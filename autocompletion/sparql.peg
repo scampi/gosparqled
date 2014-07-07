@@ -1,0 +1,166 @@
+package autocompletion
+
+type Sparql Peg {
+    Bgp
+}
+
+queryContainer <- ws prolog query !.
+
+prolog <- ( prefixDecl / baseDecl )*
+
+prefixDecl <- PREFIX [^':' ]+ COLON iri
+
+baseDecl <- BASE iri
+
+query <- selectQuery
+
+selectQuery <- select datasetClause? whereClause solutionModifier
+
+select <- SELECT ( DISTINCT / REDUCED )? ( STAR / projectionElem+ )
+
+subSelect <- select whereClause
+
+projectionElem <- var
+
+datasetClause <- FROM NAMED? iri
+
+whereClause <- WHERE? groupGraphPattern
+
+groupGraphPattern <- LBRACE ( subSelect / graphPattern ) RBRACE
+
+graphPattern <- basicGraphPattern? ( graphPatternNotTriples DOT? graphPattern )?
+
+graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern
+
+optionalGraphPattern <- OPTIONAL LBRACE ( subSelect / graphPattern ) RBRACE
+
+groupOrUnionGraphPattern <- groupGraphPattern ( UNION groupOrUnionGraphPattern )?
+
+basicGraphPattern <- triplesBlock
+
+triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
+
+triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath )
+
+varOrTerm <- <var> { p.setSubject(buffer[begin:end]) } / <graphTerm> { p.setSubject(buffer[begin:end]) } / pof { p.setSubject("?POF") } 
+
+graphTerm <- iri / literal / numericLiteral / booleanLiteral / blankNode / nil
+
+triplesNodePath <- collectionPath / blankNodePropertyListPath
+
+collectionPath <- LPAREN graphNodePath+ RPAREN
+
+blankNodePropertyListPath <- LBRACK propertyListPath RBRACK
+
+propertyListPath <- ( pof { p.setPredicate("?POF") } / <var> { p.setPredicate(buffer[begin:end]) } / verbPath ) objectListPath ( SEMICOLON propertyListPath )?
+
+verbPath <- path
+
+path <- pathAlternative
+
+pathAlternative <- pathSequence ( PIPE pathAlternative )*
+
+pathSequence <- <pathElt> { p.setPredicate(buffer[begin:end]) } ( SLASH pathSequence )*
+
+pathElt <- INVERSE? pathPrimary &pathMod?
+
+pathPrimary <- iri / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
+
+pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet ( PIPE pathOneInPropertySet )* )? RPAREN
+
+pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
+
+pathMod <- STAR / QUESTION / PLUS
+
+objectListPath <- objectPath ( COMMA objectListPath )*
+
+objectPath <- <graphNodePath> { p.setObject(buffer[begin:end]); p.addTriplePattern() } / pof { p.setObject("?POF"); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
+
+graphNodePath <- var / graphTerm
+
+solutionModifier <- limitOffsetClauses?
+
+limitOffsetClauses <- limit offset? / offset limit?
+
+limit <- LIMIT INTEGER
+
+offset <- OFFSET INTEGER
+
+#
+# Point Of Focus
+#
+
+pof <- '<' [ \t\n\r\f]+
+
+#
+# Terminals
+#
+
+var <- ('?' / '$') VARNAME ws
+
+iri <- '<' [^'>']* '>' ws
+
+literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iri )? ws
+
+string <- '\"' [^'\"']* '\"'
+
+numericLiteral <- ('+' / '-')? [0-9]+ ('.' [0-9]*)? ws
+
+booleanLiteral <- TRUE / FALSE
+
+blankNode <- blankNodeLabel / anon
+
+blankNodeLabel <- "_:" [a-zA-Z0-9][a-zA-Z0-9.-_] ?ws
+
+anon <- '[' ws ']' ws
+
+nil <- '(' ws ')' ws
+
+#
+# Labels
+#
+
+VARNAME <- ( PN_CHARS_U / [0-9] ) VAR_CHAR*
+PN_CHARS_U <- PN_CHARS_BASE / '_'
+PN_CHARS_BASE <- [[a-z]]
+VAR_CHAR <- PN_CHARS_U / [0-9]
+
+#
+# Tokens
+#
+
+PREFIX <- "PREFIX" ws
+TRUE <- "TRUE" ws
+FALSE <- "FALSE" ws
+BASE <- "BASE" ws
+SELECT <- "SELECT" ws
+REDUCED <- "REDUCED" ws
+DISTINCT <- "DISTINCT" ws
+FROM <- "FROM" ws
+NAMED <- "NAMED" ws
+WHERE <- "WHERE" ws
+LBRACE <- '{' ws
+RBRACE <- '}' ws
+LBRACK <- '[' ws
+RBRACK <- ']' ws
+SEMICOLON <- ';' ws
+COMMA <- ',' ws
+DOT <- '.' ws
+COLON <- ':' ws
+PIPE <- '|' ws
+SLASH <- '/' ws
+INVERSE <- '^' ws
+LPAREN <- '(' ws
+RPAREN <- ')' ws
+ISA <- 'a' ws
+NOT <- '!' ws
+STAR <- '*' ws
+QUESTION <- '?' ws
+PLUS <- '+' ws
+OPTIONAL <- "OPTIONAL" ws
+UNION <- "UNION" ws
+LIMIT <- "LIMIT" ws
+OFFSET <- "OFFSET" ws
+INTEGER <- [0-9]+ ws
+
+ws <- [ \t\n\r\f]*
