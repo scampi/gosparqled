@@ -6,24 +6,29 @@ import (
     "github.com/scampi/gosparqled/autocompletion"
 )
 
-func RecommendationQuery(query string) string {
-    tmpl := `
-SELECT DISTINCT ?POF
-WHERE {
-{{#Tps}}
-    {{{S}}} {{{P}}} {{{O}}} .
-{{/Tps}}
-}
-LIMIT 100
-    `
-    tp, _ := mustache.ParseString(tmpl)
-    s := &autocompletion.Sparql{ Buffer : query, Bgp : autocompletion.Bgp{Template : tp} }
-    s.Init()
-    if err := s.Parse(); err == nil {
-        s.Execute()
-        return s.RecommendationQuery()
+var tmpl string = `
+    SELECT DISTINCT ?POF
+    WHERE {
+    {{#Tps}}
+        {{{S}}} {{{P}}} {{{O}}} .
+    {{/Tps}}
     }
-    return ""
+    LIMIT 10
+`
+var tp, _ = mustache.ParseString(tmpl)
+
+func RecommendationQuery(query string, callback func(string)) {
+    go func(query string) {
+        s := &autocompletion.Sparql{ Buffer : query, Bgp : &autocompletion.Bgp{Template : tp} }
+        s.Init()
+        err := s.Parse()
+        if err == nil {
+            s.Execute()
+            callback(s.RecommendationQuery())
+        } else {
+            callback(query + "\n" + err.Error())
+        }
+    }(query)
 }
 
 func main() {

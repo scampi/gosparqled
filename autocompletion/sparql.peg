@@ -1,14 +1,14 @@
 package autocompletion
 
 type Sparql Peg {
-    Bgp
+    *Bgp
 }
 
 queryContainer <- ws prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX [^':' ]+ COLON iri
+prefixDecl <- PREFIX [^: ]+ COLON iri
 
 baseDecl <- BASE iri
 
@@ -28,7 +28,7 @@ whereClause <- WHERE? groupGraphPattern
 
 groupGraphPattern <- LBRACE ( subSelect / graphPattern ) RBRACE
 
-graphPattern <- basicGraphPattern? ( graphPatternNotTriples DOT? graphPattern )?
+graphPattern <- ( basicGraphPattern / graphPatternNotTriples DOT? graphPattern? )
 
 graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern
 
@@ -38,9 +38,9 @@ groupOrUnionGraphPattern <- groupGraphPattern ( UNION groupOrUnionGraphPattern )
 
 basicGraphPattern <- triplesBlock
 
-triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
+triplesBlock <- triplesSameSubjectPath+
 
-triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath )
+triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath ) DOT?
 
 varOrTerm <- <var> { p.setSubject(buffer[begin:end]) } / <graphTerm> { p.setSubject(buffer[begin:end]) } / pof { p.setSubject("?POF") } 
 
@@ -98,11 +98,11 @@ pof <- '<' [ \t\n\r\f]+
 
 var <- ('?' / '$') VARNAME ws
 
-iri <- '<' [^'>']* '>' ws
+iri <- '<' [^>]* '>' ws
 
 literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iri )? ws
 
-string <- '\"' [^'\"']* '\"'
+string <- '\"' [^"]* '\"'
 
 numericLiteral <- ('+' / '-')? [0-9]+ ('.' [0-9]*)? ws
 
@@ -163,4 +163,4 @@ LIMIT <- "LIMIT" ws
 OFFSET <- "OFFSET" ws
 INTEGER <- [0-9]+ ws
 
-ws <- [ \t\n\r\f]*
+ws <- ( '\040' / '\t' / '\r' / '\n' / '\f' / '\v' )*

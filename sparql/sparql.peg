@@ -7,7 +7,7 @@ queryContainer <- ws prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX [^':' ]+ COLON iri
+prefixDecl <- PREFIX [^: ]+ COLON iri
 
 baseDecl <- BASE iri
 
@@ -57,9 +57,9 @@ verbPath <- path
 
 path <- pathAlternative
 
-pathAlternative <- pathSequence ( PIPE pathSequence )*
+pathAlternative <- pathSequence ( PIPE pathAlternative )*
 
-pathSequence <- pathElt ( SLASH pathElt )*
+pathSequence <- pathElt ( SLASH pathSequence )*
 
 pathElt <- INVERSE? pathPrimary &pathMod?
 
@@ -91,13 +91,13 @@ offset <- OFFSET INTEGER
 
 var <- ('?' / '$') VARNAME ws
 
-iri <- '<' [^'>']* '>' ws
+iri <- '<' [^>]* '>' ws
 
 literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iri )? ws
 
-string <- '\"' [^'\"']* '\"'
+string <- '\"' [^"]* '\"'
 
-numericLiteral <- ('+' / '-')? [0-9.]+ ws
+numericLiteral <- ('+' / '-')? [0-9]+ ('.' [0-9]*)? ws
 
 booleanLiteral <- TRUE / FALSE
 
@@ -156,4 +156,4 @@ LIMIT <- "LIMIT" ws
 OFFSET <- "OFFSET" ws
 INTEGER <- [0-9]+ ws
 
-ws <- [ \t\n\r\f]*
+ws <- ( '\040' / '\t' / '\r' / '\n' / '\f' / '\v' )*
