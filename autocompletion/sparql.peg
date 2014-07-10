@@ -28,7 +28,7 @@ whereClause <- WHERE? groupGraphPattern
 
 groupGraphPattern <- LBRACE ( subSelect / graphPattern ) RBRACE
 
-graphPattern <- ( basicGraphPattern / graphPatternNotTriples DOT? graphPattern? )
+graphPattern <- basicGraphPattern? ( graphPatternNotTriples DOT? graphPattern )?
 
 graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern
 
@@ -38,9 +38,9 @@ groupOrUnionGraphPattern <- groupGraphPattern ( UNION groupOrUnionGraphPattern )
 
 basicGraphPattern <- triplesBlock
 
-triplesBlock <- triplesSameSubjectPath+
+triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
 
-triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath ) DOT?
+triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath )
 
 varOrTerm <- <var> { p.setSubject(buffer[begin:end]) } / <graphTerm> { p.setSubject(buffer[begin:end]) } / pof { p.setSubject("?POF") } 
 
@@ -62,7 +62,8 @@ pathAlternative <- pathSequence ( PIPE pathAlternative )*
 
 pathSequence <- <pathElt> { p.setPredicate(buffer[begin:end]) } ( SLASH pathSequence )*
 
-pathElt <- INVERSE? pathPrimary &pathMod?
+# TODO: support pathmod rule.
+pathElt <- INVERSE? pathPrimary #pathMod?
 
 pathPrimary <- iri / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
 
@@ -70,7 +71,7 @@ pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet (
 
 pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
 
-pathMod <- STAR / QUESTION / PLUS
+#pathMod <- STAR / QUESTION / PLUS
 
 objectListPath <- objectPath ( COMMA objectListPath )*
 
@@ -110,7 +111,7 @@ booleanLiteral <- TRUE / FALSE
 
 blankNode <- blankNodeLabel / anon
 
-blankNodeLabel <- "_:" [a-zA-Z0-9][a-zA-Z0-9.-_] ?ws
+blankNodeLabel <- "_:" [a-zA-Z0-9] ([a-zA-Z0-9.-_]?) ws
 
 anon <- '[' ws ']' ws
 
@@ -120,10 +121,9 @@ nil <- '(' ws ')' ws
 # Labels
 #
 
-VARNAME <- ( PN_CHARS_U / [0-9] ) VAR_CHAR*
+VARNAME <- ( PN_CHARS_U / [0-9] )+ 
 PN_CHARS_U <- PN_CHARS_BASE / '_'
 PN_CHARS_BASE <- [[a-z]]
-VAR_CHAR <- PN_CHARS_U / [0-9]
 
 #
 # Tokens
