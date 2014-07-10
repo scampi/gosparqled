@@ -950,13 +950,11 @@ func (p *Sparql) Init() {
 		nil,
 		/* 0 queryContainer <- <(ws prolog query !.)> */
 		func() bool {
-			fmt.Println("\nqueryContainer")
 			position0, tokenIndex0, depth0 := position, tokenIndex, depth
 			{
 				position1 := position
 				depth++
 				if !rules[rulews]() {
-					fmt.Print("0 ")
 					goto l0
 				}
 				{
@@ -976,16 +974,13 @@ func (p *Sparql) Init() {
 									{
 										position9, tokenIndex9, depth9 := position, tokenIndex, depth
 										if buffer[position] != rune('p') {
-											fmt.Print("10 ")
 											goto l10
 										}
 										position++
-										fmt.Print("9 ")
 										goto l9
 									l10:
 										position, tokenIndex, depth = position9, tokenIndex9, depth9
 										if buffer[position] != rune('P') {
-											fmt.Print("6 ")
 											goto l6
 										}
 										position++
@@ -994,16 +989,13 @@ func (p *Sparql) Init() {
 									{
 										position11, tokenIndex11, depth11 := position, tokenIndex, depth
 										if buffer[position] != rune('r') {
-											fmt.Print("12 ")
 											goto l12
 										}
 										position++
-										fmt.Print("11 ")
 										goto l11
 									l12:
 										position, tokenIndex, depth = position11, tokenIndex11, depth11
 										if buffer[position] != rune('R') {
-											fmt.Print("6 ")
 											goto l6
 										}
 										position++
@@ -1012,16 +1004,13 @@ func (p *Sparql) Init() {
 									{
 										position13, tokenIndex13, depth13 := position, tokenIndex, depth
 										if buffer[position] != rune('e') {
-											fmt.Print("14 ")
 											goto l14
 										}
 										position++
-										fmt.Print("13 ")
 										goto l13
 									l14:
 										position, tokenIndex, depth = position13, tokenIndex13, depth13
 										if buffer[position] != rune('E') {
-											fmt.Print("6 ")
 											goto l6
 										}
 										position++
@@ -1030,16 +1019,13 @@ func (p *Sparql) Init() {
 									{
 										position15, tokenIndex15, depth15 := position, tokenIndex, depth
 										if buffer[position] != rune('f') {
-											fmt.Print("16 ")
 											goto l16
 										}
 										position++
-										fmt.Print("15 ")
 										goto l15
 									l16:
 										position, tokenIndex, depth = position15, tokenIndex15, depth15
 										if buffer[position] != rune('F') {
-											fmt.Print("6 ")
 											goto l6
 										}
 										position++
@@ -1048,16 +1034,13 @@ func (p *Sparql) Init() {
 									{
 										position17, tokenIndex17, depth17 := position, tokenIndex, depth
 										if buffer[position] != rune('i') {
-											fmt.Print("18 ")
 											goto l18
 										}
 										position++
-										fmt.Print("17 ")
 										goto l17
 									l18:
 										position, tokenIndex, depth = position17, tokenIndex17, depth17
 										if buffer[position] != rune('I') {
-											fmt.Print("6 ")
 											goto l6
 										}
 										position++
@@ -1066,23 +1049,19 @@ func (p *Sparql) Init() {
 									{
 										position19, tokenIndex19, depth19 := position, tokenIndex, depth
 										if buffer[position] != rune('x') {
-											fmt.Print("20 ")
 											goto l20
 										}
 										position++
-										fmt.Print("19 ")
 										goto l19
 									l20:
 										position, tokenIndex, depth = position19, tokenIndex19, depth19
 										if buffer[position] != rune('X') {
-											fmt.Print("6 ")
 											goto l6
 										}
 										position++
 									}
 								l19:
 									if !rules[rulews]() {
-										fmt.Print("6 ")
 										goto l6
 									}
 									depth--
@@ -1093,28 +1072,23 @@ func (p *Sparql) Init() {
 									{
 										position24, tokenIndex24, depth24 := position, tokenIndex, depth
 										if buffer[position] != rune(':') {
-											fmt.Print("25 ")
 											goto l25
 										}
 										position++
-										fmt.Print("24 ")
 										goto l24
 									l25:
 										position, tokenIndex, depth = position24, tokenIndex24, depth24
 										if buffer[position] != rune(' ') {
-											fmt.Print("23 ")
 											goto l23
 										}
 										position++
 									}
 								l24:
-									fmt.Print("6 ")
 									goto l6
 								l23:
 									position, tokenIndex, depth = position23, tokenIndex23, depth23
 								}
 								if !matchDot() {
-									fmt.Print("6 ")
 									goto l6
 								}
 							l21:
@@ -1125,31 +1099,25 @@ func (p *Sparql) Init() {
 										{
 											position27, tokenIndex27, depth27 := position, tokenIndex, depth
 											if buffer[position] != rune(':') {
-												fmt.Print("28 ")
 												goto l28
 											}
 											position++
-											fmt.Print("27 ")
 											goto l27
 										l28:
 											position, tokenIndex, depth = position27, tokenIndex27, depth27
 											if buffer[position] != rune(' ') {
-												fmt.Print("26 ")
 												goto l26
 											}
 											position++
 										}
 									l27:
-										fmt.Print("22 ")
 										goto l22
 									l26:
 										position, tokenIndex, depth = position26, tokenIndex26, depth26
 									}
 									if !matchDot() {
-										fmt.Print("22 ")
 										goto l22
 									}
-									fmt.Print("21 ")
 									goto l21
 								l22:
 									position, tokenIndex, depth = position22, tokenIndex22, depth22
@@ -1158,25 +1126,21 @@ func (p *Sparql) Init() {
 									position29 := position
 									depth++
 									if buffer[position] != rune(':') {
-										fmt.Print("6 ")
 										goto l6
 									}
 									position++
 									if !rules[rulews]() {
-										fmt.Print("6 ")
 										goto l6
 									}
 									depth--
 									add(ruleCOLON, position29)
 								}
 								if !rules[ruleiri]() {
-									fmt.Print("6 ")
 									goto l6
 								}
 								depth--
 								add(ruleprefixDecl, position7)
 							}
-							fmt.Print("5 ")
 							goto l5
 						l6:
 							position, tokenIndex, depth = position5, tokenIndex5, depth5
@@ -1189,16 +1153,13 @@ func (p *Sparql) Init() {
 									{
 										position32, tokenIndex32, depth32 := position, tokenIndex, depth
 										if buffer[position] != rune('b') {
-											fmt.Print("33 ")
 											goto l33
 										}
 										position++
-										fmt.Print("32 ")
 										goto l32
 									l33:
 										position, tokenIndex, depth = position32, tokenIndex32, depth32
 										if buffer[position] != rune('B') {
-											fmt.Print("4 ")
 											goto l4
 										}
 										position++
@@ -1207,16 +1168,13 @@ func (p *Sparql) Init() {
 									{
 										position34, tokenIndex34, depth34 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											fmt.Print("35 ")
 											goto l35
 										}
 										position++
-										fmt.Print("34 ")
 										goto l34
 									l35:
 										position, tokenIndex, depth = position34, tokenIndex34, depth34
 										if buffer[position] != rune('A') {
-											fmt.Print("4 ")
 											goto l4
 										}
 										position++
@@ -1225,16 +1183,13 @@ func (p *Sparql) Init() {
 									{
 										position36, tokenIndex36, depth36 := position, tokenIndex, depth
 										if buffer[position] != rune('s') {
-											fmt.Print("37 ")
 											goto l37
 										}
 										position++
-										fmt.Print("36 ")
 										goto l36
 									l37:
 										position, tokenIndex, depth = position36, tokenIndex36, depth36
 										if buffer[position] != rune('S') {
-											fmt.Print("4 ")
 											goto l4
 										}
 										position++
@@ -1243,30 +1198,25 @@ func (p *Sparql) Init() {
 									{
 										position38, tokenIndex38, depth38 := position, tokenIndex, depth
 										if buffer[position] != rune('e') {
-											fmt.Print("39 ")
 											goto l39
 										}
 										position++
-										fmt.Print("38 ")
 										goto l38
 									l39:
 										position, tokenIndex, depth = position38, tokenIndex38, depth38
 										if buffer[position] != rune('E') {
-											fmt.Print("4 ")
 											goto l4
 										}
 										position++
 									}
 								l38:
 									if !rules[rulews]() {
-										fmt.Print("4 ")
 										goto l4
 									}
 									depth--
 									add(ruleBASE, position31)
 								}
 								if !rules[ruleiri]() {
-									fmt.Print("4 ")
 									goto l4
 								}
 								depth--
@@ -1274,7 +1224,6 @@ func (p *Sparql) Init() {
 							}
 						}
 					l5:
-						fmt.Print("3 ")
 						goto l3
 					l4:
 						position, tokenIndex, depth = position4, tokenIndex4, depth4
@@ -1289,7 +1238,6 @@ func (p *Sparql) Init() {
 						position41 := position
 						depth++
 						if !rules[ruleselect]() {
-							fmt.Print("0 ")
 							goto l0
 						}
 						{
@@ -1303,16 +1251,13 @@ func (p *Sparql) Init() {
 									{
 										position46, tokenIndex46, depth46 := position, tokenIndex, depth
 										if buffer[position] != rune('f') {
-											fmt.Print("47 ")
 											goto l47
 										}
 										position++
-										fmt.Print("46 ")
 										goto l46
 									l47:
 										position, tokenIndex, depth = position46, tokenIndex46, depth46
 										if buffer[position] != rune('F') {
-											fmt.Print("42 ")
 											goto l42
 										}
 										position++
@@ -1321,16 +1266,13 @@ func (p *Sparql) Init() {
 									{
 										position48, tokenIndex48, depth48 := position, tokenIndex, depth
 										if buffer[position] != rune('r') {
-											fmt.Print("49 ")
 											goto l49
 										}
 										position++
-										fmt.Print("48 ")
 										goto l48
 									l49:
 										position, tokenIndex, depth = position48, tokenIndex48, depth48
 										if buffer[position] != rune('R') {
-											fmt.Print("42 ")
 											goto l42
 										}
 										position++
@@ -1339,16 +1281,13 @@ func (p *Sparql) Init() {
 									{
 										position50, tokenIndex50, depth50 := position, tokenIndex, depth
 										if buffer[position] != rune('o') {
-											fmt.Print("51 ")
 											goto l51
 										}
 										position++
-										fmt.Print("50 ")
 										goto l50
 									l51:
 										position, tokenIndex, depth = position50, tokenIndex50, depth50
 										if buffer[position] != rune('O') {
-											fmt.Print("42 ")
 											goto l42
 										}
 										position++
@@ -1357,23 +1296,19 @@ func (p *Sparql) Init() {
 									{
 										position52, tokenIndex52, depth52 := position, tokenIndex, depth
 										if buffer[position] != rune('m') {
-											fmt.Print("53 ")
 											goto l53
 										}
 										position++
-										fmt.Print("52 ")
 										goto l52
 									l53:
 										position, tokenIndex, depth = position52, tokenIndex52, depth52
 										if buffer[position] != rune('M') {
-											fmt.Print("42 ")
 											goto l42
 										}
 										position++
 									}
 								l52:
 									if !rules[rulews]() {
-										fmt.Print("42 ")
 										goto l42
 									}
 									depth--
@@ -1387,16 +1322,13 @@ func (p *Sparql) Init() {
 										{
 											position57, tokenIndex57, depth57 := position, tokenIndex, depth
 											if buffer[position] != rune('n') {
-												fmt.Print("58 ")
 												goto l58
 											}
 											position++
-											fmt.Print("57 ")
 											goto l57
 										l58:
 											position, tokenIndex, depth = position57, tokenIndex57, depth57
 											if buffer[position] != rune('N') {
-												fmt.Print("54 ")
 												goto l54
 											}
 											position++
@@ -1405,16 +1337,13 @@ func (p *Sparql) Init() {
 										{
 											position59, tokenIndex59, depth59 := position, tokenIndex, depth
 											if buffer[position] != rune('a') {
-												fmt.Print("60 ")
 												goto l60
 											}
 											position++
-											fmt.Print("59 ")
 											goto l59
 										l60:
 											position, tokenIndex, depth = position59, tokenIndex59, depth59
 											if buffer[position] != rune('A') {
-												fmt.Print("54 ")
 												goto l54
 											}
 											position++
@@ -1423,16 +1352,13 @@ func (p *Sparql) Init() {
 										{
 											position61, tokenIndex61, depth61 := position, tokenIndex, depth
 											if buffer[position] != rune('m') {
-												fmt.Print("62 ")
 												goto l62
 											}
 											position++
-											fmt.Print("61 ")
 											goto l61
 										l62:
 											position, tokenIndex, depth = position61, tokenIndex61, depth61
 											if buffer[position] != rune('M') {
-												fmt.Print("54 ")
 												goto l54
 											}
 											position++
@@ -1441,16 +1367,13 @@ func (p *Sparql) Init() {
 										{
 											position63, tokenIndex63, depth63 := position, tokenIndex, depth
 											if buffer[position] != rune('e') {
-												fmt.Print("64 ")
 												goto l64
 											}
 											position++
-											fmt.Print("63 ")
 											goto l63
 										l64:
 											position, tokenIndex, depth = position63, tokenIndex63, depth63
 											if buffer[position] != rune('E') {
-												fmt.Print("54 ")
 												goto l54
 											}
 											position++
@@ -1459,49 +1382,41 @@ func (p *Sparql) Init() {
 										{
 											position65, tokenIndex65, depth65 := position, tokenIndex, depth
 											if buffer[position] != rune('d') {
-												fmt.Print("66 ")
 												goto l66
 											}
 											position++
-											fmt.Print("65 ")
 											goto l65
 										l66:
 											position, tokenIndex, depth = position65, tokenIndex65, depth65
 											if buffer[position] != rune('D') {
-												fmt.Print("54 ")
 												goto l54
 											}
 											position++
 										}
 									l65:
 										if !rules[rulews]() {
-											fmt.Print("54 ")
 											goto l54
 										}
 										depth--
 										add(ruleNAMED, position56)
 									}
-									fmt.Print("55 ")
 									goto l55
 								l54:
 									position, tokenIndex, depth = position54, tokenIndex54, depth54
 								}
 							l55:
 								if !rules[ruleiri]() {
-									fmt.Print("42 ")
 									goto l42
 								}
 								depth--
 								add(ruledatasetClause, position44)
 							}
-							fmt.Print("43 ")
 							goto l43
 						l42:
 							position, tokenIndex, depth = position42, tokenIndex42, depth42
 						}
 					l43:
 						if !rules[rulewhereClause]() {
-							fmt.Print("0 ")
 							goto l0
 						}
 						{
@@ -1515,36 +1430,29 @@ func (p *Sparql) Init() {
 									{
 										position71, tokenIndex71, depth71 := position, tokenIndex, depth
 										if !rules[rulelimit]() {
-											fmt.Print("72 ")
 											goto l72
 										}
 										{
 											position73, tokenIndex73, depth73 := position, tokenIndex, depth
 											if !rules[ruleoffset]() {
-												fmt.Print("73 ")
 												goto l73
 											}
-											fmt.Print("74 ")
 											goto l74
 										l73:
 											position, tokenIndex, depth = position73, tokenIndex73, depth73
 										}
 									l74:
-										fmt.Print("71 ")
 										goto l71
 									l72:
 										position, tokenIndex, depth = position71, tokenIndex71, depth71
 										if !rules[ruleoffset]() {
-											fmt.Print("68 ")
 											goto l68
 										}
 										{
 											position75, tokenIndex75, depth75 := position, tokenIndex, depth
 											if !rules[rulelimit]() {
-												fmt.Print("75 ")
 												goto l75
 											}
-											fmt.Print("76 ")
 											goto l76
 										l75:
 											position, tokenIndex, depth = position75, tokenIndex75, depth75
@@ -1555,7 +1463,6 @@ func (p *Sparql) Init() {
 									depth--
 									add(rulelimitOffsetClauses, position70)
 								}
-								fmt.Print("69 ")
 								goto l69
 							l68:
 								position, tokenIndex, depth = position68, tokenIndex68, depth68
@@ -1573,10 +1480,8 @@ func (p *Sparql) Init() {
 				{
 					position77, tokenIndex77, depth77 := position, tokenIndex, depth
 					if !matchDot() {
-						fmt.Print("77 ")
 						goto l77
 					}
-					fmt.Print("0 ")
 					goto l0
 				l77:
 					position, tokenIndex, depth = position77, tokenIndex77, depth77
@@ -1601,7 +1506,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 6 select <- <(SELECT (DISTINCT / REDUCED)? (STAR / projectionElem+))> */
 		func() bool {
-			fmt.Println("\nselect")
 			position83, tokenIndex83, depth83 := position, tokenIndex, depth
 			{
 				position84 := position
@@ -1612,16 +1516,13 @@ func (p *Sparql) Init() {
 					{
 						position86, tokenIndex86, depth86 := position, tokenIndex, depth
 						if buffer[position] != rune('s') {
-							fmt.Print("87 ")
 							goto l87
 						}
 						position++
-						fmt.Print("86 ")
 						goto l86
 					l87:
 						position, tokenIndex, depth = position86, tokenIndex86, depth86
 						if buffer[position] != rune('S') {
-							fmt.Print("83 ")
 							goto l83
 						}
 						position++
@@ -1630,16 +1531,13 @@ func (p *Sparql) Init() {
 					{
 						position88, tokenIndex88, depth88 := position, tokenIndex, depth
 						if buffer[position] != rune('e') {
-							fmt.Print("89 ")
 							goto l89
 						}
 						position++
-						fmt.Print("88 ")
 						goto l88
 					l89:
 						position, tokenIndex, depth = position88, tokenIndex88, depth88
 						if buffer[position] != rune('E') {
-							fmt.Print("83 ")
 							goto l83
 						}
 						position++
@@ -1648,16 +1546,13 @@ func (p *Sparql) Init() {
 					{
 						position90, tokenIndex90, depth90 := position, tokenIndex, depth
 						if buffer[position] != rune('l') {
-							fmt.Print("91 ")
 							goto l91
 						}
 						position++
-						fmt.Print("90 ")
 						goto l90
 					l91:
 						position, tokenIndex, depth = position90, tokenIndex90, depth90
 						if buffer[position] != rune('L') {
-							fmt.Print("83 ")
 							goto l83
 						}
 						position++
@@ -1666,16 +1561,13 @@ func (p *Sparql) Init() {
 					{
 						position92, tokenIndex92, depth92 := position, tokenIndex, depth
 						if buffer[position] != rune('e') {
-							fmt.Print("93 ")
 							goto l93
 						}
 						position++
-						fmt.Print("92 ")
 						goto l92
 					l93:
 						position, tokenIndex, depth = position92, tokenIndex92, depth92
 						if buffer[position] != rune('E') {
-							fmt.Print("83 ")
 							goto l83
 						}
 						position++
@@ -1684,16 +1576,13 @@ func (p *Sparql) Init() {
 					{
 						position94, tokenIndex94, depth94 := position, tokenIndex, depth
 						if buffer[position] != rune('c') {
-							fmt.Print("95 ")
 							goto l95
 						}
 						position++
-						fmt.Print("94 ")
 						goto l94
 					l95:
 						position, tokenIndex, depth = position94, tokenIndex94, depth94
 						if buffer[position] != rune('C') {
-							fmt.Print("83 ")
 							goto l83
 						}
 						position++
@@ -1702,23 +1591,19 @@ func (p *Sparql) Init() {
 					{
 						position96, tokenIndex96, depth96 := position, tokenIndex, depth
 						if buffer[position] != rune('t') {
-							fmt.Print("97 ")
 							goto l97
 						}
 						position++
-						fmt.Print("96 ")
 						goto l96
 					l97:
 						position, tokenIndex, depth = position96, tokenIndex96, depth96
 						if buffer[position] != rune('T') {
-							fmt.Print("83 ")
 							goto l83
 						}
 						position++
 					}
 				l96:
 					if !rules[rulews]() {
-						fmt.Print("83 ")
 						goto l83
 					}
 					depth--
@@ -1734,16 +1619,13 @@ func (p *Sparql) Init() {
 							{
 								position103, tokenIndex103, depth103 := position, tokenIndex, depth
 								if buffer[position] != rune('d') {
-									fmt.Print("104 ")
 									goto l104
 								}
 								position++
-								fmt.Print("103 ")
 								goto l103
 							l104:
 								position, tokenIndex, depth = position103, tokenIndex103, depth103
 								if buffer[position] != rune('D') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1752,16 +1634,13 @@ func (p *Sparql) Init() {
 							{
 								position105, tokenIndex105, depth105 := position, tokenIndex, depth
 								if buffer[position] != rune('i') {
-									fmt.Print("106 ")
 									goto l106
 								}
 								position++
-								fmt.Print("105 ")
 								goto l105
 							l106:
 								position, tokenIndex, depth = position105, tokenIndex105, depth105
 								if buffer[position] != rune('I') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1770,16 +1649,13 @@ func (p *Sparql) Init() {
 							{
 								position107, tokenIndex107, depth107 := position, tokenIndex, depth
 								if buffer[position] != rune('s') {
-									fmt.Print("108 ")
 									goto l108
 								}
 								position++
-								fmt.Print("107 ")
 								goto l107
 							l108:
 								position, tokenIndex, depth = position107, tokenIndex107, depth107
 								if buffer[position] != rune('S') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1788,16 +1664,13 @@ func (p *Sparql) Init() {
 							{
 								position109, tokenIndex109, depth109 := position, tokenIndex, depth
 								if buffer[position] != rune('t') {
-									fmt.Print("110 ")
 									goto l110
 								}
 								position++
-								fmt.Print("109 ")
 								goto l109
 							l110:
 								position, tokenIndex, depth = position109, tokenIndex109, depth109
 								if buffer[position] != rune('T') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1806,16 +1679,13 @@ func (p *Sparql) Init() {
 							{
 								position111, tokenIndex111, depth111 := position, tokenIndex, depth
 								if buffer[position] != rune('i') {
-									fmt.Print("112 ")
 									goto l112
 								}
 								position++
-								fmt.Print("111 ")
 								goto l111
 							l112:
 								position, tokenIndex, depth = position111, tokenIndex111, depth111
 								if buffer[position] != rune('I') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1824,16 +1694,13 @@ func (p *Sparql) Init() {
 							{
 								position113, tokenIndex113, depth113 := position, tokenIndex, depth
 								if buffer[position] != rune('n') {
-									fmt.Print("114 ")
 									goto l114
 								}
 								position++
-								fmt.Print("113 ")
 								goto l113
 							l114:
 								position, tokenIndex, depth = position113, tokenIndex113, depth113
 								if buffer[position] != rune('N') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1842,16 +1709,13 @@ func (p *Sparql) Init() {
 							{
 								position115, tokenIndex115, depth115 := position, tokenIndex, depth
 								if buffer[position] != rune('c') {
-									fmt.Print("116 ")
 									goto l116
 								}
 								position++
-								fmt.Print("115 ")
 								goto l115
 							l116:
 								position, tokenIndex, depth = position115, tokenIndex115, depth115
 								if buffer[position] != rune('C') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
@@ -1860,29 +1724,24 @@ func (p *Sparql) Init() {
 							{
 								position117, tokenIndex117, depth117 := position, tokenIndex, depth
 								if buffer[position] != rune('t') {
-									fmt.Print("118 ")
 									goto l118
 								}
 								position++
-								fmt.Print("117 ")
 								goto l117
 							l118:
 								position, tokenIndex, depth = position117, tokenIndex117, depth117
 								if buffer[position] != rune('T') {
-									fmt.Print("101 ")
 									goto l101
 								}
 								position++
 							}
 						l117:
 							if !rules[rulews]() {
-								fmt.Print("101 ")
 								goto l101
 							}
 							depth--
 							add(ruleDISTINCT, position102)
 						}
-						fmt.Print("100 ")
 						goto l100
 					l101:
 						position, tokenIndex, depth = position100, tokenIndex100, depth100
@@ -1892,16 +1751,13 @@ func (p *Sparql) Init() {
 							{
 								position120, tokenIndex120, depth120 := position, tokenIndex, depth
 								if buffer[position] != rune('r') {
-									fmt.Print("121 ")
 									goto l121
 								}
 								position++
-								fmt.Print("120 ")
 								goto l120
 							l121:
 								position, tokenIndex, depth = position120, tokenIndex120, depth120
 								if buffer[position] != rune('R') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
@@ -1910,16 +1766,13 @@ func (p *Sparql) Init() {
 							{
 								position122, tokenIndex122, depth122 := position, tokenIndex, depth
 								if buffer[position] != rune('e') {
-									fmt.Print("123 ")
 									goto l123
 								}
 								position++
-								fmt.Print("122 ")
 								goto l122
 							l123:
 								position, tokenIndex, depth = position122, tokenIndex122, depth122
 								if buffer[position] != rune('E') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
@@ -1928,16 +1781,13 @@ func (p *Sparql) Init() {
 							{
 								position124, tokenIndex124, depth124 := position, tokenIndex, depth
 								if buffer[position] != rune('d') {
-									fmt.Print("125 ")
 									goto l125
 								}
 								position++
-								fmt.Print("124 ")
 								goto l124
 							l125:
 								position, tokenIndex, depth = position124, tokenIndex124, depth124
 								if buffer[position] != rune('D') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
@@ -1946,16 +1796,13 @@ func (p *Sparql) Init() {
 							{
 								position126, tokenIndex126, depth126 := position, tokenIndex, depth
 								if buffer[position] != rune('u') {
-									fmt.Print("127 ")
 									goto l127
 								}
 								position++
-								fmt.Print("126 ")
 								goto l126
 							l127:
 								position, tokenIndex, depth = position126, tokenIndex126, depth126
 								if buffer[position] != rune('U') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
@@ -1964,16 +1811,13 @@ func (p *Sparql) Init() {
 							{
 								position128, tokenIndex128, depth128 := position, tokenIndex, depth
 								if buffer[position] != rune('c') {
-									fmt.Print("129 ")
 									goto l129
 								}
 								position++
-								fmt.Print("128 ")
 								goto l128
 							l129:
 								position, tokenIndex, depth = position128, tokenIndex128, depth128
 								if buffer[position] != rune('C') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
@@ -1982,16 +1826,13 @@ func (p *Sparql) Init() {
 							{
 								position130, tokenIndex130, depth130 := position, tokenIndex, depth
 								if buffer[position] != rune('e') {
-									fmt.Print("131 ")
 									goto l131
 								}
 								position++
-								fmt.Print("130 ")
 								goto l130
 							l131:
 								position, tokenIndex, depth = position130, tokenIndex130, depth130
 								if buffer[position] != rune('E') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
@@ -2000,23 +1841,19 @@ func (p *Sparql) Init() {
 							{
 								position132, tokenIndex132, depth132 := position, tokenIndex, depth
 								if buffer[position] != rune('d') {
-									fmt.Print("133 ")
 									goto l133
 								}
 								position++
-								fmt.Print("132 ")
 								goto l132
 							l133:
 								position, tokenIndex, depth = position132, tokenIndex132, depth132
 								if buffer[position] != rune('D') {
-									fmt.Print("98 ")
 									goto l98
 								}
 								position++
 							}
 						l132:
 							if !rules[rulews]() {
-								fmt.Print("98 ")
 								goto l98
 							}
 							depth--
@@ -2024,7 +1861,6 @@ func (p *Sparql) Init() {
 						}
 					}
 				l100:
-					fmt.Print("99 ")
 					goto l99
 				l98:
 					position, tokenIndex, depth = position98, tokenIndex98, depth98
@@ -2036,18 +1872,15 @@ func (p *Sparql) Init() {
 						position136 := position
 						depth++
 						if buffer[position] != rune('*') {
-							fmt.Print("135 ")
 							goto l135
 						}
 						position++
 						if !rules[rulews]() {
-							fmt.Print("135 ")
 							goto l135
 						}
 						depth--
 						add(ruleSTAR, position136)
 					}
-					fmt.Print("134 ")
 					goto l134
 				l135:
 					position, tokenIndex, depth = position134, tokenIndex134, depth134
@@ -2055,7 +1888,6 @@ func (p *Sparql) Init() {
 						position139 := position
 						depth++
 						if !rules[rulevar]() {
-							fmt.Print("83 ")
 							goto l83
 						}
 						depth--
@@ -2068,13 +1900,11 @@ func (p *Sparql) Init() {
 							position140 := position
 							depth++
 							if !rules[rulevar]() {
-								fmt.Print("138 ")
 								goto l138
 							}
 							depth--
 							add(ruleprojectionElem, position140)
 						}
-						fmt.Print("137 ")
 						goto l137
 					l138:
 						position, tokenIndex, depth = position138, tokenIndex138, depth138
@@ -2091,17 +1921,14 @@ func (p *Sparql) Init() {
 		},
 		/* 7 subSelect <- <(select whereClause)> */
 		func() bool {
-			fmt.Println("\nsubSelect")
 			position141, tokenIndex141, depth141 := position, tokenIndex, depth
 			{
 				position142 := position
 				depth++
 				if !rules[ruleselect]() {
-					fmt.Print("141 ")
 					goto l141
 				}
 				if !rules[rulewhereClause]() {
-					fmt.Print("141 ")
 					goto l141
 				}
 				depth--
@@ -2118,7 +1945,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 10 whereClause <- <(WHERE? groupGraphPattern)> */
 		func() bool {
-			fmt.Println("\nwhereClause")
 			position145, tokenIndex145, depth145 := position, tokenIndex, depth
 			{
 				position146 := position
@@ -2131,16 +1957,13 @@ func (p *Sparql) Init() {
 						{
 							position150, tokenIndex150, depth150 := position, tokenIndex, depth
 							if buffer[position] != rune('w') {
-								fmt.Print("151 ")
 								goto l151
 							}
 							position++
-							fmt.Print("150 ")
 							goto l150
 						l151:
 							position, tokenIndex, depth = position150, tokenIndex150, depth150
 							if buffer[position] != rune('W') {
-								fmt.Print("147 ")
 								goto l147
 							}
 							position++
@@ -2149,16 +1972,13 @@ func (p *Sparql) Init() {
 						{
 							position152, tokenIndex152, depth152 := position, tokenIndex, depth
 							if buffer[position] != rune('h') {
-								fmt.Print("153 ")
 								goto l153
 							}
 							position++
-							fmt.Print("152 ")
 							goto l152
 						l153:
 							position, tokenIndex, depth = position152, tokenIndex152, depth152
 							if buffer[position] != rune('H') {
-								fmt.Print("147 ")
 								goto l147
 							}
 							position++
@@ -2167,16 +1987,13 @@ func (p *Sparql) Init() {
 						{
 							position154, tokenIndex154, depth154 := position, tokenIndex, depth
 							if buffer[position] != rune('e') {
-								fmt.Print("155 ")
 								goto l155
 							}
 							position++
-							fmt.Print("154 ")
 							goto l154
 						l155:
 							position, tokenIndex, depth = position154, tokenIndex154, depth154
 							if buffer[position] != rune('E') {
-								fmt.Print("147 ")
 								goto l147
 							}
 							position++
@@ -2185,16 +2002,13 @@ func (p *Sparql) Init() {
 						{
 							position156, tokenIndex156, depth156 := position, tokenIndex, depth
 							if buffer[position] != rune('r') {
-								fmt.Print("157 ")
 								goto l157
 							}
 							position++
-							fmt.Print("156 ")
 							goto l156
 						l157:
 							position, tokenIndex, depth = position156, tokenIndex156, depth156
 							if buffer[position] != rune('R') {
-								fmt.Print("147 ")
 								goto l147
 							}
 							position++
@@ -2203,36 +2017,30 @@ func (p *Sparql) Init() {
 						{
 							position158, tokenIndex158, depth158 := position, tokenIndex, depth
 							if buffer[position] != rune('e') {
-								fmt.Print("159 ")
 								goto l159
 							}
 							position++
-							fmt.Print("158 ")
 							goto l158
 						l159:
 							position, tokenIndex, depth = position158, tokenIndex158, depth158
 							if buffer[position] != rune('E') {
-								fmt.Print("147 ")
 								goto l147
 							}
 							position++
 						}
 					l158:
 						if !rules[rulews]() {
-							fmt.Print("147 ")
 							goto l147
 						}
 						depth--
 						add(ruleWHERE, position149)
 					}
-					fmt.Print("148 ")
 					goto l148
 				l147:
 					position, tokenIndex, depth = position147, tokenIndex147, depth147
 				}
 			l148:
 				if !rules[rulegroupGraphPattern]() {
-					fmt.Print("145 ")
 					goto l145
 				}
 				depth--
@@ -2245,33 +2053,27 @@ func (p *Sparql) Init() {
 		},
 		/* 11 groupGraphPattern <- <(LBRACE (subSelect / graphPattern) RBRACE)> */
 		func() bool {
-			fmt.Println("\ngroupGraphPattern")
 			position160, tokenIndex160, depth160 := position, tokenIndex, depth
 			{
 				position161 := position
 				depth++
 				if !rules[ruleLBRACE]() {
-					fmt.Print("160 ")
 					goto l160
 				}
 				{
 					position162, tokenIndex162, depth162 := position, tokenIndex, depth
 					if !rules[rulesubSelect]() {
-						fmt.Print("163 ")
 						goto l163
 					}
-					fmt.Print("162 ")
 					goto l162
 				l163:
 					position, tokenIndex, depth = position162, tokenIndex162, depth162
 					if !rules[rulegraphPattern]() {
-						fmt.Print("160 ")
 						goto l160
 					}
 				}
 			l162:
 				if !rules[ruleRBRACE]() {
-					fmt.Print("160 ")
 					goto l160
 				}
 				depth--
@@ -2284,7 +2086,6 @@ func (p *Sparql) Init() {
 		},
 		/* 12 graphPattern <- <(basicGraphPattern? (graphPatternNotTriples DOT? graphPattern)?)> */
 		func() bool {
-			fmt.Println("\ngraphPattern")
 			{
 				position165 := position
 				depth++
@@ -2297,21 +2098,17 @@ func (p *Sparql) Init() {
 							position169 := position
 							depth++
 							if !rules[ruletriplesSameSubjectPath]() {
-								fmt.Print("166 ")
 								goto l166
 							}
 						l170:
 							{
 								position171, tokenIndex171, depth171 := position, tokenIndex, depth
 								if !rules[ruleDOT]() {
-									fmt.Print("171 ")
 									goto l171
 								}
 								if !rules[ruletriplesSameSubjectPath]() {
-									fmt.Print("171 ")
 									goto l171
 								}
-								fmt.Print("170 ")
 								goto l170
 							l171:
 								position, tokenIndex, depth = position171, tokenIndex171, depth171
@@ -2319,10 +2116,8 @@ func (p *Sparql) Init() {
 							{
 								position172, tokenIndex172, depth172 := position, tokenIndex, depth
 								if !rules[ruleDOT]() {
-									fmt.Print("172 ")
 									goto l172
 								}
-								fmt.Print("173 ")
 								goto l173
 							l172:
 								position, tokenIndex, depth = position172, tokenIndex172, depth172
@@ -2334,7 +2129,6 @@ func (p *Sparql) Init() {
 						depth--
 						add(rulebasicGraphPattern, position168)
 					}
-					fmt.Print("167 ")
 					goto l167
 				l166:
 					position, tokenIndex, depth = position166, tokenIndex166, depth166
@@ -2356,16 +2150,13 @@ func (p *Sparql) Init() {
 									{
 										position181, tokenIndex181, depth181 := position, tokenIndex, depth
 										if buffer[position] != rune('o') {
-											fmt.Print("182 ")
 											goto l182
 										}
 										position++
-										fmt.Print("181 ")
 										goto l181
 									l182:
 										position, tokenIndex, depth = position181, tokenIndex181, depth181
 										if buffer[position] != rune('O') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2374,16 +2165,13 @@ func (p *Sparql) Init() {
 									{
 										position183, tokenIndex183, depth183 := position, tokenIndex, depth
 										if buffer[position] != rune('p') {
-											fmt.Print("184 ")
 											goto l184
 										}
 										position++
-										fmt.Print("183 ")
 										goto l183
 									l184:
 										position, tokenIndex, depth = position183, tokenIndex183, depth183
 										if buffer[position] != rune('P') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2392,16 +2180,13 @@ func (p *Sparql) Init() {
 									{
 										position185, tokenIndex185, depth185 := position, tokenIndex, depth
 										if buffer[position] != rune('t') {
-											fmt.Print("186 ")
 											goto l186
 										}
 										position++
-										fmt.Print("185 ")
 										goto l185
 									l186:
 										position, tokenIndex, depth = position185, tokenIndex185, depth185
 										if buffer[position] != rune('T') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2410,16 +2195,13 @@ func (p *Sparql) Init() {
 									{
 										position187, tokenIndex187, depth187 := position, tokenIndex, depth
 										if buffer[position] != rune('i') {
-											fmt.Print("188 ")
 											goto l188
 										}
 										position++
-										fmt.Print("187 ")
 										goto l187
 									l188:
 										position, tokenIndex, depth = position187, tokenIndex187, depth187
 										if buffer[position] != rune('I') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2428,16 +2210,13 @@ func (p *Sparql) Init() {
 									{
 										position189, tokenIndex189, depth189 := position, tokenIndex, depth
 										if buffer[position] != rune('o') {
-											fmt.Print("190 ")
 											goto l190
 										}
 										position++
-										fmt.Print("189 ")
 										goto l189
 									l190:
 										position, tokenIndex, depth = position189, tokenIndex189, depth189
 										if buffer[position] != rune('O') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2446,16 +2225,13 @@ func (p *Sparql) Init() {
 									{
 										position191, tokenIndex191, depth191 := position, tokenIndex, depth
 										if buffer[position] != rune('n') {
-											fmt.Print("192 ")
 											goto l192
 										}
 										position++
-										fmt.Print("191 ")
 										goto l191
 									l192:
 										position, tokenIndex, depth = position191, tokenIndex191, depth191
 										if buffer[position] != rune('N') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2464,16 +2240,13 @@ func (p *Sparql) Init() {
 									{
 										position193, tokenIndex193, depth193 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											fmt.Print("194 ")
 											goto l194
 										}
 										position++
-										fmt.Print("193 ")
 										goto l193
 									l194:
 										position, tokenIndex, depth = position193, tokenIndex193, depth193
 										if buffer[position] != rune('A') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
@@ -2482,61 +2255,50 @@ func (p *Sparql) Init() {
 									{
 										position195, tokenIndex195, depth195 := position, tokenIndex, depth
 										if buffer[position] != rune('l') {
-											fmt.Print("196 ")
 											goto l196
 										}
 										position++
-										fmt.Print("195 ")
 										goto l195
 									l196:
 										position, tokenIndex, depth = position195, tokenIndex195, depth195
 										if buffer[position] != rune('L') {
-											fmt.Print("178 ")
 											goto l178
 										}
 										position++
 									}
 								l195:
 									if !rules[rulews]() {
-										fmt.Print("178 ")
 										goto l178
 									}
 									depth--
 									add(ruleOPTIONAL, position180)
 								}
 								if !rules[ruleLBRACE]() {
-									fmt.Print("178 ")
 									goto l178
 								}
 								{
 									position197, tokenIndex197, depth197 := position, tokenIndex, depth
 									if !rules[rulesubSelect]() {
-										fmt.Print("198 ")
 										goto l198
 									}
-									fmt.Print("197 ")
 									goto l197
 								l198:
 									position, tokenIndex, depth = position197, tokenIndex197, depth197
 									if !rules[rulegraphPattern]() {
-										fmt.Print("178 ")
 										goto l178
 									}
 								}
 							l197:
 								if !rules[ruleRBRACE]() {
-									fmt.Print("178 ")
 									goto l178
 								}
 								depth--
 								add(ruleoptionalGraphPattern, position179)
 							}
-							fmt.Print("177 ")
 							goto l177
 						l178:
 							position, tokenIndex, depth = position177, tokenIndex177, depth177
 							if !rules[rulegroupOrUnionGraphPattern]() {
-								fmt.Print("174 ")
 								goto l174
 							}
 						}
@@ -2547,20 +2309,16 @@ func (p *Sparql) Init() {
 					{
 						position199, tokenIndex199, depth199 := position, tokenIndex, depth
 						if !rules[ruleDOT]() {
-							fmt.Print("199 ")
 							goto l199
 						}
-						fmt.Print("200 ")
 						goto l200
 					l199:
 						position, tokenIndex, depth = position199, tokenIndex199, depth199
 					}
 				l200:
 					if !rules[rulegraphPattern]() {
-						fmt.Print("174 ")
 						goto l174
 					}
-					fmt.Print("175 ")
 					goto l175
 				l174:
 					position, tokenIndex, depth = position174, tokenIndex174, depth174
@@ -2577,13 +2335,11 @@ func (p *Sparql) Init() {
 		nil,
 		/* 15 groupOrUnionGraphPattern <- <(groupGraphPattern (UNION groupOrUnionGraphPattern)?)> */
 		func() bool {
-			fmt.Println("\ngroupOrUnionGraphPattern")
 			position203, tokenIndex203, depth203 := position, tokenIndex, depth
 			{
 				position204 := position
 				depth++
 				if !rules[rulegroupGraphPattern]() {
-					fmt.Print("203 ")
 					goto l203
 				}
 				{
@@ -2594,16 +2350,13 @@ func (p *Sparql) Init() {
 						{
 							position208, tokenIndex208, depth208 := position, tokenIndex, depth
 							if buffer[position] != rune('u') {
-								fmt.Print("209 ")
 								goto l209
 							}
 							position++
-							fmt.Print("208 ")
 							goto l208
 						l209:
 							position, tokenIndex, depth = position208, tokenIndex208, depth208
 							if buffer[position] != rune('U') {
-								fmt.Print("205 ")
 								goto l205
 							}
 							position++
@@ -2612,16 +2365,13 @@ func (p *Sparql) Init() {
 						{
 							position210, tokenIndex210, depth210 := position, tokenIndex, depth
 							if buffer[position] != rune('n') {
-								fmt.Print("211 ")
 								goto l211
 							}
 							position++
-							fmt.Print("210 ")
 							goto l210
 						l211:
 							position, tokenIndex, depth = position210, tokenIndex210, depth210
 							if buffer[position] != rune('N') {
-								fmt.Print("205 ")
 								goto l205
 							}
 							position++
@@ -2630,16 +2380,13 @@ func (p *Sparql) Init() {
 						{
 							position212, tokenIndex212, depth212 := position, tokenIndex, depth
 							if buffer[position] != rune('i') {
-								fmt.Print("213 ")
 								goto l213
 							}
 							position++
-							fmt.Print("212 ")
 							goto l212
 						l213:
 							position, tokenIndex, depth = position212, tokenIndex212, depth212
 							if buffer[position] != rune('I') {
-								fmt.Print("205 ")
 								goto l205
 							}
 							position++
@@ -2648,16 +2395,13 @@ func (p *Sparql) Init() {
 						{
 							position214, tokenIndex214, depth214 := position, tokenIndex, depth
 							if buffer[position] != rune('o') {
-								fmt.Print("215 ")
 								goto l215
 							}
 							position++
-							fmt.Print("214 ")
 							goto l214
 						l215:
 							position, tokenIndex, depth = position214, tokenIndex214, depth214
 							if buffer[position] != rune('O') {
-								fmt.Print("205 ")
 								goto l205
 							}
 							position++
@@ -2666,33 +2410,27 @@ func (p *Sparql) Init() {
 						{
 							position216, tokenIndex216, depth216 := position, tokenIndex, depth
 							if buffer[position] != rune('n') {
-								fmt.Print("217 ")
 								goto l217
 							}
 							position++
-							fmt.Print("216 ")
 							goto l216
 						l217:
 							position, tokenIndex, depth = position216, tokenIndex216, depth216
 							if buffer[position] != rune('N') {
-								fmt.Print("205 ")
 								goto l205
 							}
 							position++
 						}
 					l216:
 						if !rules[rulews]() {
-							fmt.Print("205 ")
 							goto l205
 						}
 						depth--
 						add(ruleUNION, position207)
 					}
 					if !rules[rulegroupOrUnionGraphPattern]() {
-						fmt.Print("205 ")
 						goto l205
 					}
-					fmt.Print("206 ")
 					goto l206
 				l205:
 					position, tokenIndex, depth = position205, tokenIndex205, depth205
@@ -2712,7 +2450,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 18 triplesSameSubjectPath <- <((varOrTerm propertyListPath) / (triplesNodePath propertyListPath))> */
 		func() bool {
-			fmt.Println("\ntriplesSameSubjectPath")
 			position220, tokenIndex220, depth220 := position, tokenIndex, depth
 			{
 				position221 := position
@@ -2728,7 +2465,6 @@ func (p *Sparql) Init() {
 								position227 := position
 								depth++
 								if !rules[rulevar]() {
-									fmt.Print("226 ")
 									goto l226
 								}
 								depth--
@@ -2737,7 +2473,6 @@ func (p *Sparql) Init() {
 							{
 								add(ruleAction0, position)
 							}
-							fmt.Print("225 ")
 							goto l225
 						l226:
 							position, tokenIndex, depth = position225, tokenIndex225, depth225
@@ -2745,7 +2480,6 @@ func (p *Sparql) Init() {
 								position230 := position
 								depth++
 								if !rules[rulegraphTerm]() {
-									fmt.Print("229 ")
 									goto l229
 								}
 								depth--
@@ -2754,12 +2488,10 @@ func (p *Sparql) Init() {
 							{
 								add(ruleAction1, position)
 							}
-							fmt.Print("225 ")
 							goto l225
 						l229:
 							position, tokenIndex, depth = position225, tokenIndex225, depth225
 							if !rules[rulepof]() {
-								fmt.Print("223 ")
 								goto l223
 							}
 							{
@@ -2771,10 +2503,8 @@ func (p *Sparql) Init() {
 						add(rulevarOrTerm, position224)
 					}
 					if !rules[rulepropertyListPath]() {
-						fmt.Print("223 ")
 						goto l223
 					}
-					fmt.Print("222 ")
 					goto l222
 				l223:
 					position, tokenIndex, depth = position222, tokenIndex222, depth222
@@ -2787,33 +2517,27 @@ func (p *Sparql) Init() {
 								position236 := position
 								depth++
 								if !rules[ruleLPAREN]() {
-									fmt.Print("235 ")
 									goto l235
 								}
 								if !rules[rulegraphNodePath]() {
-									fmt.Print("235 ")
 									goto l235
 								}
 							l237:
 								{
 									position238, tokenIndex238, depth238 := position, tokenIndex, depth
 									if !rules[rulegraphNodePath]() {
-										fmt.Print("238 ")
 										goto l238
 									}
-									fmt.Print("237 ")
 									goto l237
 								l238:
 									position, tokenIndex, depth = position238, tokenIndex238, depth238
 								}
 								if !rules[ruleRPAREN]() {
-									fmt.Print("235 ")
 									goto l235
 								}
 								depth--
 								add(rulecollectionPath, position236)
 							}
-							fmt.Print("234 ")
 							goto l234
 						l235:
 							position, tokenIndex, depth = position234, tokenIndex234, depth234
@@ -2824,31 +2548,26 @@ func (p *Sparql) Init() {
 									position240 := position
 									depth++
 									if buffer[position] != rune('[') {
-										fmt.Print("220 ")
 										goto l220
 									}
 									position++
 									if !rules[rulews]() {
-										fmt.Print("220 ")
 										goto l220
 									}
 									depth--
 									add(ruleLBRACK, position240)
 								}
 								if !rules[rulepropertyListPath]() {
-									fmt.Print("220 ")
 									goto l220
 								}
 								{
 									position241 := position
 									depth++
 									if buffer[position] != rune(']') {
-										fmt.Print("220 ")
 										goto l220
 									}
 									position++
 									if !rules[rulews]() {
-										fmt.Print("220 ")
 										goto l220
 									}
 									depth--
@@ -2863,7 +2582,6 @@ func (p *Sparql) Init() {
 						add(ruletriplesNodePath, position233)
 					}
 					if !rules[rulepropertyListPath]() {
-						fmt.Print("220 ")
 						goto l220
 					}
 				}
@@ -2880,7 +2598,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 20 graphTerm <- <((&('(') nil) | (&('[' | '_') blankNode) | (&('F' | 'T' | 'f' | 't') booleanLiteral) | (&('"') literal) | (&('<') iri) | (&('+' | '-' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') numericLiteral))> */
 		func() bool {
-			fmt.Println("\ngraphTerm")
 			position243, tokenIndex243, depth243 := position, tokenIndex, depth
 			{
 				position244 := position
@@ -2892,21 +2609,17 @@ func (p *Sparql) Init() {
 							position246 := position
 							depth++
 							if buffer[position] != rune('(') {
-								fmt.Print("243 ")
 								goto l243
 							}
 							position++
 							if !rules[rulews]() {
-								fmt.Print("243 ")
 								goto l243
 							}
 							if buffer[position] != rune(')') {
-								fmt.Print("243 ")
 								goto l243
 							}
 							position++
 							if !rules[rulews]() {
-								fmt.Print("243 ")
 								goto l243
 							}
 							depth--
@@ -2923,12 +2636,10 @@ func (p *Sparql) Init() {
 									position250 := position
 									depth++
 									if buffer[position] != rune('_') {
-										fmt.Print("249 ")
 										goto l249
 									}
 									position++
 									if buffer[position] != rune(':') {
-										fmt.Print("249 ")
 										goto l249
 									}
 									position++
@@ -2936,21 +2647,18 @@ func (p *Sparql) Init() {
 										switch buffer[position] {
 										case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 											if c := buffer[position]; c < rune('0') || c > rune('9') {
-												fmt.Print("249 ")
 												goto l249
 											}
 											position++
 											break
 										case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
 											if c := buffer[position]; c < rune('A') || c > rune('Z') {
-												fmt.Print("249 ")
 												goto l249
 											}
 											position++
 											break
 										default:
 											if c := buffer[position]; c < rune('a') || c > rune('z') {
-												fmt.Print("249 ")
 												goto l249
 											}
 											position++
@@ -2963,53 +2671,43 @@ func (p *Sparql) Init() {
 										{
 											position254, tokenIndex254, depth254 := position, tokenIndex, depth
 											if c := buffer[position]; c < rune('a') || c > rune('z') {
-												fmt.Print("255 ")
 												goto l255
 											}
 											position++
-											fmt.Print("254 ")
 											goto l254
 										l255:
 											position, tokenIndex, depth = position254, tokenIndex254, depth254
 											if c := buffer[position]; c < rune('A') || c > rune('Z') {
-												fmt.Print("256 ")
 												goto l256
 											}
 											position++
-											fmt.Print("254 ")
 											goto l254
 										l256:
 											position, tokenIndex, depth = position254, tokenIndex254, depth254
 											if c := buffer[position]; c < rune('0') || c > rune('9') {
-												fmt.Print("257 ")
 												goto l257
 											}
 											position++
-											fmt.Print("254 ")
 											goto l254
 										l257:
 											position, tokenIndex, depth = position254, tokenIndex254, depth254
 											if c := buffer[position]; c < rune('.') || c > rune('_') {
-												fmt.Print("252 ")
 												goto l252
 											}
 											position++
 										}
 									l254:
-										fmt.Print("253 ")
 										goto l253
 									l252:
 										position, tokenIndex, depth = position252, tokenIndex252, depth252
 									}
 								l253:
 									if !rules[rulews]() {
-										fmt.Print("249 ")
 										goto l249
 									}
 									depth--
 									add(ruleblankNodeLabel, position250)
 								}
-								fmt.Print("248 ")
 								goto l248
 							l249:
 								position, tokenIndex, depth = position248, tokenIndex248, depth248
@@ -3017,21 +2715,17 @@ func (p *Sparql) Init() {
 									position258 := position
 									depth++
 									if buffer[position] != rune('[') {
-										fmt.Print("243 ")
 										goto l243
 									}
 									position++
 									if !rules[rulews]() {
-										fmt.Print("243 ")
 										goto l243
 									}
 									if buffer[position] != rune(']') {
-										fmt.Print("243 ")
 										goto l243
 									}
 									position++
 									if !rules[rulews]() {
-										fmt.Print("243 ")
 										goto l243
 									}
 									depth--
@@ -3055,16 +2749,13 @@ func (p *Sparql) Init() {
 									{
 										position263, tokenIndex263, depth263 := position, tokenIndex, depth
 										if buffer[position] != rune('t') {
-											fmt.Print("264 ")
 											goto l264
 										}
 										position++
-										fmt.Print("263 ")
 										goto l263
 									l264:
 										position, tokenIndex, depth = position263, tokenIndex263, depth263
 										if buffer[position] != rune('T') {
-											fmt.Print("261 ")
 											goto l261
 										}
 										position++
@@ -3073,16 +2764,13 @@ func (p *Sparql) Init() {
 									{
 										position265, tokenIndex265, depth265 := position, tokenIndex, depth
 										if buffer[position] != rune('r') {
-											fmt.Print("266 ")
 											goto l266
 										}
 										position++
-										fmt.Print("265 ")
 										goto l265
 									l266:
 										position, tokenIndex, depth = position265, tokenIndex265, depth265
 										if buffer[position] != rune('R') {
-											fmt.Print("261 ")
 											goto l261
 										}
 										position++
@@ -3091,16 +2779,13 @@ func (p *Sparql) Init() {
 									{
 										position267, tokenIndex267, depth267 := position, tokenIndex, depth
 										if buffer[position] != rune('u') {
-											fmt.Print("268 ")
 											goto l268
 										}
 										position++
-										fmt.Print("267 ")
 										goto l267
 									l268:
 										position, tokenIndex, depth = position267, tokenIndex267, depth267
 										if buffer[position] != rune('U') {
-											fmt.Print("261 ")
 											goto l261
 										}
 										position++
@@ -3109,29 +2794,24 @@ func (p *Sparql) Init() {
 									{
 										position269, tokenIndex269, depth269 := position, tokenIndex, depth
 										if buffer[position] != rune('e') {
-											fmt.Print("270 ")
 											goto l270
 										}
 										position++
-										fmt.Print("269 ")
 										goto l269
 									l270:
 										position, tokenIndex, depth = position269, tokenIndex269, depth269
 										if buffer[position] != rune('E') {
-											fmt.Print("261 ")
 											goto l261
 										}
 										position++
 									}
 								l269:
 									if !rules[rulews]() {
-										fmt.Print("261 ")
 										goto l261
 									}
 									depth--
 									add(ruleTRUE, position262)
 								}
-								fmt.Print("260 ")
 								goto l260
 							l261:
 								position, tokenIndex, depth = position260, tokenIndex260, depth260
@@ -3141,16 +2821,13 @@ func (p *Sparql) Init() {
 									{
 										position272, tokenIndex272, depth272 := position, tokenIndex, depth
 										if buffer[position] != rune('f') {
-											fmt.Print("273 ")
 											goto l273
 										}
 										position++
-										fmt.Print("272 ")
 										goto l272
 									l273:
 										position, tokenIndex, depth = position272, tokenIndex272, depth272
 										if buffer[position] != rune('F') {
-											fmt.Print("243 ")
 											goto l243
 										}
 										position++
@@ -3159,16 +2836,13 @@ func (p *Sparql) Init() {
 									{
 										position274, tokenIndex274, depth274 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											fmt.Print("275 ")
 											goto l275
 										}
 										position++
-										fmt.Print("274 ")
 										goto l274
 									l275:
 										position, tokenIndex, depth = position274, tokenIndex274, depth274
 										if buffer[position] != rune('A') {
-											fmt.Print("243 ")
 											goto l243
 										}
 										position++
@@ -3177,16 +2851,13 @@ func (p *Sparql) Init() {
 									{
 										position276, tokenIndex276, depth276 := position, tokenIndex, depth
 										if buffer[position] != rune('l') {
-											fmt.Print("277 ")
 											goto l277
 										}
 										position++
-										fmt.Print("276 ")
 										goto l276
 									l277:
 										position, tokenIndex, depth = position276, tokenIndex276, depth276
 										if buffer[position] != rune('L') {
-											fmt.Print("243 ")
 											goto l243
 										}
 										position++
@@ -3195,16 +2866,13 @@ func (p *Sparql) Init() {
 									{
 										position278, tokenIndex278, depth278 := position, tokenIndex, depth
 										if buffer[position] != rune('s') {
-											fmt.Print("279 ")
 											goto l279
 										}
 										position++
-										fmt.Print("278 ")
 										goto l278
 									l279:
 										position, tokenIndex, depth = position278, tokenIndex278, depth278
 										if buffer[position] != rune('S') {
-											fmt.Print("243 ")
 											goto l243
 										}
 										position++
@@ -3213,23 +2881,19 @@ func (p *Sparql) Init() {
 									{
 										position280, tokenIndex280, depth280 := position, tokenIndex, depth
 										if buffer[position] != rune('e') {
-											fmt.Print("281 ")
 											goto l281
 										}
 										position++
-										fmt.Print("280 ")
 										goto l280
 									l281:
 										position, tokenIndex, depth = position280, tokenIndex280, depth280
 										if buffer[position] != rune('E') {
-											fmt.Print("243 ")
 											goto l243
 										}
 										position++
 									}
 								l280:
 									if !rules[rulews]() {
-										fmt.Print("243 ")
 										goto l243
 									}
 									depth--
@@ -3249,7 +2913,6 @@ func (p *Sparql) Init() {
 								position283 := position
 								depth++
 								if buffer[position] != rune('"') {
-									fmt.Print("243 ")
 									goto l243
 								}
 								position++
@@ -3259,26 +2922,21 @@ func (p *Sparql) Init() {
 									{
 										position286, tokenIndex286, depth286 := position, tokenIndex, depth
 										if buffer[position] != rune('"') {
-											fmt.Print("286 ")
 											goto l286
 										}
 										position++
-										fmt.Print("285 ")
 										goto l285
 									l286:
 										position, tokenIndex, depth = position286, tokenIndex286, depth286
 									}
 									if !matchDot() {
-										fmt.Print("285 ")
 										goto l285
 									}
-									fmt.Print("284 ")
 									goto l284
 								l285:
 									position, tokenIndex, depth = position285, tokenIndex285, depth285
 								}
 								if buffer[position] != rune('"') {
-									fmt.Print("243 ")
 									goto l243
 								}
 								position++
@@ -3290,23 +2948,19 @@ func (p *Sparql) Init() {
 								{
 									position289, tokenIndex289, depth289 := position, tokenIndex, depth
 									if buffer[position] != rune('@') {
-										fmt.Print("290 ")
 										goto l290
 									}
 									position++
 									{
 										position293, tokenIndex293, depth293 := position, tokenIndex, depth
 										if c := buffer[position]; c < rune('a') || c > rune('z') {
-											fmt.Print("294 ")
 											goto l294
 										}
 										position++
-										fmt.Print("293 ")
 										goto l293
 									l294:
 										position, tokenIndex, depth = position293, tokenIndex293, depth293
 										if c := buffer[position]; c < rune('A') || c > rune('Z') {
-											fmt.Print("290 ")
 											goto l290
 										}
 										position++
@@ -3318,22 +2972,18 @@ func (p *Sparql) Init() {
 										{
 											position295, tokenIndex295, depth295 := position, tokenIndex, depth
 											if c := buffer[position]; c < rune('a') || c > rune('z') {
-												fmt.Print("296 ")
 												goto l296
 											}
 											position++
-											fmt.Print("295 ")
 											goto l295
 										l296:
 											position, tokenIndex, depth = position295, tokenIndex295, depth295
 											if c := buffer[position]; c < rune('A') || c > rune('Z') {
-												fmt.Print("292 ")
 												goto l292
 											}
 											position++
 										}
 									l295:
-										fmt.Print("291 ")
 										goto l291
 									l292:
 										position, tokenIndex, depth = position292, tokenIndex292, depth292
@@ -3342,7 +2992,6 @@ func (p *Sparql) Init() {
 									{
 										position298, tokenIndex298, depth298 := position, tokenIndex, depth
 										if buffer[position] != rune('-') {
-											fmt.Print("298 ")
 											goto l298
 										}
 										position++
@@ -3350,21 +2999,18 @@ func (p *Sparql) Init() {
 											switch buffer[position] {
 											case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 												if c := buffer[position]; c < rune('0') || c > rune('9') {
-													fmt.Print("298 ")
 													goto l298
 												}
 												position++
 												break
 											case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
 												if c := buffer[position]; c < rune('A') || c > rune('Z') {
-													fmt.Print("298 ")
 													goto l298
 												}
 												position++
 												break
 											default:
 												if c := buffer[position]; c < rune('a') || c > rune('z') {
-													fmt.Print("298 ")
 													goto l298
 												}
 												position++
@@ -3379,21 +3025,18 @@ func (p *Sparql) Init() {
 												switch buffer[position] {
 												case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 													if c := buffer[position]; c < rune('0') || c > rune('9') {
-														fmt.Print("300 ")
 														goto l300
 													}
 													position++
 													break
 												case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
 													if c := buffer[position]; c < rune('A') || c > rune('Z') {
-														fmt.Print("300 ")
 														goto l300
 													}
 													position++
 													break
 												default:
 													if c := buffer[position]; c < rune('a') || c > rune('z') {
-														fmt.Print("300 ")
 														goto l300
 													}
 													position++
@@ -3401,44 +3044,36 @@ func (p *Sparql) Init() {
 												}
 											}
 
-											fmt.Print("299 ")
 											goto l299
 										l300:
 											position, tokenIndex, depth = position300, tokenIndex300, depth300
 										}
-										fmt.Print("297 ")
 										goto l297
 									l298:
 										position, tokenIndex, depth = position298, tokenIndex298, depth298
 									}
-									fmt.Print("289 ")
 									goto l289
 								l290:
 									position, tokenIndex, depth = position289, tokenIndex289, depth289
 									if buffer[position] != rune('^') {
-										fmt.Print("287 ")
 										goto l287
 									}
 									position++
 									if buffer[position] != rune('^') {
-										fmt.Print("287 ")
 										goto l287
 									}
 									position++
 									if !rules[ruleiri]() {
-										fmt.Print("287 ")
 										goto l287
 									}
 								}
 							l289:
-								fmt.Print("288 ")
 								goto l288
 							l287:
 								position, tokenIndex, depth = position287, tokenIndex287, depth287
 							}
 						l288:
 							if !rules[rulews]() {
-								fmt.Print("243 ")
 								goto l243
 							}
 							depth--
@@ -3447,7 +3082,6 @@ func (p *Sparql) Init() {
 						break
 					case '<':
 						if !rules[ruleiri]() {
-							fmt.Print("243 ")
 							goto l243
 						}
 						break
@@ -3460,29 +3094,24 @@ func (p *Sparql) Init() {
 								{
 									position306, tokenIndex306, depth306 := position, tokenIndex, depth
 									if buffer[position] != rune('+') {
-										fmt.Print("307 ")
 										goto l307
 									}
 									position++
-									fmt.Print("306 ")
 									goto l306
 								l307:
 									position, tokenIndex, depth = position306, tokenIndex306, depth306
 									if buffer[position] != rune('-') {
-										fmt.Print("304 ")
 										goto l304
 									}
 									position++
 								}
 							l306:
-								fmt.Print("305 ")
 								goto l305
 							l304:
 								position, tokenIndex, depth = position304, tokenIndex304, depth304
 							}
 						l305:
 							if c := buffer[position]; c < rune('0') || c > rune('9') {
-								fmt.Print("243 ")
 								goto l243
 							}
 							position++
@@ -3490,11 +3119,9 @@ func (p *Sparql) Init() {
 							{
 								position309, tokenIndex309, depth309 := position, tokenIndex, depth
 								if c := buffer[position]; c < rune('0') || c > rune('9') {
-									fmt.Print("309 ")
 									goto l309
 								}
 								position++
-								fmt.Print("308 ")
 								goto l308
 							l309:
 								position, tokenIndex, depth = position309, tokenIndex309, depth309
@@ -3502,7 +3129,6 @@ func (p *Sparql) Init() {
 							{
 								position310, tokenIndex310, depth310 := position, tokenIndex, depth
 								if buffer[position] != rune('.') {
-									fmt.Print("310 ")
 									goto l310
 								}
 								position++
@@ -3510,23 +3136,19 @@ func (p *Sparql) Init() {
 								{
 									position313, tokenIndex313, depth313 := position, tokenIndex, depth
 									if c := buffer[position]; c < rune('0') || c > rune('9') {
-										fmt.Print("313 ")
 										goto l313
 									}
 									position++
-									fmt.Print("312 ")
 									goto l312
 								l313:
 									position, tokenIndex, depth = position313, tokenIndex313, depth313
 								}
-								fmt.Print("311 ")
 								goto l311
 							l310:
 								position, tokenIndex, depth = position310, tokenIndex310, depth310
 							}
 						l311:
 							if !rules[rulews]() {
-								fmt.Print("243 ")
 								goto l243
 							}
 							depth--
@@ -3552,7 +3174,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 24 propertyListPath <- <(((pof Action3) / (<var> Action4) / verbPath) objectListPath (SEMICOLON propertyListPath)?)> */
 		func() bool {
-			fmt.Println("\npropertyListPath")
 			position317, tokenIndex317, depth317 := position, tokenIndex, depth
 			{
 				position318 := position
@@ -3560,13 +3181,11 @@ func (p *Sparql) Init() {
 				{
 					position319, tokenIndex319, depth319 := position, tokenIndex, depth
 					if !rules[rulepof]() {
-						fmt.Print("320 ")
 						goto l320
 					}
 					{
 						add(ruleAction3, position)
 					}
-					fmt.Print("319 ")
 					goto l319
 				l320:
 					position, tokenIndex, depth = position319, tokenIndex319, depth319
@@ -3574,7 +3193,6 @@ func (p *Sparql) Init() {
 						position323 := position
 						depth++
 						if !rules[rulevar]() {
-							fmt.Print("322 ")
 							goto l322
 						}
 						depth--
@@ -3583,7 +3201,6 @@ func (p *Sparql) Init() {
 					{
 						add(ruleAction4, position)
 					}
-					fmt.Print("319 ")
 					goto l319
 				l322:
 					position, tokenIndex, depth = position319, tokenIndex319, depth319
@@ -3591,7 +3208,6 @@ func (p *Sparql) Init() {
 						position325 := position
 						depth++
 						if !rules[rulepath]() {
-							fmt.Print("317 ")
 							goto l317
 						}
 						depth--
@@ -3600,7 +3216,6 @@ func (p *Sparql) Init() {
 				}
 			l319:
 				if !rules[ruleobjectListPath]() {
-					fmt.Print("317 ")
 					goto l317
 				}
 				{
@@ -3609,22 +3224,18 @@ func (p *Sparql) Init() {
 						position328 := position
 						depth++
 						if buffer[position] != rune(';') {
-							fmt.Print("326 ")
 							goto l326
 						}
 						position++
 						if !rules[rulews]() {
-							fmt.Print("326 ")
 							goto l326
 						}
 						depth--
 						add(ruleSEMICOLON, position328)
 					}
 					if !rules[rulepropertyListPath]() {
-						fmt.Print("326 ")
 						goto l326
 					}
-					fmt.Print("327 ")
 					goto l327
 				l326:
 					position, tokenIndex, depth = position326, tokenIndex326, depth326
@@ -3642,13 +3253,11 @@ func (p *Sparql) Init() {
 		nil,
 		/* 26 path <- <pathAlternative> */
 		func() bool {
-			fmt.Println("\npath")
 			position330, tokenIndex330, depth330 := position, tokenIndex, depth
 			{
 				position331 := position
 				depth++
 				if !rules[rulepathAlternative]() {
-					fmt.Print("330 ")
 					goto l330
 				}
 				depth--
@@ -3661,27 +3270,22 @@ func (p *Sparql) Init() {
 		},
 		/* 27 pathAlternative <- <(pathSequence (PIPE pathAlternative)*)> */
 		func() bool {
-			fmt.Println("\npathAlternative")
 			position332, tokenIndex332, depth332 := position, tokenIndex, depth
 			{
 				position333 := position
 				depth++
 				if !rules[rulepathSequence]() {
-					fmt.Print("332 ")
 					goto l332
 				}
 			l334:
 				{
 					position335, tokenIndex335, depth335 := position, tokenIndex, depth
 					if !rules[rulePIPE]() {
-						fmt.Print("335 ")
 						goto l335
 					}
 					if !rules[rulepathAlternative]() {
-						fmt.Print("335 ")
 						goto l335
 					}
-					fmt.Print("334 ")
 					goto l334
 				l335:
 					position, tokenIndex, depth = position335, tokenIndex335, depth335
@@ -3696,7 +3300,6 @@ func (p *Sparql) Init() {
 		},
 		/* 28 pathSequence <- <(<pathElt> Action5 (SLASH pathSequence)*)> */
 		func() bool {
-			fmt.Println("\npathSequence")
 			position336, tokenIndex336, depth336 := position, tokenIndex, depth
 			{
 				position337 := position
@@ -3710,10 +3313,8 @@ func (p *Sparql) Init() {
 						{
 							position340, tokenIndex340, depth340 := position, tokenIndex, depth
 							if !rules[ruleINVERSE]() {
-								fmt.Print("340 ")
 								goto l340
 							}
-							fmt.Print("341 ")
 							goto l341
 						l340:
 							position, tokenIndex, depth = position340, tokenIndex340, depth340
@@ -3726,15 +3327,12 @@ func (p *Sparql) Init() {
 								switch buffer[position] {
 								case '(':
 									if !rules[ruleLPAREN]() {
-										fmt.Print("336 ")
 										goto l336
 									}
 									if !rules[rulepath]() {
-										fmt.Print("336 ")
 										goto l336
 									}
 									if !rules[ruleRPAREN]() {
-										fmt.Print("336 ")
 										goto l336
 									}
 									break
@@ -3743,12 +3341,10 @@ func (p *Sparql) Init() {
 										position344 := position
 										depth++
 										if buffer[position] != rune('!') {
-											fmt.Print("336 ")
 											goto l336
 										}
 										position++
 										if !rules[rulews]() {
-											fmt.Print("336 ")
 											goto l336
 										}
 										depth--
@@ -3760,47 +3356,38 @@ func (p *Sparql) Init() {
 										{
 											position346, tokenIndex346, depth346 := position, tokenIndex, depth
 											if !rules[rulepathOneInPropertySet]() {
-												fmt.Print("347 ")
 												goto l347
 											}
-											fmt.Print("346 ")
 											goto l346
 										l347:
 											position, tokenIndex, depth = position346, tokenIndex346, depth346
 											if !rules[ruleLPAREN]() {
-												fmt.Print("336 ")
 												goto l336
 											}
 											{
 												position348, tokenIndex348, depth348 := position, tokenIndex, depth
 												if !rules[rulepathOneInPropertySet]() {
-													fmt.Print("348 ")
 													goto l348
 												}
 											l350:
 												{
 													position351, tokenIndex351, depth351 := position, tokenIndex, depth
 													if !rules[rulePIPE]() {
-														fmt.Print("351 ")
 														goto l351
 													}
 													if !rules[rulepathOneInPropertySet]() {
-														fmt.Print("351 ")
 														goto l351
 													}
-													fmt.Print("350 ")
 													goto l350
 												l351:
 													position, tokenIndex, depth = position351, tokenIndex351, depth351
 												}
-												fmt.Print("349 ")
 												goto l349
 											l348:
 												position, tokenIndex, depth = position348, tokenIndex348, depth348
 											}
 										l349:
 											if !rules[ruleRPAREN]() {
-												fmt.Print("336 ")
 												goto l336
 											}
 										}
@@ -3811,13 +3398,11 @@ func (p *Sparql) Init() {
 									break
 								case 'a':
 									if !rules[ruleISA]() {
-										fmt.Print("336 ")
 										goto l336
 									}
 									break
 								default:
 									if !rules[ruleiri]() {
-										fmt.Print("336 ")
 										goto l336
 									}
 									break
@@ -3843,22 +3428,18 @@ func (p *Sparql) Init() {
 						position355 := position
 						depth++
 						if buffer[position] != rune('/') {
-							fmt.Print("354 ")
 							goto l354
 						}
 						position++
 						if !rules[rulews]() {
-							fmt.Print("354 ")
 							goto l354
 						}
 						depth--
 						add(ruleSLASH, position355)
 					}
 					if !rules[rulepathSequence]() {
-						fmt.Print("354 ")
 						goto l354
 					}
-					fmt.Print("353 ")
 					goto l353
 				l354:
 					position, tokenIndex, depth = position354, tokenIndex354, depth354
@@ -3879,7 +3460,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 32 pathOneInPropertySet <- <((&('^') (INVERSE (iri / ISA))) | (&('a') ISA) | (&('<') iri))> */
 		func() bool {
-			fmt.Println("\npathOneInPropertySet")
 			position359, tokenIndex359, depth359 := position, tokenIndex, depth
 			{
 				position360 := position
@@ -3888,21 +3468,17 @@ func (p *Sparql) Init() {
 					switch buffer[position] {
 					case '^':
 						if !rules[ruleINVERSE]() {
-							fmt.Print("359 ")
 							goto l359
 						}
 						{
 							position362, tokenIndex362, depth362 := position, tokenIndex, depth
 							if !rules[ruleiri]() {
-								fmt.Print("363 ")
 								goto l363
 							}
-							fmt.Print("362 ")
 							goto l362
 						l363:
 							position, tokenIndex, depth = position362, tokenIndex362, depth362
 							if !rules[ruleISA]() {
-								fmt.Print("359 ")
 								goto l359
 							}
 						}
@@ -3910,13 +3486,11 @@ func (p *Sparql) Init() {
 						break
 					case 'a':
 						if !rules[ruleISA]() {
-							fmt.Print("359 ")
 							goto l359
 						}
 						break
 					default:
 						if !rules[ruleiri]() {
-							fmt.Print("359 ")
 							goto l359
 						}
 						break
@@ -3933,7 +3507,6 @@ func (p *Sparql) Init() {
 		},
 		/* 33 objectListPath <- <(objectPath (COMMA objectListPath)*)> */
 		func() bool {
-			fmt.Println("\nobjectListPath")
 			{
 				position365 := position
 				depth++
@@ -3946,7 +3519,6 @@ func (p *Sparql) Init() {
 							position369 := position
 							depth++
 							if !rules[rulegraphNodePath]() {
-								fmt.Print("368 ")
 								goto l368
 							}
 							depth--
@@ -3955,18 +3527,15 @@ func (p *Sparql) Init() {
 						{
 							add(ruleAction6, position)
 						}
-						fmt.Print("367 ")
 						goto l367
 					l368:
 						position, tokenIndex, depth = position367, tokenIndex367, depth367
 						if !rules[rulepof]() {
-							fmt.Print("371 ")
 							goto l371
 						}
 						{
 							add(ruleAction7, position)
 						}
-						fmt.Print("367 ")
 						goto l367
 					l371:
 						position, tokenIndex, depth = position367, tokenIndex367, depth367
@@ -3985,22 +3554,18 @@ func (p *Sparql) Init() {
 						position376 := position
 						depth++
 						if buffer[position] != rune(',') {
-							fmt.Print("375 ")
 							goto l375
 						}
 						position++
 						if !rules[rulews]() {
-							fmt.Print("375 ")
 							goto l375
 						}
 						depth--
 						add(ruleCOMMA, position376)
 					}
 					if !rules[ruleobjectListPath]() {
-						fmt.Print("375 ")
 						goto l375
 					}
-					fmt.Print("374 ")
 					goto l374
 				l375:
 					position, tokenIndex, depth = position375, tokenIndex375, depth375
@@ -4014,7 +3579,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 35 graphNodePath <- <(var / graphTerm)> */
 		func() bool {
-			fmt.Println("\ngraphNodePath")
 			position378, tokenIndex378, depth378 := position, tokenIndex, depth
 			{
 				position379 := position
@@ -4022,15 +3586,12 @@ func (p *Sparql) Init() {
 				{
 					position380, tokenIndex380, depth380 := position, tokenIndex, depth
 					if !rules[rulevar]() {
-						fmt.Print("381 ")
 						goto l381
 					}
-					fmt.Print("380 ")
 					goto l380
 				l381:
 					position, tokenIndex, depth = position380, tokenIndex380, depth380
 					if !rules[rulegraphTerm]() {
-						fmt.Print("378 ")
 						goto l378
 					}
 				}
@@ -4049,7 +3610,6 @@ func (p *Sparql) Init() {
 		nil,
 		/* 38 limit <- <(LIMIT INTEGER)> */
 		func() bool {
-			fmt.Println("\nlimit")
 			position384, tokenIndex384, depth384 := position, tokenIndex, depth
 			{
 				position385 := position
@@ -4060,16 +3620,13 @@ func (p *Sparql) Init() {
 					{
 						position387, tokenIndex387, depth387 := position, tokenIndex, depth
 						if buffer[position] != rune('l') {
-							fmt.Print("388 ")
 							goto l388
 						}
 						position++
-						fmt.Print("387 ")
 						goto l387
 					l388:
 						position, tokenIndex, depth = position387, tokenIndex387, depth387
 						if buffer[position] != rune('L') {
-							fmt.Print("384 ")
 							goto l384
 						}
 						position++
@@ -4078,16 +3635,13 @@ func (p *Sparql) Init() {
 					{
 						position389, tokenIndex389, depth389 := position, tokenIndex, depth
 						if buffer[position] != rune('i') {
-							fmt.Print("390 ")
 							goto l390
 						}
 						position++
-						fmt.Print("389 ")
 						goto l389
 					l390:
 						position, tokenIndex, depth = position389, tokenIndex389, depth389
 						if buffer[position] != rune('I') {
-							fmt.Print("384 ")
 							goto l384
 						}
 						position++
@@ -4096,16 +3650,13 @@ func (p *Sparql) Init() {
 					{
 						position391, tokenIndex391, depth391 := position, tokenIndex, depth
 						if buffer[position] != rune('m') {
-							fmt.Print("392 ")
 							goto l392
 						}
 						position++
-						fmt.Print("391 ")
 						goto l391
 					l392:
 						position, tokenIndex, depth = position391, tokenIndex391, depth391
 						if buffer[position] != rune('M') {
-							fmt.Print("384 ")
 							goto l384
 						}
 						position++
@@ -4114,16 +3665,13 @@ func (p *Sparql) Init() {
 					{
 						position393, tokenIndex393, depth393 := position, tokenIndex, depth
 						if buffer[position] != rune('i') {
-							fmt.Print("394 ")
 							goto l394
 						}
 						position++
-						fmt.Print("393 ")
 						goto l393
 					l394:
 						position, tokenIndex, depth = position393, tokenIndex393, depth393
 						if buffer[position] != rune('I') {
-							fmt.Print("384 ")
 							goto l384
 						}
 						position++
@@ -4132,30 +3680,25 @@ func (p *Sparql) Init() {
 					{
 						position395, tokenIndex395, depth395 := position, tokenIndex, depth
 						if buffer[position] != rune('t') {
-							fmt.Print("396 ")
 							goto l396
 						}
 						position++
-						fmt.Print("395 ")
 						goto l395
 					l396:
 						position, tokenIndex, depth = position395, tokenIndex395, depth395
 						if buffer[position] != rune('T') {
-							fmt.Print("384 ")
 							goto l384
 						}
 						position++
 					}
 				l395:
 					if !rules[rulews]() {
-						fmt.Print("384 ")
 						goto l384
 					}
 					depth--
 					add(ruleLIMIT, position386)
 				}
 				if !rules[ruleINTEGER]() {
-					fmt.Print("384 ")
 					goto l384
 				}
 				depth--
@@ -4168,7 +3711,6 @@ func (p *Sparql) Init() {
 		},
 		/* 39 offset <- <(OFFSET INTEGER)> */
 		func() bool {
-			fmt.Println("\noffset")
 			position397, tokenIndex397, depth397 := position, tokenIndex, depth
 			{
 				position398 := position
@@ -4179,16 +3721,13 @@ func (p *Sparql) Init() {
 					{
 						position400, tokenIndex400, depth400 := position, tokenIndex, depth
 						if buffer[position] != rune('o') {
-							fmt.Print("401 ")
 							goto l401
 						}
 						position++
-						fmt.Print("400 ")
 						goto l400
 					l401:
 						position, tokenIndex, depth = position400, tokenIndex400, depth400
 						if buffer[position] != rune('O') {
-							fmt.Print("397 ")
 							goto l397
 						}
 						position++
@@ -4197,16 +3736,13 @@ func (p *Sparql) Init() {
 					{
 						position402, tokenIndex402, depth402 := position, tokenIndex, depth
 						if buffer[position] != rune('f') {
-							fmt.Print("403 ")
 							goto l403
 						}
 						position++
-						fmt.Print("402 ")
 						goto l402
 					l403:
 						position, tokenIndex, depth = position402, tokenIndex402, depth402
 						if buffer[position] != rune('F') {
-							fmt.Print("397 ")
 							goto l397
 						}
 						position++
@@ -4215,16 +3751,13 @@ func (p *Sparql) Init() {
 					{
 						position404, tokenIndex404, depth404 := position, tokenIndex, depth
 						if buffer[position] != rune('f') {
-							fmt.Print("405 ")
 							goto l405
 						}
 						position++
-						fmt.Print("404 ")
 						goto l404
 					l405:
 						position, tokenIndex, depth = position404, tokenIndex404, depth404
 						if buffer[position] != rune('F') {
-							fmt.Print("397 ")
 							goto l397
 						}
 						position++
@@ -4233,16 +3766,13 @@ func (p *Sparql) Init() {
 					{
 						position406, tokenIndex406, depth406 := position, tokenIndex, depth
 						if buffer[position] != rune('s') {
-							fmt.Print("407 ")
 							goto l407
 						}
 						position++
-						fmt.Print("406 ")
 						goto l406
 					l407:
 						position, tokenIndex, depth = position406, tokenIndex406, depth406
 						if buffer[position] != rune('S') {
-							fmt.Print("397 ")
 							goto l397
 						}
 						position++
@@ -4251,16 +3781,13 @@ func (p *Sparql) Init() {
 					{
 						position408, tokenIndex408, depth408 := position, tokenIndex, depth
 						if buffer[position] != rune('e') {
-							fmt.Print("409 ")
 							goto l409
 						}
 						position++
-						fmt.Print("408 ")
 						goto l408
 					l409:
 						position, tokenIndex, depth = position408, tokenIndex408, depth408
 						if buffer[position] != rune('E') {
-							fmt.Print("397 ")
 							goto l397
 						}
 						position++
@@ -4269,30 +3796,25 @@ func (p *Sparql) Init() {
 					{
 						position410, tokenIndex410, depth410 := position, tokenIndex, depth
 						if buffer[position] != rune('t') {
-							fmt.Print("411 ")
 							goto l411
 						}
 						position++
-						fmt.Print("410 ")
 						goto l410
 					l411:
 						position, tokenIndex, depth = position410, tokenIndex410, depth410
 						if buffer[position] != rune('T') {
-							fmt.Print("397 ")
 							goto l397
 						}
 						position++
 					}
 				l410:
 					if !rules[rulews]() {
-						fmt.Print("397 ")
 						goto l397
 					}
 					depth--
 					add(ruleOFFSET, position399)
 				}
 				if !rules[ruleINTEGER]() {
-					fmt.Print("397 ")
 					goto l397
 				}
 				depth--
@@ -4305,13 +3827,11 @@ func (p *Sparql) Init() {
 		},
 		/* 40 pof <- <('<' ((&('\f') '\f') | (&('\r') '\r') | (&('\n') '\n') | (&('\t') '\t') | (&(' ') ' '))+)> */
 		func() bool {
-			fmt.Println("\npof")
 			position412, tokenIndex412, depth412 := position, tokenIndex, depth
 			{
 				position413 := position
 				depth++
 				if buffer[position] != rune('<') {
-					fmt.Print("412 ")
 					goto l412
 				}
 				position++
@@ -4319,35 +3839,30 @@ func (p *Sparql) Init() {
 					switch buffer[position] {
 					case '\f':
 						if buffer[position] != rune('\f') {
-							fmt.Print("412 ")
 							goto l412
 						}
 						position++
 						break
 					case '\r':
 						if buffer[position] != rune('\r') {
-							fmt.Print("412 ")
 							goto l412
 						}
 						position++
 						break
 					case '\n':
 						if buffer[position] != rune('\n') {
-							fmt.Print("412 ")
 							goto l412
 						}
 						position++
 						break
 					case '\t':
 						if buffer[position] != rune('\t') {
-							fmt.Print("412 ")
 							goto l412
 						}
 						position++
 						break
 					default:
 						if buffer[position] != rune(' ') {
-							fmt.Print("412 ")
 							goto l412
 						}
 						position++
@@ -4362,35 +3877,30 @@ func (p *Sparql) Init() {
 						switch buffer[position] {
 						case '\f':
 							if buffer[position] != rune('\f') {
-								fmt.Print("415 ")
 								goto l415
 							}
 							position++
 							break
 						case '\r':
 							if buffer[position] != rune('\r') {
-								fmt.Print("415 ")
 								goto l415
 							}
 							position++
 							break
 						case '\n':
 							if buffer[position] != rune('\n') {
-								fmt.Print("415 ")
 								goto l415
 							}
 							position++
 							break
 						case '\t':
 							if buffer[position] != rune('\t') {
-								fmt.Print("415 ")
 								goto l415
 							}
 							position++
 							break
 						default:
 							if buffer[position] != rune(' ') {
-								fmt.Print("415 ")
 								goto l415
 							}
 							position++
@@ -4398,7 +3908,6 @@ func (p *Sparql) Init() {
 						}
 					}
 
-					fmt.Print("414 ")
 					goto l414
 				l415:
 					position, tokenIndex, depth = position415, tokenIndex415, depth415
@@ -4413,7 +3922,6 @@ func (p *Sparql) Init() {
 		},
 		/* 41 var <- <(('?' / '$') VARNAME ws)> */
 		func() bool {
-			fmt.Println("\nvar")
 			position418, tokenIndex418, depth418 := position, tokenIndex, depth
 			{
 				position419 := position
@@ -4421,16 +3929,13 @@ func (p *Sparql) Init() {
 				{
 					position420, tokenIndex420, depth420 := position, tokenIndex, depth
 					if buffer[position] != rune('?') {
-						fmt.Print("421 ")
 						goto l421
 					}
 					position++
-					fmt.Print("420 ")
 					goto l420
 				l421:
 					position, tokenIndex, depth = position420, tokenIndex420, depth420
 					if buffer[position] != rune('$') {
-						fmt.Print("418 ")
 						goto l418
 					}
 					position++
@@ -4452,16 +3957,13 @@ func (p *Sparql) Init() {
 									{
 										position431, tokenIndex431, depth431 := position, tokenIndex, depth
 										if c := buffer[position]; c < rune('a') || c > rune('z') {
-											fmt.Print("432 ")
 											goto l432
 										}
 										position++
-										fmt.Print("431 ")
 										goto l431
 									l432:
 										position, tokenIndex, depth = position431, tokenIndex431, depth431
 										if c := buffer[position]; c < rune('A') || c > rune('Z') {
-											fmt.Print("429 ")
 											goto l429
 										}
 										position++
@@ -4470,12 +3972,10 @@ func (p *Sparql) Init() {
 									depth--
 									add(rulePN_CHARS_BASE, position430)
 								}
-								fmt.Print("428 ")
 								goto l428
 							l429:
 								position, tokenIndex, depth = position428, tokenIndex428, depth428
 								if buffer[position] != rune('_') {
-									fmt.Print("426 ")
 									goto l426
 								}
 								position++
@@ -4484,12 +3984,10 @@ func (p *Sparql) Init() {
 							depth--
 							add(rulePN_CHARS_U, position427)
 						}
-						fmt.Print("425 ")
 						goto l425
 					l426:
 						position, tokenIndex, depth = position425, tokenIndex425, depth425
 						if c := buffer[position]; c < rune('0') || c > rune('9') {
-							fmt.Print("418 ")
 							goto l418
 						}
 						position++
@@ -4511,16 +4009,13 @@ func (p *Sparql) Init() {
 										{
 											position439, tokenIndex439, depth439 := position, tokenIndex, depth
 											if c := buffer[position]; c < rune('a') || c > rune('z') {
-												fmt.Print("440 ")
 												goto l440
 											}
 											position++
-											fmt.Print("439 ")
 											goto l439
 										l440:
 											position, tokenIndex, depth = position439, tokenIndex439, depth439
 											if c := buffer[position]; c < rune('A') || c > rune('Z') {
-												fmt.Print("437 ")
 												goto l437
 											}
 											position++
@@ -4529,12 +4024,10 @@ func (p *Sparql) Init() {
 										depth--
 										add(rulePN_CHARS_BASE, position438)
 									}
-									fmt.Print("436 ")
 									goto l436
 								l437:
 									position, tokenIndex, depth = position436, tokenIndex436, depth436
 									if buffer[position] != rune('_') {
-										fmt.Print("434 ")
 										goto l434
 									}
 									position++
@@ -4543,18 +4036,15 @@ func (p *Sparql) Init() {
 								depth--
 								add(rulePN_CHARS_U, position435)
 							}
-							fmt.Print("433 ")
 							goto l433
 						l434:
 							position, tokenIndex, depth = position433, tokenIndex433, depth433
 							if c := buffer[position]; c < rune('0') || c > rune('9') {
-								fmt.Print("424 ")
 								goto l424
 							}
 							position++
 						}
 					l433:
-						fmt.Print("423 ")
 						goto l423
 					l424:
 						position, tokenIndex, depth = position424, tokenIndex424, depth424
@@ -4563,7 +4053,6 @@ func (p *Sparql) Init() {
 					add(ruleVARNAME, position422)
 				}
 				if !rules[rulews]() {
-					fmt.Print("418 ")
 					goto l418
 				}
 				depth--
@@ -4576,13 +4065,11 @@ func (p *Sparql) Init() {
 		},
 		/* 42 iri <- <('<' (!'>' .)* '>' ws)> */
 		func() bool {
-			fmt.Println("\niri")
 			position441, tokenIndex441, depth441 := position, tokenIndex, depth
 			{
 				position442 := position
 				depth++
 				if buffer[position] != rune('<') {
-					fmt.Print("441 ")
 					goto l441
 				}
 				position++
@@ -4592,31 +4079,25 @@ func (p *Sparql) Init() {
 					{
 						position445, tokenIndex445, depth445 := position, tokenIndex, depth
 						if buffer[position] != rune('>') {
-							fmt.Print("445 ")
 							goto l445
 						}
 						position++
-						fmt.Print("444 ")
 						goto l444
 					l445:
 						position, tokenIndex, depth = position445, tokenIndex445, depth445
 					}
 					if !matchDot() {
-						fmt.Print("444 ")
 						goto l444
 					}
-					fmt.Print("443 ")
 					goto l443
 				l444:
 					position, tokenIndex, depth = position444, tokenIndex444, depth444
 				}
 				if buffer[position] != rune('>') {
-					fmt.Print("441 ")
 					goto l441
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("441 ")
 					goto l441
 				}
 				depth--
@@ -4671,18 +4152,15 @@ func (p *Sparql) Init() {
 		nil,
 		/* 64 LBRACE <- <('{' ws)> */
 		func() bool {
-			fmt.Println("\nLBRACE")
 			position467, tokenIndex467, depth467 := position, tokenIndex, depth
 			{
 				position468 := position
 				depth++
 				if buffer[position] != rune('{') {
-					fmt.Print("467 ")
 					goto l467
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("467 ")
 					goto l467
 				}
 				depth--
@@ -4695,18 +4173,15 @@ func (p *Sparql) Init() {
 		},
 		/* 65 RBRACE <- <('}' ws)> */
 		func() bool {
-			fmt.Println("\nRBRACE")
 			position469, tokenIndex469, depth469 := position, tokenIndex, depth
 			{
 				position470 := position
 				depth++
 				if buffer[position] != rune('}') {
-					fmt.Print("469 ")
 					goto l469
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("469 ")
 					goto l469
 				}
 				depth--
@@ -4727,18 +4202,15 @@ func (p *Sparql) Init() {
 		nil,
 		/* 70 DOT <- <('.' ws)> */
 		func() bool {
-			fmt.Println("\nDOT")
 			position475, tokenIndex475, depth475 := position, tokenIndex, depth
 			{
 				position476 := position
 				depth++
 				if buffer[position] != rune('.') {
-					fmt.Print("475 ")
 					goto l475
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("475 ")
 					goto l475
 				}
 				depth--
@@ -4753,18 +4225,15 @@ func (p *Sparql) Init() {
 		nil,
 		/* 72 PIPE <- <('|' ws)> */
 		func() bool {
-			fmt.Println("\nPIPE")
 			position478, tokenIndex478, depth478 := position, tokenIndex, depth
 			{
 				position479 := position
 				depth++
 				if buffer[position] != rune('|') {
-					fmt.Print("478 ")
 					goto l478
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("478 ")
 					goto l478
 				}
 				depth--
@@ -4779,18 +4248,15 @@ func (p *Sparql) Init() {
 		nil,
 		/* 74 INVERSE <- <('^' ws)> */
 		func() bool {
-			fmt.Println("\nINVERSE")
 			position481, tokenIndex481, depth481 := position, tokenIndex, depth
 			{
 				position482 := position
 				depth++
 				if buffer[position] != rune('^') {
-					fmt.Print("481 ")
 					goto l481
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("481 ")
 					goto l481
 				}
 				depth--
@@ -4803,18 +4269,15 @@ func (p *Sparql) Init() {
 		},
 		/* 75 LPAREN <- <('(' ws)> */
 		func() bool {
-			fmt.Println("\nLPAREN")
 			position483, tokenIndex483, depth483 := position, tokenIndex, depth
 			{
 				position484 := position
 				depth++
 				if buffer[position] != rune('(') {
-					fmt.Print("483 ")
 					goto l483
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("483 ")
 					goto l483
 				}
 				depth--
@@ -4827,18 +4290,15 @@ func (p *Sparql) Init() {
 		},
 		/* 76 RPAREN <- <(')' ws)> */
 		func() bool {
-			fmt.Println("\nRPAREN")
 			position485, tokenIndex485, depth485 := position, tokenIndex, depth
 			{
 				position486 := position
 				depth++
 				if buffer[position] != rune(')') {
-					fmt.Print("485 ")
 					goto l485
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("485 ")
 					goto l485
 				}
 				depth--
@@ -4851,18 +4311,15 @@ func (p *Sparql) Init() {
 		},
 		/* 77 ISA <- <('a' ws)> */
 		func() bool {
-			fmt.Println("\nISA")
 			position487, tokenIndex487, depth487 := position, tokenIndex, depth
 			{
 				position488 := position
 				depth++
 				if buffer[position] != rune('a') {
-					fmt.Print("487 ")
 					goto l487
 				}
 				position++
 				if !rules[rulews]() {
-					fmt.Print("487 ")
 					goto l487
 				}
 				depth--
@@ -4891,13 +4348,11 @@ func (p *Sparql) Init() {
 		nil,
 		/* 86 INTEGER <- <([0-9]+ ws)> */
 		func() bool {
-			fmt.Println("\nINTEGER")
 			position497, tokenIndex497, depth497 := position, tokenIndex, depth
 			{
 				position498 := position
 				depth++
 				if c := buffer[position]; c < rune('0') || c > rune('9') {
-					fmt.Print("497 ")
 					goto l497
 				}
 				position++
@@ -4905,17 +4360,14 @@ func (p *Sparql) Init() {
 				{
 					position500, tokenIndex500, depth500 := position, tokenIndex, depth
 					if c := buffer[position]; c < rune('0') || c > rune('9') {
-						fmt.Print("500 ")
 						goto l500
 					}
 					position++
-					fmt.Print("499 ")
 					goto l499
 				l500:
 					position, tokenIndex, depth = position500, tokenIndex500, depth500
 				}
 				if !rules[rulews]() {
-					fmt.Print("497 ")
 					goto l497
 				}
 				depth--
@@ -4928,7 +4380,6 @@ func (p *Sparql) Init() {
 		},
 		/* 87 ws <- <((&('\v') '\v') | (&('\f') '\f') | (&('\n') '\n') | (&('\r') '\r') | (&('\t') '\t') | (&(' ') ' '))*> */
 		func() bool {
-			fmt.Println("\nws")
 			{
 				position502 := position
 				depth++
@@ -4939,42 +4390,36 @@ func (p *Sparql) Init() {
 						switch buffer[position] {
 						case '\v':
 							if buffer[position] != rune('\v') {
-								fmt.Print("504 ")
 								goto l504
 							}
 							position++
 							break
 						case '\f':
 							if buffer[position] != rune('\f') {
-								fmt.Print("504 ")
 								goto l504
 							}
 							position++
 							break
 						case '\n':
 							if buffer[position] != rune('\n') {
-								fmt.Print("504 ")
 								goto l504
 							}
 							position++
 							break
 						case '\r':
 							if buffer[position] != rune('\r') {
-								fmt.Print("504 ")
 								goto l504
 							}
 							position++
 							break
 						case '\t':
 							if buffer[position] != rune('\t') {
-								fmt.Print("504 ")
 								goto l504
 							}
 							position++
 							break
 						default:
 							if buffer[position] != rune(' ') {
-								fmt.Print("504 ")
 								goto l504
 							}
 							position++
@@ -4982,7 +4427,6 @@ func (p *Sparql) Init() {
 						}
 					}
 
-					fmt.Print("503 ")
 					goto l503
 				l504:
 					position, tokenIndex, depth = position504, tokenIndex504, depth504
