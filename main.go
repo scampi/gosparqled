@@ -6,9 +6,9 @@ import (
 )
 
 // Scope as a global variable so that the text/template is created only once
-var scope *autocompletion.Scope = autocompletion.NewScope()
+var scope = autocompletion.NewScope()
 
-// Returns a SPARQL query for retrieving recommendations.
+// RecommendationQuery returns a SPARQL query for retrieving recommendations.
 // If the input query does not have a Point Of Focus, an empty string is returned
 func RecommendationQuery(query string, callback func(string,string)) {
     go func(query string) {

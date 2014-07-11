@@ -1,5 +1,6 @@
 /*
- Create a SPARQL query that can be used for retrieving recommendations items.
+ Package autocompletion creates a SPARQL query that can be used for retrieving
+ recommendations elements, e.g., predicates or classes.
 
  The position in the input SPARQL query for the recommendation is indicated
  by the character '<', called the "Point Of Focus". For example, the query
@@ -56,10 +57,7 @@ func NewScope() *Scope {
         LIMIT 10
     `
     scope := &Scope{}
-    tp, err := template.New("rec").Parse(tmpl)
-    if err != nil {
-        panic(err)
-    }
+    tp, _ := template.New("rec").Parse(tmpl)
     scope.template = tp
     return scope
 }

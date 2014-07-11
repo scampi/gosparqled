@@ -19056,13 +19056,10 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 		this.p = p_ !== undefined ? p_ : ($ptrType(Sparql)).nil;
 	});
 	NewScope = $pkg.NewScope = function() {
-		var tmpl, scope, _tuple, tp, err;
+		var tmpl, scope, _tuple, tp;
 		tmpl = "\n        SELECT DISTINCT ?POF\n        WHERE {\n        {{range .Tps}}\n            {{.S}} {{.P}} {{.O}} .\n        {{end}}\n        {{if .Keyword}}\n            FILTER regex(?POF, \"{{.Keyword}}\", \"i\")\n        {{end}}\n        }\n        LIMIT 10\n    ";
 		scope = new Scope.Ptr(new triplePattern.Ptr(), ($sliceType(triplePattern)).nil, false, ($ptrType(template.Template)).nil, "");
-		_tuple = template.New("rec").Parse(tmpl); tp = _tuple[0]; err = _tuple[1];
-		if (!($interfaceIsEqual(err, null))) {
-			$panic(err);
-		}
+		_tuple = template.New("rec").Parse(tmpl); tp = _tuple[0];
 		scope.template = tp;
 		return scope;
 	};
