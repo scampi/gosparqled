@@ -2,7 +2,6 @@ package autocompletion
 
 import (
     "testing"
-    "text/template"
     "bytes"
 )
 
@@ -20,23 +19,7 @@ func (td *templateData) setKeyword(kw string) {
 }
 
 func parse(t *testing.T, query string, expected *templateData) {
-    tmpl := `
-        SELECT DISTINCT ?POF
-        WHERE {
-        {{range .Tps}}
-            {{.S}} {{.P}} {{.O}} .
-        {{end}}
-        {{if .Keyword}}
-            FILTER regex(?POF, "{{.Keyword}}", "i")
-        {{end}}
-        }
-        LIMIT 10
-    `
-
-    tp, err := template.New("rec").Parse(tmpl)
-    if err != nil { panic(err) }
-
-    s := &Sparql{ Buffer : query, Bgp : &Bgp{Template : tp} }
+    s := &Sparql{ Buffer : query, Scope : NewScope() }
     s.Init()
     if err := s.Parse(); err != nil {
         t.Errorf("Failed to parse query\n%v", err)
@@ -44,7 +27,7 @@ func parse(t *testing.T, query string, expected *templateData) {
     s.Execute()
     actual := s.RecommendationQuery()
     var out bytes.Buffer
-    tp.Execute(&out, expected)
+    s.template.Execute(&out, expected)
     expectedString := out.String()
     if actual != expectedString {
         t.Errorf("Expected %v\nbut got %v\n", expectedString, actual)

@@ -14,7 +14,13 @@ var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
  */
 
 var customAutocompletionFunction = function(yasqe, partialToken, type, callback) {
-    autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q) {
+    autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q, err) {
+        if (err) {
+            alert(err)
+        }
+        if (!q) {
+            return
+        }
         var ajaxConfig = {
             type: "GET",
             crossDomain: true,

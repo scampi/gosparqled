@@ -18972,19 +18972,19 @@ $packages["text/template"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
-	var $pkg = {}, strings = $packages["strings"], template = $packages["text/template"], bytes = $packages["bytes"], fmt = $packages["fmt"], math = $packages["math"], sort = $packages["sort"], strconv = $packages["strconv"], triplePattern, Bgp, pegRule, tokenTree, node32, element, token16, tokens16, state16, token32, tokens32, state32, Sparql, textPosition, parseError, rul3s, translatePositions;
+	var $pkg = {}, strings = $packages["strings"], template = $packages["text/template"], bytes = $packages["bytes"], fmt = $packages["fmt"], math = $packages["math"], sort = $packages["sort"], strconv = $packages["strconv"], triplePattern, Scope, pegRule, tokenTree, node32, element, token16, tokens16, state16, token32, tokens32, state32, Sparql, textPosition, parseError, rul3s, NewScope, translatePositions;
 	triplePattern = $pkg.triplePattern = $newType(0, "Struct", "autocompletion.triplePattern", "triplePattern", "github.com/scampi/gosparqled/autocompletion", function(S_, P_, O_) {
 		this.$val = this;
 		this.S = S_ !== undefined ? S_ : "";
 		this.P = P_ !== undefined ? P_ : "";
 		this.O = O_ !== undefined ? O_ : "";
 	});
-	Bgp = $pkg.Bgp = $newType(0, "Struct", "autocompletion.Bgp", "Bgp", "github.com/scampi/gosparqled/autocompletion", function(triplePattern_, Tps_, scope_, Template_, Keyword_) {
+	Scope = $pkg.Scope = $newType(0, "Struct", "autocompletion.Scope", "Scope", "github.com/scampi/gosparqled/autocompletion", function(triplePattern_, Tps_, scope_, template_, Keyword_) {
 		this.$val = this;
 		this.triplePattern = triplePattern_ !== undefined ? triplePattern_ : new triplePattern.Ptr();
 		this.Tps = Tps_ !== undefined ? Tps_ : ($sliceType(triplePattern)).nil;
 		this.scope = scope_ !== undefined ? scope_ : false;
-		this.Template = Template_ !== undefined ? Template_ : ($ptrType(template.Template)).nil;
+		this.template = template_ !== undefined ? template_ : ($ptrType(template.Template)).nil;
 		this.Keyword = Keyword_ !== undefined ? Keyword_ : "";
 	});
 	pegRule = $pkg.pegRule = $newType(1, "Uint8", "autocompletion.pegRule", "pegRule", "github.com/scampi/gosparqled/autocompletion", null);
@@ -19036,9 +19036,9 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 		this.depths = depths_ !== undefined ? depths_ : ($sliceType($Int32)).nil;
 		this.leaf = leaf_ !== undefined ? leaf_ : false;
 	});
-	Sparql = $pkg.Sparql = $newType(0, "Struct", "autocompletion.Sparql", "Sparql", "github.com/scampi/gosparqled/autocompletion", function(Bgp_, Buffer_, buffer_, rules_, Parse_, Reset_, tokenTree_) {
+	Sparql = $pkg.Sparql = $newType(0, "Struct", "autocompletion.Sparql", "Sparql", "github.com/scampi/gosparqled/autocompletion", function(Scope_, Buffer_, buffer_, rules_, Parse_, Reset_, tokenTree_) {
 		this.$val = this;
-		this.Bgp = Bgp_ !== undefined ? Bgp_ : ($ptrType(Bgp)).nil;
+		this.Scope = Scope_ !== undefined ? Scope_ : ($ptrType(Scope)).nil;
 		this.Buffer = Buffer_ !== undefined ? Buffer_ : "";
 		this.buffer = buffer_ !== undefined ? buffer_ : ($sliceType($Int32)).nil;
 		this.rules = rules_ !== undefined ? rules_ : ($arrayType(($funcType([], [$Bool], false)), 99)).zero();
@@ -19055,52 +19055,60 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 		this.$val = this;
 		this.p = p_ !== undefined ? p_ : ($ptrType(Sparql)).nil;
 	});
-	Bgp.Ptr.prototype.setKeyword = function(keyword) {
+	NewScope = $pkg.NewScope = function() {
+		var tmpl, scope, _tuple, tp, err;
+		tmpl = "\n        SELECT DISTINCT ?POF\n        WHERE {\n        {{range .Tps}}\n            {{.S}} {{.P}} {{.O}} .\n        {{end}}\n        {{if .Keyword}}\n            FILTER regex(?POF, \"{{.Keyword}}\", \"i\")\n        {{end}}\n        }\n        LIMIT 10\n    ";
+		scope = new Scope.Ptr(new triplePattern.Ptr(), ($sliceType(triplePattern)).nil, false, ($ptrType(template.Template)).nil, "");
+		_tuple = template.New("rec").Parse(tmpl); tp = _tuple[0]; err = _tuple[1];
+		if (!($interfaceIsEqual(err, null))) {
+			$panic(err);
+		}
+		scope.template = tp;
+		return scope;
+	};
+	Scope.Ptr.prototype.setKeyword = function(keyword) {
 		var b;
 		b = this;
 		if (!((keyword.length === 0))) {
 			b.Keyword = keyword;
 		}
 	};
-	Bgp.prototype.setKeyword = function(keyword) { return this.$val.setKeyword(keyword); };
-	Bgp.Ptr.prototype.setSubject = function(s) {
+	Scope.prototype.setKeyword = function(keyword) { return this.$val.setKeyword(keyword); };
+	Scope.Ptr.prototype.setSubject = function(s) {
 		var b;
 		b = this;
 		s = strings.TrimSpace(s);
-		if ((s.length === 0)) {
-			return;
+		if (!((s.length === 0))) {
+			b.triplePattern.S = s;
 		}
-		b.triplePattern.S = s;
 	};
-	Bgp.prototype.setSubject = function(s) { return this.$val.setSubject(s); };
-	Bgp.Ptr.prototype.setPredicate = function(p) {
+	Scope.prototype.setSubject = function(s) { return this.$val.setSubject(s); };
+	Scope.Ptr.prototype.setPredicate = function(p) {
 		var b;
 		b = this;
 		p = strings.TrimSpace(p);
-		if ((p.length === 0)) {
-			return;
+		if (!((p.length === 0))) {
+			b.triplePattern.P = p;
 		}
-		b.triplePattern.P = p;
 	};
-	Bgp.prototype.setPredicate = function(p) { return this.$val.setPredicate(p); };
-	Bgp.Ptr.prototype.setObject = function(o) {
+	Scope.prototype.setPredicate = function(p) { return this.$val.setPredicate(p); };
+	Scope.Ptr.prototype.setObject = function(o) {
 		var b;
 		b = this;
 		o = strings.TrimSpace(o);
-		if ((o.length === 0)) {
-			return;
+		if (!((o.length === 0))) {
+			b.triplePattern.O = o;
 		}
-		b.triplePattern.O = o;
 	};
-	Bgp.prototype.setObject = function(o) { return this.$val.setObject(o); };
-	Bgp.Ptr.prototype.addTriplePattern = function() {
+	Scope.prototype.setObject = function(o) { return this.$val.setObject(o); };
+	Scope.Ptr.prototype.addTriplePattern = function() {
 		var b, tp;
 		b = this;
 		tp = new triplePattern.Ptr(b.triplePattern.S, b.triplePattern.P, b.triplePattern.O);
 		b.Tps = $append(b.Tps, tp);
 	};
-	Bgp.prototype.addTriplePattern = function() { return this.$val.addTriplePattern(); };
-	Bgp.Ptr.prototype.trimToScope = function() {
+	Scope.prototype.addTriplePattern = function() { return this.$val.addTriplePattern(); };
+	Scope.Ptr.prototype.trimToScope = function() {
 		var b, _map, _key, size, _ref, _i, tp, scoped, _ref$1, _i$1, tp$1;
 		b = this;
 		b.scope = (_map = new $Map(), _key = "?POF", _map[_key] = { k: _key, v: true }, _map);
@@ -19129,7 +19137,7 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 		}
 		b.Tps = scoped;
 	};
-	Bgp.prototype.trimToScope = function() { return this.$val.trimToScope(); };
+	Scope.prototype.trimToScope = function() { return this.$val.trimToScope(); };
 	triplePattern.Ptr.prototype.in$ = function(scope) {
 		var tp, _entry, _entry$1, _entry$2;
 		tp = this;
@@ -19147,15 +19155,15 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 		_key$2 = tp.O; (scope || $throwRuntimeError("assignment to entry in nil map"))[_key$2] = { k: _key$2, v: true };
 	};
 	triplePattern.prototype.addToScope = function(scope) { return this.$val.addToScope(scope); };
-	Bgp.Ptr.prototype.RecommendationQuery = function() {
+	Scope.Ptr.prototype.RecommendationQuery = function() {
 		var b, out;
 		b = this;
 		b.trimToScope();
 		out = new bytes.Buffer.Ptr(); $copy(out, new bytes.Buffer.Ptr(), bytes.Buffer);
-		b.Template.Execute(out, b);
+		b.template.Execute(out, b);
 		return out.String();
 	};
-	Bgp.prototype.RecommendationQuery = function() { return this.$val.RecommendationQuery(); };
+	Scope.prototype.RecommendationQuery = function() { return this.$val.RecommendationQuery(); };
 	node32.Ptr.prototype.print = function(depth, buffer) {
 		var node, c, x;
 		node = this;
@@ -19949,28 +19957,28 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 			if (_ref$1 === 88) {
 				_tmp$3 = (token.begin >> 0); _tmp$4 = (token.end >> 0); begin = _tmp$3; end = _tmp$4;
 			} else if (_ref$1 === 89) {
-				p.Bgp.setSubject(buffer.substring(begin, end));
+				p.Scope.setSubject(buffer.substring(begin, end));
 			} else if (_ref$1 === 90) {
-				p.Bgp.setSubject(buffer.substring(begin, end));
+				p.Scope.setSubject(buffer.substring(begin, end));
 			} else if (_ref$1 === 91) {
-				p.Bgp.setSubject("?POF");
+				p.Scope.setSubject("?POF");
 			} else if (_ref$1 === 92) {
-				p.Bgp.setPredicate("?POF");
+				p.Scope.setPredicate("?POF");
 			} else if (_ref$1 === 93) {
-				p.Bgp.setPredicate(buffer.substring(begin, end));
+				p.Scope.setPredicate(buffer.substring(begin, end));
 			} else if (_ref$1 === 94) {
-				p.Bgp.setPredicate(buffer.substring(begin, end));
+				p.Scope.setPredicate(buffer.substring(begin, end));
 			} else if (_ref$1 === 95) {
-				p.Bgp.setObject(buffer.substring(begin, end));
-				p.Bgp.addTriplePattern();
+				p.Scope.setObject(buffer.substring(begin, end));
+				p.Scope.addTriplePattern();
 			} else if (_ref$1 === 96) {
-				p.Bgp.setObject("?POF");
-				p.Bgp.addTriplePattern();
+				p.Scope.setObject("?POF");
+				p.Scope.addTriplePattern();
 			} else if (_ref$1 === 97) {
-				p.Bgp.setObject("?FillVar");
-				p.Bgp.addTriplePattern();
+				p.Scope.setObject("?FillVar");
+				p.Scope.addTriplePattern();
 			} else if (_ref$1 === 98) {
-				p.Bgp.setKeyword(buffer.substring(begin, end));
+				p.Scope.setKeyword(buffer.substring(begin, end));
 			}
 		/* } */ $s = 1; continue; case 2:
 		/* */ case -1: } return; } };
@@ -22934,8 +22942,8 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 	$pkg.$init = function() {
 		($ptrType(triplePattern)).methods = [["addToScope", "addToScope", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [], false, -1], ["in$", "in", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [$Bool], false, -1]];
 		triplePattern.init([["S", "S", "", $String, ""], ["P", "P", "", $String, ""], ["O", "O", "", $String, ""]]);
-		($ptrType(Bgp)).methods = [["RecommendationQuery", "RecommendationQuery", "", [], [$String], false, -1], ["addToScope", "addToScope", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [], false, 0], ["addTriplePattern", "addTriplePattern", "github.com/scampi/gosparqled/autocompletion", [], [], false, -1], ["in$", "in", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [$Bool], false, 0], ["setKeyword", "setKeyword", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["setObject", "setObject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["setPredicate", "setPredicate", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["setSubject", "setSubject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["trimToScope", "trimToScope", "github.com/scampi/gosparqled/autocompletion", [], [], false, -1]];
-		Bgp.init([["triplePattern", "", "github.com/scampi/gosparqled/autocompletion", triplePattern, ""], ["Tps", "Tps", "", ($sliceType(triplePattern)), ""], ["scope", "scope", "github.com/scampi/gosparqled/autocompletion", ($mapType($String, $Bool)), ""], ["Template", "Template", "", ($ptrType(template.Template)), ""], ["Keyword", "Keyword", "", $String, ""]]);
+		($ptrType(Scope)).methods = [["RecommendationQuery", "RecommendationQuery", "", [], [$String], false, -1], ["addToScope", "addToScope", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [], false, 0], ["addTriplePattern", "addTriplePattern", "github.com/scampi/gosparqled/autocompletion", [], [], false, -1], ["in$", "in", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [$Bool], false, 0], ["setKeyword", "setKeyword", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["setObject", "setObject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["setPredicate", "setPredicate", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["setSubject", "setSubject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, -1], ["trimToScope", "trimToScope", "github.com/scampi/gosparqled/autocompletion", [], [], false, -1]];
+		Scope.init([["triplePattern", "", "github.com/scampi/gosparqled/autocompletion", triplePattern, ""], ["Tps", "Tps", "", ($sliceType(triplePattern)), ""], ["scope", "scope", "github.com/scampi/gosparqled/autocompletion", ($mapType($String, $Bool)), ""], ["template", "template", "github.com/scampi/gosparqled/autocompletion", ($ptrType(template.Template)), ""], ["Keyword", "Keyword", "", $String, ""]]);
 		tokenTree.init([["AST", "AST", "", [], [($ptrType(node32))], false], ["Add", "Add", "", [pegRule, $Int, $Int, $Int, $Int], [], false], ["Error", "Error", "", [], [($sliceType(token32))], false], ["Expand", "Expand", "", [$Int], [tokenTree], false], ["Print", "Print", "", [], [], false], ["PrintSyntax", "PrintSyntax", "", [], [], false], ["PrintSyntaxTree", "PrintSyntaxTree", "", [$String], [], false], ["Tokens", "Tokens", "", [], [($chanType(token32, false, true))], false], ["trim", "trim", "github.com/scampi/gosparqled/autocompletion", [$Int], [], false]]);
 		($ptrType(node32)).methods = [["Print", "Print", "", [$String], [], false, -1], ["String", "String", "", [], [$String], false, 0], ["getToken32", "getToken32", "github.com/scampi/gosparqled/autocompletion", [], [token32], false, 0], ["isParentOf", "isParentOf", "github.com/scampi/gosparqled/autocompletion", [token32], [$Bool], false, 0], ["isZero", "isZero", "github.com/scampi/gosparqled/autocompletion", [], [$Bool], false, 0], ["print", "print", "github.com/scampi/gosparqled/autocompletion", [$Int, $String], [], false, -1]];
 		node32.init([["token32", "", "github.com/scampi/gosparqled/autocompletion", token32, ""], ["up", "up", "github.com/scampi/gosparqled/autocompletion", ($ptrType(node32)), ""], ["next", "next", "github.com/scampi/gosparqled/autocompletion", ($ptrType(node32)), ""]]);
@@ -22954,7 +22962,7 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 		state32.init([["token32", "", "github.com/scampi/gosparqled/autocompletion", token32, ""], ["depths", "depths", "github.com/scampi/gosparqled/autocompletion", ($sliceType($Int32)), ""], ["leaf", "leaf", "github.com/scampi/gosparqled/autocompletion", $Bool, ""]]);
 		Sparql.methods = [["AST", "AST", "", [], [($ptrType(node32))], false, 6], ["Add", "Add", "", [pegRule, $Int, $Int, $Int, $Int], [], false, 6], ["Error", "Error", "", [], [($sliceType(token32))], false, 6], ["Expand", "Expand", "", [$Int], [tokenTree], false, 6], ["Print", "Print", "", [], [], false, 6], ["PrintSyntax", "PrintSyntax", "", [], [], false, 6], ["RecommendationQuery", "RecommendationQuery", "", [], [$String], false, 0], ["Tokens", "Tokens", "", [], [($chanType(token32, false, true))], false, 6], ["addToScope", "addToScope", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [], false, 0], ["addTriplePattern", "addTriplePattern", "github.com/scampi/gosparqled/autocompletion", [], [], false, 0], ["in$", "in", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [$Bool], false, 0], ["setKeyword", "setKeyword", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["setObject", "setObject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["setPredicate", "setPredicate", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["setSubject", "setSubject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["trim", "trim", "github.com/scampi/gosparqled/autocompletion", [$Int], [], false, 6], ["trimToScope", "trimToScope", "github.com/scampi/gosparqled/autocompletion", [], [], false, 0]];
 		($ptrType(Sparql)).methods = [["AST", "AST", "", [], [($ptrType(node32))], false, 6], ["Add", "Add", "", [pegRule, $Int, $Int, $Int, $Int], [], false, 6], ["Error", "Error", "", [], [($sliceType(token32))], false, 6], ["Execute", "Execute", "", [], [], false, -1], ["Expand", "Expand", "", [$Int], [tokenTree], false, 6], ["Highlighter", "Highlighter", "", [], [], false, -1], ["Init", "Init", "", [], [], false, -1], ["Print", "Print", "", [], [], false, 6], ["PrintSyntax", "PrintSyntax", "", [], [], false, 6], ["PrintSyntaxTree", "PrintSyntaxTree", "", [], [], false, -1], ["RecommendationQuery", "RecommendationQuery", "", [], [$String], false, 0], ["Tokens", "Tokens", "", [], [($chanType(token32, false, true))], false, 6], ["addToScope", "addToScope", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [], false, 0], ["addTriplePattern", "addTriplePattern", "github.com/scampi/gosparqled/autocompletion", [], [], false, 0], ["in$", "in", "github.com/scampi/gosparqled/autocompletion", [($mapType($String, $Bool))], [$Bool], false, 0], ["setKeyword", "setKeyword", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["setObject", "setObject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["setPredicate", "setPredicate", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["setSubject", "setSubject", "github.com/scampi/gosparqled/autocompletion", [$String], [], false, 0], ["trim", "trim", "github.com/scampi/gosparqled/autocompletion", [$Int], [], false, 6], ["trimToScope", "trimToScope", "github.com/scampi/gosparqled/autocompletion", [], [], false, 0]];
-		Sparql.init([["Bgp", "", "", ($ptrType(Bgp)), ""], ["Buffer", "Buffer", "", $String, ""], ["buffer", "buffer", "github.com/scampi/gosparqled/autocompletion", ($sliceType($Int32)), ""], ["rules", "rules", "github.com/scampi/gosparqled/autocompletion", ($arrayType(($funcType([], [$Bool], false)), 99)), ""], ["Parse", "Parse", "", ($funcType([($sliceType($Int))], [$error], true)), ""], ["Reset", "Reset", "", ($funcType([], [], false)), ""], ["tokenTree", "", "github.com/scampi/gosparqled/autocompletion", tokenTree, ""]]);
+		Sparql.init([["Scope", "", "", ($ptrType(Scope)), ""], ["Buffer", "Buffer", "", $String, ""], ["buffer", "buffer", "github.com/scampi/gosparqled/autocompletion", ($sliceType($Int32)), ""], ["rules", "rules", "github.com/scampi/gosparqled/autocompletion", ($arrayType(($funcType([], [$Bool], false)), 99)), ""], ["Parse", "Parse", "", ($funcType([($sliceType($Int))], [$error], true)), ""], ["Reset", "Reset", "", ($funcType([], [], false)), ""], ["tokenTree", "", "github.com/scampi/gosparqled/autocompletion", tokenTree, ""]]);
 		textPosition.init([["line", "line", "github.com/scampi/gosparqled/autocompletion", $Int, ""], ["symbol", "symbol", "github.com/scampi/gosparqled/autocompletion", $Int, ""]]);
 		($ptrType(parseError)).methods = [["Error", "Error", "", [], [$String], false, -1]];
 		parseError.init([["p", "p", "github.com/scampi/gosparqled/autocompletion", ($ptrType(Sparql)), ""]]);
@@ -22963,26 +22971,26 @@ $packages["github.com/scampi/gosparqled/autocompletion"] = (function() {
 	return $pkg;
 })();
 $packages["/home/stecam/documents/prog/go/src/github.com/scampi/gosparqled"] = (function() {
-	var $pkg = {}, js = $packages["github.com/gopherjs/gopherjs/js"], autocompletion = $packages["github.com/scampi/gosparqled/autocompletion"], template = $packages["text/template"], tmpl, tp, _tuple, RecommendationQuery, main;
+	var $pkg = {}, js = $packages["github.com/gopherjs/gopherjs/js"], autocompletion = $packages["github.com/scampi/gosparqled/autocompletion"], scope, RecommendationQuery, main;
 	RecommendationQuery = $pkg.RecommendationQuery = function(query, callback) {
 		$go((function(query$1, $b) {
 			var $this = this, $args = arguments, $r, $s = 0, s, err;
 			/* */ if(!$b) { $nonblockingCall(); }; return function() { while (true) { switch ($s) { case 0:
-			s = new autocompletion.Sparql.Ptr(new autocompletion.Bgp.Ptr(new autocompletion.triplePattern.Ptr(), ($sliceType(autocompletion.triplePattern)).nil, false, tp, ""), query$1, ($sliceType($Int32)).nil, ($arrayType(($funcType([], [$Bool], false)), 99)).zero(), $throwNilPointerError, $throwNilPointerError, null);
+			s = new autocompletion.Sparql.Ptr(scope, query$1, ($sliceType($Int32)).nil, ($arrayType(($funcType([], [$Bool], false)), 99)).zero(), $throwNilPointerError, $throwNilPointerError, null);
 			s.Init();
 			err = s.Parse(new ($sliceType($Int))([]));
 			/* if ($interfaceIsEqual(err, null)) { */ if ($interfaceIsEqual(err, null)) {} else { $s = 1; continue; }
 				$r = s.Execute(true); /* */ $s = 3; case 3: if ($r && $r.constructor === Function) { $r = $r(); }
-				callback(s.Bgp.RecommendationQuery());
+				callback(s.Scope.RecommendationQuery(), "");
 			/* } else { */ $s = 2; continue; case 1: 
-				callback(query$1 + "\n" + err.Error());
+				callback("", err.Error());
 			/* } */ case 2:
 			/* */ case -1: } return; } };
 		}), [query]);
 	};
 	main = function() {
 		var _map, _key;
-		$global.autocompletion = $externalize((_map = new $Map(), _key = "RecommendationQuery", _map[_key] = { k: _key, v: new ($funcType([$String, ($funcType([$String], [], false))], [], false))(RecommendationQuery) }, _map), ($mapType($String, $emptyInterface)));
+		$global.autocompletion = $externalize((_map = new $Map(), _key = "RecommendationQuery", _map[_key] = { k: _key, v: new ($funcType([$String, ($funcType([$String, $String], [], false))], [], false))(RecommendationQuery) }, _map), ($mapType($String, $emptyInterface)));
 	};
 	$pkg.$run = function($b) {
 		$packages["github.com/gopherjs/gopherjs/js"].$init();
@@ -23014,8 +23022,7 @@ $packages["/home/stecam/documents/prog/go/src/github.com/scampi/gosparqled"] = (
 		main();
 	};
 	$pkg.$init = function() {
-		tmpl = "\nSELECT DISTINCT ?POF\nWHERE {\n{{range .Tps}}\n    {{.S}} {{.P}} {{.O}} .\n{{end}}\n{{if .Keyword}}\n    FILTER regex(?POF, \"{{.Keyword}}\", \"i\")\n{{end}}\n}\nLIMIT 10\n";
-		_tuple = template.New("rec").Parse(tmpl); tp = _tuple[0];
+		scope = autocompletion.NewScope();
 	};
 	return $pkg;
 })();

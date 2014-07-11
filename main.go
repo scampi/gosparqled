@@ -3,33 +3,23 @@ package main
 import (
     "github.com/gopherjs/gopherjs/js"
     "github.com/scampi/gosparqled/autocompletion"
-    "text/template"
 )
 
-var tmpl string = `
-SELECT DISTINCT ?POF
-WHERE {
-{{range .Tps}}
-    {{.S}} {{.P}} {{.O}} .
-{{end}}
-{{if .Keyword}}
-    FILTER regex(?POF, "{{.Keyword}}", "i")
-{{end}}
-}
-LIMIT 10
-`
-var tp, _ = template.New("rec").Parse(tmpl)
+// Scope as a global variable so that the text/template is created only once
+var scope *autocompletion.Scope = autocompletion.NewScope()
 
-func RecommendationQuery(query string, callback func(string)) {
+// Returns a SPARQL query for retrieving recommendations.
+// If the input query does not have a Point Of Focus, an empty string is returned
+func RecommendationQuery(query string, callback func(string,string)) {
     go func(query string) {
-        s := &autocompletion.Sparql{ Buffer : query, Bgp : &autocompletion.Bgp{Template : tp} }
+        s := &autocompletion.Sparql{ Buffer : query, Scope : scope }
         s.Init()
         err := s.Parse()
         if err == nil {
             s.Execute()
-            callback(s.RecommendationQuery())
+            callback(s.RecommendationQuery(), "")
         } else {
-            callback(query + "\n" + err.Error())
+            callback("", err.Error())
         }
     }(query)
 }

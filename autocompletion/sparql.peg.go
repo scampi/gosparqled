@@ -782,7 +782,7 @@ func (t *tokens32) Expand(index int) tokenTree {
 }
 
 type Sparql struct {
-	*Bgp
+	*Scope
 
 	Buffer string
 	buffer []rune
