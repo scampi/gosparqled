@@ -2,19 +2,40 @@ package autocompletion
 
 import (
     "testing"
-    "github.com/hoisie/mustache"
+    "text/template"
+    "bytes"
 )
 
 type templateData struct {
     Tps []triplePattern
+    Keyword string ``
 }
 
 func (td *templateData) add(s string, p string, o string) {
     td.Tps = append(td.Tps, triplePattern{ S : s, P : p, O : o })
 }
 
+func (td *templateData) setKeyword(kw string) {
+    td.Keyword = kw
+}
+
 func parse(t *testing.T, query string, expected *templateData) {
-    tp, _ := mustache.ParseFile("/home/stecam/documents/prog/go/src/github.com/scampi/gosparqled/autocompletion/template.mustache")
+    tmpl := `
+        SELECT DISTINCT ?POF
+        WHERE {
+        {{range .Tps}}
+            {{.S}} {{.P}} {{.O}} .
+        {{end}}
+        {{if .Keyword}}
+            FILTER regex(?POF, "{{.Keyword}}", "i")
+        {{end}}
+        }
+        LIMIT 10
+    `
+
+    tp, err := template.New("rec").Parse(tmpl)
+    if err != nil { panic(err) }
+
     s := &Sparql{ Buffer : query, Bgp : &Bgp{Template : tp} }
     s.Init()
     if err := s.Parse(); err != nil {
@@ -22,9 +43,48 @@ func parse(t *testing.T, query string, expected *templateData) {
     }
     s.Execute()
     actual := s.RecommendationQuery()
-    if actual != tp.Render(expected) {
-        t.Errorf("Expected %v\nbut got %v\n", tp.Render(expected), actual)
+    var out bytes.Buffer
+    tp.Execute(&out, expected)
+    expectedString := out.String()
+    if actual != expectedString {
+        t.Errorf("Expected %v\nbut got %v\n", expectedString, actual)
     }
+}
+
+func TestKeyword1(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "?POF", "?FillVar")
+    td.setKeyword("test")
+    parse(t, `
+        SELECT * WHERE {
+          ?s test< 
+        }
+        LIMIT 10
+    `, td)
+}
+
+func TestKeyword2(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "?p", "?POF")
+    td.setKeyword("test")
+    parse(t, `
+        SELECT * WHERE {
+          ?s ?p test< 
+        }
+        LIMIT 10
+    `, td)
+}
+
+func TestKeyword3(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "a", "?POF")
+    td.setKeyword("Person-1")
+    parse(t, `
+        SELECT * WHERE {
+          ?s a Person-1< 
+        }
+        LIMIT 10
+    `, td)
 }
 
 func TestEditor(t *testing.T) {
@@ -32,11 +92,11 @@ func TestEditor(t *testing.T) {
     td.add("?sub", "a", "<http://schema.org/MusicGroup>")
     td.add("?sub", "?POF", "?FillVar")
     parse(t, `
-SELECT * WHERE {
-  ?sub a <http://schema.org/MusicGroup> .
-  ?sub < 
-}
-LIMIT 10
+        SELECT * WHERE {
+          ?sub a <http://schema.org/MusicGroup> .
+          ?sub < 
+        }
+        LIMIT 10
     `, td)
 }
 

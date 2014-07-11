@@ -75,7 +75,7 @@ pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
 
 objectListPath <- objectPath ( COMMA objectListPath )*
 
-objectPath <- <graphNodePath> { p.setObject(buffer[begin:end]); p.addTriplePattern() } / pof { p.setObject("?POF"); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
+objectPath <- <graphNodePath> { p.setObject(buffer[begin:end]); p.addTriplePattern() } /  pof { p.setObject("?POF"); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
 
 graphNodePath <- var / graphTerm
 
@@ -91,7 +91,7 @@ offset <- OFFSET INTEGER
 # Point Of Focus
 #
 
-pof <- '<' [ \t\n\r\f]+
+pof <- <[a-zA-Z0-9.\-_+]*> { p.setKeyword(buffer[begin:end]) } '<' whiteSpaces+
 
 #
 # Terminals
@@ -155,12 +155,13 @@ RPAREN <- ')' ws
 ISA <- 'a' ws
 NOT <- '!' ws
 STAR <- '*' ws
-QUESTION <- '?' ws
-PLUS <- '+' ws
+#QUESTION <- '?' ws
+#PLUS <- '+' ws
 OPTIONAL <- "OPTIONAL" ws
 UNION <- "UNION" ws
 LIMIT <- "LIMIT" ws
 OFFSET <- "OFFSET" ws
 INTEGER <- [0-9]+ ws
 
-ws <- ( '\040' / '\t' / '\r' / '\n' / '\f' / '\v' )*
+whiteSpaces <- '\040' / '\t' / '\r' / '\n' / '\f' / '\v'
+ws <- whiteSpaces*

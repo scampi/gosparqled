@@ -2,20 +2,23 @@ package main
 
 import (
     "github.com/gopherjs/gopherjs/js"
-    "github.com/hoisie/mustache"
     "github.com/scampi/gosparqled/autocompletion"
+    "text/template"
 )
 
 var tmpl string = `
-    SELECT DISTINCT ?POF
-    WHERE {
-    {{#Tps}}
-        {{{S}}} {{{P}}} {{{O}}} .
-    {{/Tps}}
-    }
-    LIMIT 10
+SELECT DISTINCT ?POF
+WHERE {
+{{range .Tps}}
+    {{.S}} {{.P}} {{.O}} .
+{{end}}
+{{if .Keyword}}
+    FILTER regex(?POF, "{{.Keyword}}", "i")
+{{end}}
+}
+LIMIT 10
 `
-var tp, _ = mustache.ParseString(tmpl)
+var tp, _ = template.New("rec").Parse(tmpl)
 
 func RecommendationQuery(query string, callback func(string)) {
     go func(query string) {

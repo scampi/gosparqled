@@ -2,7 +2,8 @@ package autocompletion
 
 import (
     "strings"
-    "github.com/hoisie/mustache"
+    "text/template"
+    "bytes"
 )
 
 type triplePattern struct {
@@ -13,7 +14,14 @@ type Bgp struct {
     triplePattern
     Tps []triplePattern
     scope map[string]bool
-    Template *mustache.Template
+    Template *template.Template
+    Keyword string
+}
+
+func (b *Bgp) setKeyword(keyword string) {
+    if len(keyword) != 0 {
+        b.Keyword = keyword
+    }
 }
 
 func (b *Bgp) setSubject(s string) {
@@ -80,6 +88,8 @@ func (tp *triplePattern) addToScope(scope map[string]bool) {
 
 func (b *Bgp) RecommendationQuery() string {
     b.trimToScope()
-    return b.Template.Render(b)
+    var out bytes.Buffer
+    b.Template.Execute(&out, b)
+    return out.String()
 }
 
