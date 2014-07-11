@@ -62,6 +62,12 @@ func NewScope() *Scope {
     return scope
 }
 
+// Reset the scope to prepare for a new query
+func (b *Scope) Reset() {
+    b.Keyword = ""
+    b.Tps = b.Tps[:0]
+}
+
 // Sets the keyword that the recommended item must match
 func (b *Scope) setKeyword(keyword string) {
     if len(keyword) != 0 {
