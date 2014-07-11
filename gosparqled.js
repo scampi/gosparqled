@@ -22980,7 +22980,7 @@ $packages["/home/stecam/documents/prog/go/src/github.com/scampi/gosparqled"] = (
 				$r = s.Execute(true); /* */ $s = 3; case 3: if ($r && $r.constructor === Function) { $r = $r(); }
 				callback(s.Scope.RecommendationQuery(), "");
 			/* } else { */ $s = 2; continue; case 1: 
-				callback("", err.Error());
+				callback("", "Failed to process query\n" + err.Error());
 			/* } */ case 2:
 			/* */ case -1: } return; } };
 		}), [query]);

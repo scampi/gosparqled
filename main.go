@@ -19,7 +19,7 @@ func RecommendationQuery(query string, callback func(string,string)) {
             s.Execute()
             callback(s.RecommendationQuery(), "")
         } else {
-            callback("", err.Error())
+            callback("", "Failed to process query\n" + err.Error())
         }
     }(query)
 }

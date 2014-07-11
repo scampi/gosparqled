@@ -17,9 +17,11 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
     autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q, err) {
         if (err) {
             alert(err)
+            return
         }
         if (!q) {
             alert("No recommendation at this position")
+            return
         }
         var ajaxConfig = {
             type: "GET",
