@@ -19,7 +19,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
             alert(err)
         }
         if (!q) {
-            return
+            alert("No recommendation at this position")
         }
         var ajaxConfig = {
             type: "GET",
