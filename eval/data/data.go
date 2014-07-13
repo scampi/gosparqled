@@ -1,4 +1,4 @@
-package main
+package data
 
 import (
     "os"
@@ -59,9 +59,5 @@ func Clean(endpoint string, graph string, queries []string, out string) {
             w.WriteString("###\n")
         }
     }
-}
-
-func main() {
-    Clean("http://ssdtest.index.sindice.net:4747/sparql", "http://sindice.com/usewod/dbpedia-3-3", Load(os.Args[1]), "clean"+os.Args[1])
 }
 
