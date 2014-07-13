@@ -56,6 +56,11 @@ func NewScope() *Scope {
         }
         LIMIT 10
     `
+    return NewScopeWithTemplate(tmpl)
+}
+
+// Scope struct constructor with the given text template
+func NewScopeWithTemplate(tmpl string) *Scope {
     scope := &Scope{}
     tp, _ := template.New("rec").Parse(tmpl)
     scope.template = tp

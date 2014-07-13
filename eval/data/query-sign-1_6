@@ -1,0 +1,90 @@
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/property/website> ?v3 .
+  ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?v4 .
+  ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?v5 .
+  ?v0 <http://dbpedia.org/property/einwohner> ?v6 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/background> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/voiceType> ?v4 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v5 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v6 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/JapaneseBaseballPlayers> .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
+  ?v0 <http://dbpedia.org/property/team> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/bats> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/currentNumber> ?v4 .
+  ?v0 <http://dbpedia.org/ontology/currentPosition> ?v5 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+  ?v0 <http://dbpedia.org/dbpedia.country> ?v5 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+  ?v0 <http://dbpedia.org/ontology/country> ?v5 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/president> ?v1 .
+  ?v0 <http://dbpedia.org/property/postgrad> ?v2 .
+  ?v0 <http://dbpedia.org/property/undergrad> ?v3 .
+  ?v0 <http://dbpedia.org/property/staff> ?v4 .
+  ?v0 <http://dbpedia.org/property/profess> ?v5 .
+  ?v0 <http://dbpedia.org/property/doctoral> ?v6 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+  ?v0 <http://dbpedia.org/country> ?v5 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+  ?v0 <http://dbpedia.org/property/country> ?v5 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v0 <http://dbpedia.org/property/populationCensus> ?v2 .
+  ?v0 <http://dbpedia.org/property/populationCensusYear> ?v3 .
+  ?v0 <http://dbpedia.org/property/gini> ?v4 .
+  ?v0 <http://dbpedia.org/property/giniYear> ?v5 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> .
+}
+###

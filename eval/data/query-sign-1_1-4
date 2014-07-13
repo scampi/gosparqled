@@ -1,0 +1,9 @@
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Film> .
+  ?v0 <http://dbpedia.org/ontology/director> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://dbpedia.org/property/imdbId> ?v3 .
+  ?v1 <http://dbpedia.org/property/dateOfBirth> ?v4 .
+}
+###

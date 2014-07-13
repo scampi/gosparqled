@@ -1,0 +1,14 @@
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/redirect> ?v1 .
+  ?v1 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v3 <http://www.w3.org/2004/02/skos/core#broader> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/redirect> ?v1 .
+  ?v1 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v2 <http://www.w3.org/2004/02/skos/core#narrower> ?v3 .
+}
+###

@@ -1,0 +1,18 @@
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v4 <http://dbpedia.org/property/notableRole> ?v0 .
+  ?v5 <http://dbpedia.org/ontology/related> ?v2 .
+  ?v4 <http://dbpedia.org/property/starring> ?v5 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1 .
+  ?v1 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?v3 .
+  ?v3 <http://xmlns.com/foaf/0.1/primaryTopic> ?v4 .
+  ?v4 <http://xmlns.com/foaf/0.1/name> ?v5 .
+}
+###

@@ -1,0 +1,246 @@
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
+  ?v1 <http://dbpedia.org/property/name> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/city> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://purl.org/vocab/bio/0.1/event> ?v1 .
+  ?v1 <http://purl.org/vocab/bio/0.1/date> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
+  ?v2 <http://www.w3.org/2004/02/skos/core#subject> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/party> ?v1 .
+  ?v2 <http://dbpedia.org/ontology/residence> ?v1 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v2 <http://dbpedia.org/property/nameFor> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/writer> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/capital> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/season> ?v1 .
+  ?v1 <http://dbpedia.org/property/sportHonoursProperty> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/ontology/writer> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/property/releaseDate> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/leaderName> ?v1 .
+  ?v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Chancellor> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/property/portrayed> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v2 <http://dbpedia.org/property/namedFor> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://data.linkedmdb.org/resource/movie/actor_name> ?v1 .
+  ?v2 <http://data.linkedmdb.org/resource/movie/actor> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#Label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/property/notableRole> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://www.w3.org/2004/02/skos/core#releasedate> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/total_type> ?v1 .
+  ?v2 <http://dbpedia.org/ontology/capital> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/class/yago/AustralianMusicians> ?v1 .
+  ?v1 <http://dbpedia.org/property/abstract> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/redirect> ?v1 .
+  ?v1 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/ontology/releasedate> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/city> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1 .
+  ?v1 <http://xmlns.com/foaf/0.1/homepage> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/author> ?v2 .
+  ?v2 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#Lable> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/capital> ?v2 .
+  ?v2 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v2 <http://dbpedia.org/ontology:writer> ?v0 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/capital> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/incumbent> ?v1 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/notableRole> ?v1 .
+  ?v1 <http://xmlns.com/foaf/0.1/name> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/artist> ?v1 .
+  ?v1 <http://dbpedia.org/property/abstract> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1 .
+  ?v1 <http://xmlns.com/foaf/0.1/name> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/leaderName> ?v1 .
+  ?v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/property/chancellor> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/redirect> ?v1 .
+  ?v1 <http://www.w3.org/2002/07/owl#sameAs> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
+  ?v1 <http://www.w3.org/2004/02/skos/core#narrower> ?v2 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/starring> ?v1 .
+  ?v2 <http://dbpedia.org/property/director> ?v1 .
+}
+###

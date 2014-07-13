@@ -1,0 +1,13 @@
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/binomial_authority> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/classis> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/division> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/family> ?v4 .
+  ?v0 <http://dbpedia.org/ontology/genus> ?v5 .
+  ?v0 <http://dbpedia.org/ontology/kingdom> ?v6 .
+  ?v0 <http://dbpedia.org/ontology/order> ?v7 .
+  ?v0 <http://dbpedia.org/ontology/species> ?v8 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v9 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v10 .
+}

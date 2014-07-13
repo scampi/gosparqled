@@ -1,0 +1,27 @@
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
+  ?v2 <http://www.w3.org/2004/02/skos/core#subject> ?v0 .
+  ?v3 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v3 <http://dbpedia.org/property/fuelType> ?v4 .
+  ?v3 <http://dbpedia.org/property/maxCapacity> ?v5 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
+  ?v2 <http://www.w3.org/2004/02/skos/core#broader> ?v0 .
+  ?v3 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v3 <http://dbpedia.org/property/fuelType> ?v4 .
+  ?v3 <http://dbpedia.org/property/maxCapacity> ?v5 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
+  ?v2 <http://www.w3.org/2004/02/skos/core#broader> ?v0 .
+  ?v3 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v3 <http://xmlns.com/foaf/0.1/page> ?v4 .
+  ?v3 <http://dbpedia.org/property/wikiPageUsesTemplate> ?v5 .
+}
+###

@@ -1,0 +1,10 @@
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/artist> ?v1 .
+  ?v0 <http://dbpedia.org/property/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
+  ?v0 <http://dbpedia.org/property/released> ?v4 .
+  ?v0 <http://dbpedia.org/property/cover> ?v5 .
+  ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v6 .
+}
+###

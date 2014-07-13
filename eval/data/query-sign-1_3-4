@@ -1,0 +1,11 @@
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/name> ?v1 .
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v0 <http://dbpedia.org/property/genre> ?v3 .
+  ?v0 <http://dbpedia.org/property/origin> ?v4 .
+  ?v5 <http://dbpedia.org/property/city> ?v4 .
+  ?v5 <http://www.w3.org/2004/02/skos/core#subject> ?v6 .
+  ?v5 <http://dbpedia.org/property/address> ?v7 .
+}
+###

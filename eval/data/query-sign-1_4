@@ -1,0 +1,353 @@
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/ontology/percentageWater> ?v2 ;<http://www.w3.org/2000/01/rdf-schema#value> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://xmlns.com/foaf/0.1/deathdate> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/occupation> ?v2 ;<http://dbpedia.org/property/birthPlace> ?v3 ;<http://xmlns.com/foaf/0.1/img> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/creator> ?v1 .
+  ?v0 <http://dbpedia.org/property/numepisodes> ?v2 .
+  ?v0 <http://dbpedia.org/property/starring> ?v3 .
+  ?v0 <http://dbpedia.org/property/firstAired> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/background> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/birthplace> ?v3 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/numberOfEmployees> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/revenue> ?v3 .
+  ?v0 <http://dbpedia.org/property/foundation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+{
+  ?v0 <http://dbpedia.org/birthplace> ?v1 .
+}
+{
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+}
+{
+  ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
+}
+{
+  ?v0 <http://xmlns.com/foaf/0.1/depiction> ?v4 .
+}
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/person> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/deathdate> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v3 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#occupation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 ;<http://dbpedia.org/property/abstract> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthplace> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/deathdate> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/ocupation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/ocupation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v0 <http://dbpedia.org/property/populationMetro> ?v2 .
+  ?v0 <http://dbpedia.org/property/areaTotalKm> ?v3 .
+  ?v0 <http://dbpedia.org/property/subdivisionName> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/latd> ?v2 ;<http://dbpedia.org/property/longd> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/depiction> ?v2 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/deathdate> ?v3 .
+  ?v0 <http://dbpedia.org/property/knownFor> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://www.w3.org/2004/02/skos/core#ocupation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/iso31661Alpha> ?v2 ;<http://dbpedia.org/property/populationCensus> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/property/reference> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/property/reference> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstracth> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/abstract> ?v1 .
+  ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?v2 ;<http://www.w3.org/2003/01/geo/wgs84_pos#long> ?v3 ;<http://xmlns.com/foaf/0.1/page> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/deathdate> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://xmlns.com/foaf/0.1/ocupation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/property/birth> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/property/death> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v3 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/property/birth> ?v2 .
+  ?v0 <http://dbpedia.org/property/death> ?v3 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://dbpedia.org/property/ocupation> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
+  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/MotionPictureFilm103789400> .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/property/released> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v2 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v3 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+  ?v0 <http://dbpedia.org/ontology/height> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/width> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/influences> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/page> ?v2 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/MotionPictureFilm103789400> .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/property/award> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Person> .
+  ?v0 <http://dbpedia.org/ontology/height> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/width> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/page> ?v2 .
+  ?v0 <http://dbpedia.org/birth> ?v3 .
+  ?v0 <http://dbpedia.org/death> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Mountain> ;<http://dbpedia.org/ontology/elevation> ?v1 ;<http://dbpedia.org/property/name> ?v2 ;<http://dbpedia.org/property/range> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/currentTeam> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/writer> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/director> ?v3 .
+  ?v0 <http://dbpedia.org/date> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/ontology/series> ?v1 .
+  ?v0 <http://dbpedia.org/ontology/releaseDate> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/episodeNumber> ?v3 .
+  ?v0 <http://dbpedia.org/ontology/seasonNumber> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/ontology/percentageWater> ?v2 ;<http://www.w3.org/2000/01/rdf-schema#range> ?v3 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
+  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
+  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
+}
+###
+SELECT *
+WHERE {
+  ?v0 <http://dbpedia.org/property/height> ?v1 .
+  ?v0 <http://dbpedia.org/property/wikiPageUsesTemplate> ?v2 .
+  ?v0 <http://dbpedia.org/property/locale> ?v3 .
+  ?v0 <http://dbpedia.org/property/began> ?v4 .
+}
+###
