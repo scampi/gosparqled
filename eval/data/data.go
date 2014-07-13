@@ -4,6 +4,8 @@ import (
     "os"
     "bufio"
     "log"
+    "github.com/scampi/gosparqled/eval"
+    "strings"
 )
 
 func Load(file string) []string {
@@ -42,7 +44,24 @@ func Load(file string) []string {
     return queries
 }
 
+func Clean(endpoint string, graph string, queries []string, out string) {
+    fi, err := os.Create(out)
+    if err != nil { log.Fatal(err) }
+    defer fi.Close()
+    w := bufio.NewWriter(fi)
+    defer w.Flush()
+    for _,query := range queries {
+        ask := strings.Replace(query, "SELECT *", "ASK FROM <" + graph + "> ", 1)
+        body := eval.ExecuteQuery(endpoint, ask)
+        defer body.Close()
+        if (eval.Ask(body)) {
+            w.WriteString(query)
+            w.WriteString("###\n")
+        }
+    }
+}
+
 func main() {
-    log.Println(Load(os.Args[1]))
+    Clean("http://ssdtest.index.sindice.net:4747/sparql", "http://sindice.com/usewod/dbpedia-3-3", Load(os.Args[1]), "clean"+os.Args[1])
 }
 

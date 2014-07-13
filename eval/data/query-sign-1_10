@@ -11,3 +11,4 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v9 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v10 .
 }
+###

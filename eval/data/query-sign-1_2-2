@@ -8,25 +8,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://purl.org/stuff/rev#hasReview> ?v2 .
-  ?v2 <http://purl.org/stuff/rev#reviewer> ?v3 .
-  ?v2 <http://purl.org/stuff/rev#createdOn> ?v4 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://dbpedia.org/property/capital> ?v2 .
   ?v2 <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?v3 .
   ?v2 <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?v4 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/resource/cityname> ?v1 .
-  ?v0 <http://dbpedia.org/resource/isCapitalOf> ?v2 .
-  ?v2 <http://dbpedia.org/resource/countryname> ?v3 .
-  ?v2 <http://dbpedia.org/resource/isInContinent> ?v4 .
 }
 ###

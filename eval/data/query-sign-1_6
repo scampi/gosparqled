@@ -34,16 +34,6 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
   ?v0 <http://dbpedia.org/property/abstract> ?v4 .
-  ?v0 <http://dbpedia.org/dbpedia.country> ?v5 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
   ?v0 <http://dbpedia.org/ontology/country> ?v5 .
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
@@ -56,16 +46,6 @@ WHERE {
   ?v0 <http://dbpedia.org/property/staff> ?v4 .
   ?v0 <http://dbpedia.org/property/profess> ?v5 .
   ?v0 <http://dbpedia.org/property/doctoral> ?v6 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v4 .
-  ?v0 <http://dbpedia.org/country> ?v5 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *

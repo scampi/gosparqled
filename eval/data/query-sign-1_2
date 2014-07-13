@@ -30,12 +30,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/description> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> .
 }
@@ -86,38 +80,14 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Capital> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://ld2sd.deri.org/LD2SD/ns#JavaClass> .
-  ?v0 <http://ld2sd.deri.org/LD2SD/ns#hasMethod> ?v1 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
   ?v0 <http://dbpedia.org/property/residence> ?v1 .
 }
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#abstract> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/State108654360> .
 }
 ###
 SELECT *
@@ -130,12 +100,6 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/ontology/starring> ?v1 .
   ?v0 <http://dbpedia.org/ontology/budget> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/total_type> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/capital> ?v2 .
 }
 ###
 SELECT *
@@ -218,12 +182,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://dbpedia.org/releaseDate> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/deathdate> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -249,12 +207,6 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/starring> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia/ontology/Film> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/starring> ?v1 .
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
 }
 ###
@@ -272,62 +224,14 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Location> .
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v1 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/PrimeMinister> .
   ?v0 <http://dbpedia.org/ontology/deathdate> ?v1 .
 }
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/callingCode> ?v1 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#name> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/imdbTitleProperty> ?v1 .
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Capital108518505> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/musician> .
-  ?v0 <http://dbpedia.org/property/abstract> ?v1 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 <http://dbpedia.org/property/releaseDate> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://dbpedia.org/snorql/?describe=http%3A//dbpedia.org/resource/Game_Boy_Advance> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/gender> ?v2 .
 }
 ###
 SELECT *
@@ -340,12 +244,6 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/lenght> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/resource/party> ?v1 .
-  ?v0 <http://dbpedia.org/resource/residence> ?v2 .
 }
 ###
 SELECT *
@@ -368,12 +266,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://data.linkedmdb.org/resource/movie/director_name> ?v1 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/book> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -387,12 +279,6 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Country108544813> ;<http://dbpedia.org/property/establishedDate> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
-  ?v0 <http://dbpedia.org/resource/Fernando_Meirelles> ?v2 .
 }
 ###
 SELECT *
@@ -415,20 +301,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://dbpedia.org/snorql/?describe=http%3A//dbpedia.org/resource/Game_Boy_Advance> ?v1 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/page> ?v1 .
   ?v0 <http://dbpedia.org/property/abstract> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/abstract> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
 }
 ###
 SELECT *
@@ -441,12 +315,6 @@ SELECT *
 WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Company108058098> .
   ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/MotionPictureFilm103789400> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
 }
 ###
 SELECT *
@@ -473,12 +341,6 @@ WHERE {
   ?v0 <http://dbpedia.org/ontology/occupation> ?v1 .
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
 }
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
-  ?v0 <http://dbpedia.org/name> ?v2 .
 }
 ###
 SELECT *
@@ -518,22 +380,10 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v0 .
-  ?v0 <http://dbpedia.org/ontology/author> ?v1 .
-}
-###
-SELECT *
-WHERE {
 {
   ?v0 <http://dbpedia.org/property/party> ?v1 .
   ?v0 <http://dbpedia.org/ontology/residence> ?v2 .
 }
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/Person#spouse> ?v1 .
-  ?v0 <http://dbpedia.org/property/birthname> ?v2 .
 }
 ###
 SELECT *
@@ -615,12 +465,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/abstract> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Capital108518505> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/numberOfEmployees> ?v1 .
   ?v0 <http://dbpedia.org/ontology/revenue> ?v2 .
 }
@@ -639,18 +483,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://umbel.org/umbel/sc/City> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v1 .
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -659,18 +491,6 @@ SELECT *
 WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/industry> ?v1 .
-  ?v0 <http://dbpedia.org/resource/revenue> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/wineRegion> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> .
 }
 ###
 SELECT *
@@ -693,12 +513,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://purl.org/dc/terms/title> ?v1 .
-  ?v0 <http://data.linkedmdb.org/movie/director_name> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/birth> ?v2 .
 }
@@ -707,12 +521,6 @@ SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/page> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/abstract> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -737,12 +545,6 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/starring> ?v1 .
   ?v0 <http://dbpedia.org/property/director> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.geonames.org/ontology#population> ?v1 .
-  ?v0 <http://www.geonames.org/ontology#name> ?v2 .
 }
 ###
 SELECT *
@@ -796,19 +598,7 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
-  ?v0 <http://www.w3.org/2004/02/skos/core#prefLabel> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/depiction> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/releasedate> ?v2 .
 }
 ###
 SELECT *
@@ -908,12 +698,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Writer110794014> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/depiction> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -956,26 +740,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/bithdate> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
   ?v0 <http://dbpedia.org/property/deathPlace> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Bird101503061> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Capital108518505> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
 }
 ###
 SELECT *
@@ -1000,12 +766,6 @@ SELECT *
 WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 <http://dbpedia.org/ontology/writer> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/Brazil> ?v1 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
 ###
 SELECT *
@@ -1040,12 +800,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/mbox> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/deathplace> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -1064,44 +818,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/property/party> ?v1 .
-  ?v0 <http://dbpedia.org/resource/residence> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/prefLabel> ?v1 .
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sw.opencyc.org/2008/06/10/concept/Mx4rvViEwJwpEbGdrcN5Y29ycA> .
-  ?v0 <http://dbpedia.org/property/populationMetro> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Programmer110481268> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/uws> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Capital108518505> .
 }
 ###
 SELECT *

@@ -1,23 +1,5 @@
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://xmlns.com/foaf/0.1/abstract> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
-  ?v0 <http://dbpedia.org/property/website> ?v4 .
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v5 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/populationMetro> ?v2 .
   ?v0 <http://dbpedia.org/property/areaTotalKm> ?v3 .
@@ -63,15 +45,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/birthplace> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
-  ?v0 <http://dbpedia.org/birth> ?v4 .
-  ?v0 <http://dbpedia.org/death> ?v5 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
   ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
   ?v0 <http://dbpedia.org/ontology/background> ?v3 .
@@ -85,33 +58,6 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
   ?v0 <http://dbpedia.org/property/abstract> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://xmlns.com/foaf/0.1/desc> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://xmlns.com/foaf/0.1/about> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://xmlns.com/foaf/0.1/knows> ?v4 .
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###

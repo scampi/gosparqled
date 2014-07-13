@@ -28,13 +28,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://data.linkedmdb.org/resource/movie/actor_name> ?v1 .
-  ?v2 <http://data.linkedmdb.org/resource/movie/actor> ?v0 .
-  ?v2 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/total_type> ?v1 .
   ?v2 <http://dbpedia.org/ontology/capital> ?v0 .
   ?v2 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
@@ -45,13 +38,6 @@ WHERE {
   ?v0 <http://dbpedia.org/property/primeMinister> ?v3 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
   ?v3 <http://www.w3.org/2000/01/rdf-schema#label> ?v4 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v2 <http://dbpedia.org/property/notableRole> ?v3 .
-  ?v2 <http://dbpedia.org/property/starring> ?v0 .
 }
 ###
 SELECT *
@@ -105,13 +91,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/hasBudget> ?v1 .
-  ?v2 <http://dbpedia.org/ontology/birthplace> ?v3 .
-  ?v0 <http://dbpedia.org/ontology/starring> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
   ?v2 <http://www.w3.org/2004/02/skos/core#subject> ?v0 .
   ?v2 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
@@ -140,20 +119,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2002/07/owlsameAs> ?v3 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-  ?v3 <http://www.w3.org/2000/01/rdf-schema#label> ?v4 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v2 <http://dbpedia.org/property/notableRole> ?v3 .
-  ?v2 <http://dbpedia.org/ontology/starring> ?v0 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/book> ?v3 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
   ?v3 <http://www.w3.org/2000/01/rdf-schema#label> ?v4 .
@@ -162,8 +127,8 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/ontology/budget> ?v1 .
-  ?v2 <http://dbpedia.org/ontology/birthplace> ?v3 .
   ?v0 <http://dbpedia.org/ontology/starring> ?v2 .
+  ?v2 <http://dbpedia.org/ontology/birthplace> ?v3 .
 }
 ###
 SELECT *

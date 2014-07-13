@@ -7,21 +7,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Canada> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/percentWater> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?v2 .
   ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#label> ?v2 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v3 .
 }
 ###
 SELECT *
@@ -31,21 +19,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/produced> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://dbpedia.org/property/firstFlight> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
   ?v0 <http://dbpedia.org/property/birth> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/id> ?v1 ;<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Film> ;<http://www.w3.org/2002/07/owl#sameAs> ?v2 .
 }
 ###
 SELECT *
@@ -58,23 +34,6 @@ WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Artist> .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/abstract> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Capital> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/coordinates> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Capital> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://www.w3.org/2002/07/owl#coordinates> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/description> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -100,23 +59,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/property/party> ?v1 .
-  ?v0 <http://dbpedia.org/resource/residence> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/ontology/numberOfEmployees> ?v2 .
   ?v0 <http://dbpedia.org/ontology/revenue> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v0 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -131,13 +76,6 @@ WHERE {
   ?v0 <http://dbpedia.org/property/startDateProperty> ?v1 .
   ?v0 <http://dbpedia.org/property/name> ?v2 .
   ?v0 <http://dbpedia.org/ontology/foundationplace> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://dbpedia.org/ocupation> ?v3 .
 }
 ###
 SELECT *
@@ -184,11 +122,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://purl.org/goodrelations/v1#hasUnitOfMeasurement> ?v1 ;<http://purl.org/goodrelations/v1#hasCurrencyValue> ?v2 ;<http://purl.org/goodrelations/v1#hasCurrency> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://dbpedia.org/property/iso31661Alpha> ?v1 ;<http://dbpedia.org/property/populationCensus> ?v2 .
 }
 ###
@@ -221,23 +154,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/MotionPictureFilm103789400> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
   ?v0 <http://dbpedia.org/property/released> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://www.w3.org/2002/07/owl#sameas> ?v3 .
 }
 ###
 SELECT *
@@ -261,13 +180,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/occupation> ?v1 .
-  ?v0 <http://dbpedia.org/property/WorkInstitution> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/background> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
@@ -282,40 +194,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Writer> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/latitutedegrees> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/longitudedegrees> ?v2 .
-  ?v0 <http://dbpedia.org/ontology/leaderName> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/LandlockedCountries> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/populationEstimate> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/MotionPictureFilm103789400> .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://dbpedia.org/property/award> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://www.w3.org/2002/07/owl#percentageWater> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://dbpedia.org/abstract> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -369,11 +248,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://www.w3.org/2000/01/rdf-schema#percentageWater> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 ;<http://xmlns.com/foaf/0.1/img> ?v2 ;<http://dbpedia.org/property/birth> ?v3 .
 }
 ###
@@ -393,11 +267,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/property/imdbTitleProperty> ?v1 ;<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Film> ;<http://www.w3.org/2002/07/owl#sameAs> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/SkiArea> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/liftsystem> ?v2 .
 }
 ###
@@ -408,35 +277,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v1 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v2 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#subject> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/foundationplace> ?v1 ;<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Organisation> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/occupation> ?v1 .
-  ?v0 <http://dbpedia.org/property/workInstitution> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/creator> ?v1 .
-  ?v0 <http://dbpedia.org/property/numepisodes> ?v2 .
-  ?v0 <http://dbpedia.org/property/starring> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://dbpedia.org/ontology/ocupation> ?v3 .
 }
 ###
 SELECT *
@@ -455,26 +296,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/ontology/percentageWater> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
   ?v0 <http://dbpedia.org/property/award> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 ;<http://dbpedia.org/property/birth> ?v2 ;<http://dbpedia.org/property/presidentStart> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/abstract> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -486,35 +310,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/imdbid> ?v1 ;<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Film> ;<http://www.w3.org/2002/07/owl#sameAs> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/genre> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/description> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v2 .
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v3 .
 }
 ###
 SELECT *
@@ -548,13 +346,6 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/abstract> ?v2 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
   ?v0 <http://dbpedia.org/property/abstract> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v3 .
 }
@@ -562,11 +353,6 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/MusicalArtist> ;<http://dbpedia.org/property/abstract> ?v1 ;<http://xmlns.com/foaf/0.1/page> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/artist> ;<http://dbpedia.org/property/abstract> ?v1 ;<http://xmlns.com/foaf/0.1/page> ?v2 .
 }
 ###
 SELECT *
@@ -592,13 +378,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://www.w3.org/2002/07/owl#sameAs> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/genre> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/page> ?v3 .
@@ -620,13 +399,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#abstract> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/gini> ?v1 .
   ?v0 <http://dbpedia.org/property/giniYear> ?v2 .
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> .
@@ -634,24 +406,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.geonames.org/ontology#parentFeature> ?v1 ;<http://www.geonames.org/ontology#featureClass> ?v2 ;<http://www.geonames.org/ontology#name> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/owl/percentageWater> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-  ?v0 <http://dbpedia.org/ontology/height> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/width> ?v2 .
 }
 ###
 SELECT *
@@ -683,13 +438,6 @@ WHERE {
   ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?v1 .
   ?v0 <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?v2 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/abstract> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Capital108518505> .
 }
 ###
 SELECT *

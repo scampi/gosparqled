@@ -61,7 +61,8 @@ pathAlternative <- pathSequence ( PIPE pathAlternative )*
 
 pathSequence <- pathElt ( SLASH pathSequence )*
 
-pathElt <- INVERSE? pathPrimary &pathMod?
+# TODO: support pathmod rule.
+pathElt <- INVERSE? pathPrimary #pathMod?
 
 pathPrimary <- iri / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
 
@@ -69,7 +70,7 @@ pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet (
 
 pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
 
-pathMod <- STAR / QUESTION / PLUS
+#pathMod <- STAR / QUESTION / PLUS
 
 objectListPath <- objectPath ( COMMA objectListPath )*
 
@@ -113,10 +114,9 @@ nil <- '(' ws ')' ws
 # Labels
 #
 
-VARNAME <- ( PN_CHARS_U / [0-9] ) VAR_CHAR*
+VARNAME <- ( PN_CHARS_U / [0-9] )+ 
 PN_CHARS_U <- PN_CHARS_BASE / '_'
 PN_CHARS_BASE <- [[a-z]]
-VAR_CHAR <- PN_CHARS_U / [0-9]
 
 #
 # Tokens
@@ -148,8 +148,8 @@ RPAREN <- ')' ws
 ISA <- 'a' ws
 NOT <- '!' ws
 STAR <- '*' ws
-QUESTION <- '?' ws
-PLUS <- '+' ws
+#QUESTION <- '?' ws
+#PLUS <- '+' ws
 OPTIONAL <- "OPTIONAL" ws
 UNION <- "UNION" ws
 LIMIT <- "LIMIT" ws

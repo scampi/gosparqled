@@ -1,31 +1,8 @@
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v2 <http://xmlns.com/foaf/0.1/name> ?v3 .
-  ?v0 <http://dbpedia.org/property/starring> ?v4 .
-  ?v4 <http://dbpedia.org/property/seriesList> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#broader> ?v1 .
   ?v2 <http://www.w3.org/2004/02/skos/core#broader> ?v0 .
   ?v3 <http://www.w3.org/2004/02/skos/core#subject> ?v2 .
   ?v3 <http://xmlns.com/foaf/0.1/page> ?v4 .
 }
 ###
-SELECT *
-WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v2 <http://xmlns.com/foaf/0.1/name> ?v3 .
-  ?v4 <http://dbpedia.org/property/notableRole> ?v0 .
-  ?v4 <http://dbpedia.org/property/starring> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://data.linkedmdb.org/resource/movie/actor_name> ?v1 .
-  ?v2 <http://data.linkedmdb.org/resource/movie/actor> ?v0 .
-  ?v2 <http://data.linkedmdb.org/resource/movie/director> ?v3 .
-  ?v3 <http://data.linkedmdb.org/resource/movie/director_name> ?v4 .
-}
