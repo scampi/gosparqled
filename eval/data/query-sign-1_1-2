@@ -56,9 +56,9 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Organisation> .
+  ?v0 a <http://dbpedia.org/ontology/Organisation> .
   ?v1 <http://dbpedia.org/ontology/developer> ?v0 .
-  ?v1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Software> .
+  ?v1 a <http://dbpedia.org/ontology/Software> .
 }
 ###
 SELECT *
@@ -113,7 +113,7 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/ontology/occupation> ?v1 .
-  ?v2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+  ?v2 a <http://xmlns.com/foaf/0.1/Person> .
   ?v2 <http://dbpedia.org/property/workInstitution> ?v1 .
 }
 ###
@@ -134,7 +134,7 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/party> ?v1 .
-  ?v2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+  ?v2 a <http://xmlns.com/foaf/0.1/Person> .
   ?v2 <http://dbpedia.org/ontology/residence> ?v1 .
 }
 ###

@@ -14,7 +14,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/imdbid> ?v1 ;<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Film> ;<http://dbpedia.org/ontology/releaseDate> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/imdbid> ?v1 ;a <http://dbpedia.org/ontology/Film> ;<http://dbpedia.org/ontology/releaseDate> ?v2 .
 }
 ###
 SELECT *
@@ -31,7 +31,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Artist> .
+  ?v0 a <http://dbpedia.org/ontology/Artist> .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/abstract> ?v2 .
 }
@@ -87,7 +87,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/PrimeMinister> .
+  ?v0 a <http://dbpedia.org/ontology/PrimeMinister> .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 <http://dbpedia.org/ontology/deathdate> ?v2 .
 }
@@ -122,20 +122,20 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://dbpedia.org/property/iso31661Alpha> ?v1 ;<http://dbpedia.org/property/populationCensus> ?v2 .
+  ?v0 a <http://dbpedia.org/ontology/Country> ;<http://dbpedia.org/property/iso31661Alpha> ?v1 ;<http://dbpedia.org/property/populationCensus> ?v2 .
 }
 ###
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/Country108544813> ;<http://dbpedia.org/property/establishedDate> ?v2 .
+  ?v0 a <http://dbpedia.org/class/yago/Country108544813> ;<http://dbpedia.org/property/establishedDate> ?v2 .
 }
 ###
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#comment> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> .
+  ?v0 a <http://dbpedia.org/ontology/City> .
 }
 ###
 SELECT *
@@ -187,14 +187,14 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/MilitaryConflict> .
+  ?v0 a <http://dbpedia.org/ontology/MilitaryConflict> .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/ontology/date> ?v2 .
 }
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/LandlockedCountries> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/populationEstimate> ?v2 .
+  ?v0 a <http://dbpedia.org/class/yago/LandlockedCountries> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/populationEstimate> ?v2 .
 }
 ###
 SELECT *
@@ -206,7 +206,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Writer> .
+  ?v0 a <http://dbpedia.org/ontology/Writer> .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/abstract> ?v2 .
 }
@@ -214,7 +214,7 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+  ?v0 a <http://xmlns.com/foaf/0.1/Person> .
   ?v0 <http://dbpedia.org/ontology/height> ?v2 .
 }
 ###
@@ -267,7 +267,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/SkiArea> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/liftsystem> ?v2 .
+  ?v0 a <http://dbpedia.org/ontology/SkiArea> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/liftsystem> ?v2 .
 }
 ###
 SELECT *
@@ -277,7 +277,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/foundationplace> ?v1 ;<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Organisation> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
+  ?v0 <http://dbpedia.org/ontology/foundationplace> ?v1 ;a <http://dbpedia.org/ontology/Organisation> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
 ###
 SELECT *
@@ -352,14 +352,14 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/MusicalArtist> ;<http://dbpedia.org/property/abstract> ?v1 ;<http://xmlns.com/foaf/0.1/page> ?v2 .
+  ?v0 a <http://dbpedia.org/ontology/MusicalArtist> ;<http://dbpedia.org/property/abstract> ?v1 ;<http://xmlns.com/foaf/0.1/page> ?v2 .
 }
 ###
 SELECT *
 WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -401,12 +401,12 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/gini> ?v1 .
   ?v0 <http://dbpedia.org/property/giniYear> ?v2 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> .
+  ?v0 a <http://dbpedia.org/ontology/Country> .
 }
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 .
+  ?v0 a <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 .
 }
 ###
 SELECT *
@@ -425,7 +425,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/percentWater> ?v2 .
+  ?v0 a <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/percentWater> ?v2 .
 }
 ###
 SELECT *

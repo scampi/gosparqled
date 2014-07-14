@@ -24,12 +24,12 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 ;<http://dbpedia.org/property/abstract> ?v3 .
+  ?v0 a <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 ;<http://dbpedia.org/property/abstract> ?v3 .
 }
 ###
 SELECT *
@@ -58,7 +58,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/latd> ?v2 ;<http://dbpedia.org/property/longd> ?v3 .
+  ?v0 a <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/latd> ?v2 ;<http://dbpedia.org/property/longd> ?v3 .
 }
 ###
 SELECT *
@@ -79,7 +79,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/iso31661Alpha> ?v2 ;<http://dbpedia.org/property/populationCensus> ?v3 .
+  ?v0 a <http://dbpedia.org/ontology/Country> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 ;<http://dbpedia.org/property/iso31661Alpha> ?v2 ;<http://dbpedia.org/property/populationCensus> ?v3 .
 }
 ###
 SELECT *
@@ -141,7 +141,7 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v2 .
   ?v0 <http://dbpedia.org/property/abstract> ?v3 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -162,7 +162,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Mountain> ;<http://dbpedia.org/ontology/elevation> ?v1 ;<http://dbpedia.org/property/name> ?v2 ;<http://dbpedia.org/property/range> ?v3 .
+  ?v0 a <http://dbpedia.org/ontology/Mountain> ;<http://dbpedia.org/ontology/elevation> ?v1 ;<http://dbpedia.org/property/name> ?v2 ;<http://dbpedia.org/property/range> ?v3 .
 }
 ###
 SELECT *

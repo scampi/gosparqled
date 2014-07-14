@@ -31,7 +31,7 @@ WHERE {
   ?v0 <http://dbpedia.org/property/populationCensusYear> ?v2 .
   ?v0 <http://dbpedia.org/property/gini> ?v3 .
   ?v0 <http://dbpedia.org/property/giniYear> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> .
+  ?v0 a <http://dbpedia.org/ontology/Country> .
 }
 ###
 SELECT *
@@ -40,7 +40,7 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
   ?v0 <http://xmlns.com/foaf/0.1/depiction> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -58,7 +58,7 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
   ?v0 <http://dbpedia.org/property/abstract> ?v4 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *

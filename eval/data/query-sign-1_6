@@ -20,7 +20,7 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/JapaneseBaseballPlayers> .
+  ?v0 a <http://dbpedia.org/class/yago/JapaneseBaseballPlayers> .
   ?v0 <http://dbpedia.org/ontology/birthdate> ?v1 .
   ?v0 <http://dbpedia.org/property/team> ?v2 .
   ?v0 <http://dbpedia.org/ontology/bats> ?v3 .
@@ -35,7 +35,7 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
   ?v0 <http://dbpedia.org/property/abstract> ?v4 .
   ?v0 <http://dbpedia.org/ontology/country> ?v5 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -55,7 +55,7 @@ WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .
   ?v0 <http://dbpedia.org/property/abstract> ?v4 .
   ?v0 <http://dbpedia.org/property/country> ?v5 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/class/yago/University108286163> .
+  ?v0 a <http://dbpedia.org/class/yago/University108286163> .
 }
 ###
 SELECT *
@@ -65,6 +65,6 @@ WHERE {
   ?v0 <http://dbpedia.org/property/populationCensusYear> ?v3 .
   ?v0 <http://dbpedia.org/property/gini> ?v4 .
   ?v0 <http://dbpedia.org/property/giniYear> ?v5 .
-  ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country> .
+  ?v0 a <http://dbpedia.org/ontology/Country> .
 }
 ###
