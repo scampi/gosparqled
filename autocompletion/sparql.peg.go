@@ -874,10 +874,10 @@ func (p *Sparql) Execute() {
 		case ruleAction5:
 			p.setPredicate(buffer[begin:end])
 		case ruleAction6:
-			p.setObject(buffer[begin:end])
+			p.setObject("?POF")
 			p.addTriplePattern()
 		case ruleAction7:
-			p.setObject("?POF")
+			p.setObject(buffer[begin:end])
 			p.addTriplePattern()
 		case ruleAction8:
 			p.setObject("?FillVar")
@@ -3517,14 +3517,8 @@ func (p *Sparql) Init() {
 					depth++
 					{
 						position367, tokenIndex367, depth367 := position, tokenIndex, depth
-						{
-							position369 := position
-							depth++
-							if !rules[rulegraphNodePath]() {
-								goto l368
-							}
-							depth--
-							add(rulePegText, position369)
+						if !rules[rulepof]() {
+							goto l368
 						}
 						{
 							add(ruleAction6, position)
@@ -3532,14 +3526,20 @@ func (p *Sparql) Init() {
 						goto l367
 					l368:
 						position, tokenIndex, depth = position367, tokenIndex367, depth367
-						if !rules[rulepof]() {
-							goto l371
+						{
+							position371 := position
+							depth++
+							if !rules[rulegraphNodePath]() {
+								goto l370
+							}
+							depth--
+							add(rulePegText, position371)
 						}
 						{
 							add(ruleAction7, position)
 						}
 						goto l367
-					l371:
+					l370:
 						position, tokenIndex, depth = position367, tokenIndex367, depth367
 						{
 							add(ruleAction8, position)
@@ -3577,7 +3577,7 @@ func (p *Sparql) Init() {
 			}
 			return true
 		},
-		/* 34 objectPath <- <((<graphNodePath> Action6) / (pof Action7) / Action8)> */
+		/* 34 objectPath <- <((pof Action6) / (<graphNodePath> Action7) / Action8)> */
 		nil,
 		/* 35 graphNodePath <- <(var / graphTerm)> */
 		func() bool {
@@ -4463,9 +4463,9 @@ func (p *Sparql) Init() {
 		nil,
 		/* 94 Action5 <- <{ p.setPredicate(buffer[begin:end]) }> */
 		nil,
-		/* 95 Action6 <- <{ p.setObject(buffer[begin:end]); p.addTriplePattern() }> */
+		/* 95 Action6 <- <{ p.setObject("?POF"); p.addTriplePattern() }> */
 		nil,
-		/* 96 Action7 <- <{ p.setObject("?POF"); p.addTriplePattern() }> */
+		/* 96 Action7 <- <{ p.setObject(buffer[begin:end]); p.addTriplePattern() }> */
 		nil,
 		/* 97 Action8 <- <{ p.setObject("?FillVar"); p.addTriplePattern() }> */
 		nil,

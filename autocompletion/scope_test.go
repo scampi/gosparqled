@@ -34,6 +34,54 @@ func parse(t *testing.T, query string, expected *templateData) {
     }
 }
 
+func TestEval1(t *testing.T) {
+    td := &templateData{}
+    td.add("?v0", "a", "?POF")
+    td.add("?v1", "<http://dbpedia.org/ontology/developer>", "?v0")
+    td.add("?v1", "a", "<http://dbpedia.org/ontology/Software>")
+    parse(t, `
+        SELECT *
+        WHERE {
+          ?v0 a  <  .
+          ?v1 <http://dbpedia.org/ontology/developer> ?v0 .
+          ?v1 a <http://dbpedia.org/ontology/Software> .
+        }
+        `, td)
+}
+
+func TestEval2(t *testing.T) {
+    td := &templateData{}
+    td.add("?v0", "a", "?POF")
+    td.add("?v0", "<http://dbpedia.org/ontology/director>", "?v1")
+    td.add("?v0", "<http://xmlns.com/foaf/0.1/name>", "?v2")
+    td.add("?v0", "<http://dbpedia.org/property/imdbId>", "?v3")
+    td.add("?v1", "<http://dbpedia.org/property/dateOfBirth>", "?v4")
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?v0 a  <  .
+            ?v0 <http://dbpedia.org/ontology/director> ?v1 .
+            ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
+            ?v0 <http://dbpedia.org/property/imdbId> ?v3 .
+            ?v1 <http://dbpedia.org/property/dateOfBirth> ?v4 .
+        }
+        `, td)
+}
+
+func TestEval3(t *testing.T) {
+    td := &templateData{}
+    td.add("?v0", "a", "?POF")
+    td.add("?v0", "<http://dbpedia.org/ontology/birthdate>", "?v1")
+    td.add("?v0", "<http://xmlns.com/foaf/0.1/name>", "?v2")
+    td.add("?v0", "<http://dbpedia.org/property/abstract>", "?v3")
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?v0 a  <  ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 ;<http://dbpedia.org/property/abstract> ?v3 .
+        }
+        `, td)
+}
+
 func TestKeyword1(t *testing.T) {
     td := &templateData{}
     td.add("?s", "?POF", "?FillVar")

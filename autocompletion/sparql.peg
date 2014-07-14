@@ -75,7 +75,7 @@ pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
 
 objectListPath <- objectPath ( COMMA objectListPath )*
 
-objectPath <- <graphNodePath> { p.setObject(buffer[begin:end]); p.addTriplePattern() } /  pof { p.setObject("?POF"); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
+objectPath <- pof { p.setObject("?POF"); p.addTriplePattern() } / <graphNodePath> { p.setObject(buffer[begin:end]); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
 
 graphNodePath <- var / graphTerm
 

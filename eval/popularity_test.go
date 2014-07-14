@@ -7,7 +7,7 @@ import (
 
 func TestTopK(t *testing.T) {
     tmpl := `
-        SELECT ?POF
+        SELECT ?POF ?count
         WHERE {
         {{range .Tps}}
             {{.S}} {{.P}} {{.O}} .
@@ -15,6 +15,7 @@ func TestTopK(t *testing.T) {
         {{if .Keyword}}
             FILTER regex(?POF, "{{.Keyword}}", "i")
         {{end}}
+            BIND(1 as ?count)
         }
         LIMIT 100
     `
