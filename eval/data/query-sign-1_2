@@ -24,12 +24,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
   ?v0 a <http://dbpedia.org/ontology/City> .
 }
@@ -581,12 +575,6 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/pastMembers> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v2 .
 }
 ###
 SELECT *

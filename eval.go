@@ -18,8 +18,8 @@ func main() {
          {{if .Keyword}}
              FILTER regex(?POF, "{{.Keyword}}", "i")
          {{end}}
-         BIND(1 as ?count)
-         FILTER(?POF != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+             BIND(1 as ?count)
+             FILTER(?POF != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
          }
     `
     tmpl += "LIMIT " + os.Args[2]
@@ -36,8 +36,8 @@ func main() {
         log.Printf("\tProcessing query [%s]", query)
         for _,pof := range data.POFs(query) {
             log.Printf("\t\tProcessing [%s]", pof)
-            min, max, avg, time := eval.Measure(os.Args[3], os.Args[6], pof, tmpl)
-            w.WriteString(fmt.Sprintf("%v %v %v %v\n", min, max, avg, time))
+            measure := eval.Measure(os.Args[3], os.Args[6], pof, tmpl)
+            w.WriteString(fmt.Sprintf("%v %v %v %v %v %v\n", measure.Min, measure.Max, measure.Avg, measure.Length, measure.ElapsedTime, measure.Recs))
         }
     }
 }
