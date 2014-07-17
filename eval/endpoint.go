@@ -17,6 +17,7 @@ func timeTrack(start time.Time, name string) {
 }
 
 func ExecuteQuery(endpoint string, query string) (io.ReadCloser, time.Duration) {
+    time.Sleep(time.Second)
     q := endpoint + "?format=application/json&query=" + url.QueryEscape(query)
     log.Printf("Execute request: [%s]", q)
     start := time.Now()

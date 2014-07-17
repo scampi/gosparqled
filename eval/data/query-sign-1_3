@@ -449,16 +449,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-{
-}
-{
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v1 .
-}
-{
   ?v0 <http://xmlns.com/foaf/0.1/page> ?v2 .
-}
-{
   ?v0 <http://xmlns.com/foaf/0.1/depiction> ?v3 .
-}
 }
 ###
