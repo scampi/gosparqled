@@ -27,6 +27,32 @@ func (bc ByCount) Len() int { return len(bc) }
 func (bc ByCount) Swap(i, j int)      { bc[i], bc[j] = bc[j], bc[i] }
 func (bc ByCount) Less(i, j int) bool { return bc[i].count < bc[j].count }
 
+func Gold(endpoint string, from string, query string, template string) []Recommendation {
+    // retrieve the recommendations
+    var scope *autocompletion.Scope
+    if len(template) == 0 {
+        scope = autocompletion.NewScope()
+    } else {
+        scope = autocompletion.NewScopeWithTemplate(template)
+    }
+    s := &autocompletion.Sparql{ Buffer : query, Scope : scope }
+    s.Init()
+    err := s.Parse()
+    if err != nil {
+        log.Fatal(err)
+    }
+    s.Execute()
+    body, _ := ExecuteQuery(endpoint, s.RecommendationQuery())
+    bindings := GetBindings(body)
+    var recs []Recommendation
+    for _,v := range bindings {
+        count,_ := strconv.Atoi(v["count"]["value"])
+        recs = append(recs, Recommendation{ item : v["POF"]["value"], count : count })
+    }
+    defer body.Close()
+    return recs
+}
+
 func Measure(endpoint string, from string, query string, template string) Measurement {
     pofs, elapsedTime := getRecommendations(endpoint, from, query, template)
     min, max, sum := math.MaxInt32, 0, float32(0)
@@ -75,36 +101,37 @@ func getRecommendations(endpoint string, from string, query string, template str
     min := int(math.Min(10, float64(len(pofs))))
     top := pofs[:min]
     log.Printf("TOP10: %v\n", top)
-    // get the popularity of each recommended item
-    values := "values ?POF { "
-    for _,r := range top {
-        values += "<" + r.item + "> "
-    }
-    values += "}"
-    tmpl := "SELECT ?POF (count(?POF) as ?count) FROM <" + from + "> WHERE {" +
-         values + `
-         {{range .Tps}}
-             {{.S}} {{.P}} {{.O}} .
-         {{end}}
-         }
-        `
-    scope = autocompletion.NewScopeWithTemplate(tmpl)
-    s = &autocompletion.Sparql{ Buffer : query, Scope : scope }
-    s.Init()
-    err = s.Parse()
-    if err != nil {
-        log.Fatal(err)
-    }
-    s.Execute()
-    body2, _ := ExecuteQuery(endpoint, s.RecommendationQuery())
-    defer body2.Close()
-    var popularity []Recommendation
-    bindings = GetBindings(body2)
-    for _,v := range bindings {
-        count,_ := strconv.Atoi(v["count"]["value"])
-        popularity = append(popularity, Recommendation{ item: v["POF"]["value"], count: count })
-    }
-    log.Printf("Popularity=%v\n", bindings)
-    return popularity, elapsedTime
+    return top, elapsedTime
+//    // get the popularity of each recommended item
+//    values := "values ?POF { "
+//    for _,r := range top {
+//        values += "<" + r.item + "> "
+//    }
+//    values += "}"
+//    tmpl := "SELECT ?POF (count(?POF) as ?count) FROM <" + from + "> WHERE {" +
+//         values + `
+//         {{range .Tps}}
+//             {{.S}} {{.P}} {{.O}} .
+//         {{end}}
+//         }
+//        `
+//    scope = autocompletion.NewScopeWithTemplate(tmpl)
+//    s = &autocompletion.Sparql{ Buffer : query, Scope : scope }
+//    s.Init()
+//    err = s.Parse()
+//    if err != nil {
+//        log.Fatal(err)
+//    }
+//    s.Execute()
+//    body2, _ := ExecuteQuery(endpoint, s.RecommendationQuery())
+//    defer body2.Close()
+//    var popularity []Recommendation
+//    bindings = GetBindings(body2)
+//    for _,v := range bindings {
+//        count,_ := strconv.Atoi(v["count"]["value"])
+//        popularity = append(popularity, Recommendation{ item: v["POF"]["value"], count: count })
+//    }
+//    log.Printf("Popularity=%v\n", bindings)
+//    return popularity, elapsedTime
 }
 

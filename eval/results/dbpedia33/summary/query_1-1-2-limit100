@@ -1,0 +1,4 @@
+100 100 100 1 269.026514ms [{http://www.w3.org/2004/02/skos/core#broader 100}]
+100 100 100 1 1.484621189s [{http://www.w3.org/2004/02/skos/core#broader 100}]
+100 100 100 1 268.389372ms [{http://www.w3.org/2004/02/skos/core#subject 100}]
+2 44 16.666666 6 263.705257ms [{http://www.w3.org/2000/01/rdf-schema#label 44} {http://www.w3.org/2004/02/skos/core#subject 44} {http://dbpedia.org/ontology/binomial_authority 6} {http://dbpedia.org/ontology/background 2} {http://dbpedia.org/ontology/associatedBand 2} {http://dbpedia.org/ontology/associatedMusicalArtist 2}]

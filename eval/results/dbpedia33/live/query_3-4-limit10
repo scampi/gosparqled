@@ -1,0 +1,7 @@
+2 8 5 2 267.642152ms [{http://dbpedia.org/ontology/label 8} {http://dbpedia.org/property/wikilink 2}]
+4 6 5 2 270.697415ms [{http://dbpedia.org/property/wikilink 6} {http://dbpedia.org/ontology/homeTown 4}]
+2 4 3.3333333 3 272.317285ms [{http://dbpedia.org/ontology/label 4} {http://dbpedia.org/property/wikilink 4} {http://dbpedia.org/ontology/genre 2}]
+10 10 10 1 270.03509ms [{http://dbpedia.org/ontology/birthplace 10}]
+10 10 10 1 273.618422ms [{http://dbpedia.org/property/wikilink 10}]
+4 6 5 2 270.892276ms [{http://dbpedia.org/property/wikilink 6} {http://dbpedia.org/ontology/students 4}]
+10 10 10 1 273.04398ms [{http://dbpedia.org/property/wikilink 10}]
