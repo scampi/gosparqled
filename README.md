@@ -43,8 +43,8 @@ Recommend possible relations between two variables:
 
 ```sparql
 SELECT * {
-    ?s a :Person .
-    ?o a :Document .
+    ?s a <Person> .
+    ?o a <Document> .
     ?s < ?o
 }
 ``` 
