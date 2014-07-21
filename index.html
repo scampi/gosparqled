@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head>
-
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta content="utf-8" http-equiv="encoding">
-
-    <!--Make sure to store YASR and YASQE css/js files in the current working dir! (these are not included in this gist)-->
-	<link href="yasqe.min.css" rel="stylesheet" type="text/css" />
-	<link href="yasr.min.css" rel="stylesheet" type="text/css" />
-
-</head>
-<body style="margin:0px;">
-
-<div id="yasqe">
-
-<div id="loading" style="display: none;">
-    <span><img src="loading.gif"></span>
-</div>
-
-</div>
-<div id="yasr"></div>
-<script src="yasqe.min.js"></script>
-<script src="yasr.min.js"></script>
-<script src="sparqled.js"></script>
-<script src="gosparqled-min.js"></script>
-
-</body>
+    <head>
+    
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+    
+        <!--Make sure to store YASR and YASQE css/js files in the current working dir! (these are not included in this gist)-->
+    	<link href="yasqe.min.css" rel="stylesheet" type="text/css" />
+    	<link href="yasr.min.css" rel="stylesheet" type="text/css" />
+    
+        <style>
+            #loading {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 50%;
+                width: 50%;
+                z-index: 9999999;
+                background: url('loading.gif') center center no-repeat;
+                opacity: 0.7;
+                filter: alpha(opacity=70); /* ie */
+                -moz-opacity: 0.7; /* mozilla */
+                display:none;
+            }
+        </style>
+    
+    </head>
+    <body style="margin:0px;">
+    
+        <div id="loading"></div>
+        
+        <div id="yasqe"></div>
+        <div id="yasr"></div>
+        
+        <script src="yasqe.min.js"></script>
+        <script src="yasr.min.js"></script>
+        <script src="sparqled.js"></script>
+        <script src="../gosparqled.js"></script>
+    
+    </body>
 </html>
