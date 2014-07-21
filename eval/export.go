@@ -12,12 +12,19 @@ import (
     "sort"
 )
 
+// AggregatedMeasurement represents an aggregation of several Measure
 type AggregatedMeasurement struct {
+    // Name is the identifier of the set of aggregated Measures
     Name string
+    // Jaccard is the average Jaccard similarity of the set of Measures
+    // with regards to the set of gold standard recommendations
     Jaccard float64
+    // ElapsedTime is the average time taken for retrieving recommendations
     ElapsedTime time.Duration
 }
 
+// loadGold reads a list of Recommendations from the given file.
+// Each line represents the recommendations for one query.
 func loadGold(gold string) [][]Recommendation {
     log.Printf("Loading Gold [%v]\n", gold)
     fi, err := os.Open(gold)
@@ -38,13 +45,15 @@ func loadGold(gold string) [][]Recommendation {
             }
             item := v[lbrace+1:space]
             count, _ := strconv.Atoi(v[space+1:])
-            recs = append(recs, Recommendation{ item: item, count: count })
+            recs = append(recs, Recommendation{ Item: item, Count: count })
         }
         allrecs = append(allrecs, recs)
     }
     return allrecs
 }
 
+// loadMesure reads a list of Measurements from the given file.
+// Each line represents the Measurement for one query.
 func loadMeasure(result string) []Measurement {
     fi, err := os.Open(result)
     if err != nil { log.Fatal(err) }
@@ -70,20 +79,21 @@ func loadMeasure(result string) []Measurement {
             }
             item := v[lbrace+1:space]
             count, _ := strconv.Atoi(v[space+1:])
-            recs = append(recs, Recommendation{ item: item, count: count })
+            recs = append(recs, Recommendation{ Item: item, Count: count })
         }
         measurements = append(measurements, Measurement{ Min: min, Max: max, Avg: float32(avg), Length: length, ElapsedTime: elapsedTime, Recs: recs })
     }
     return measurements
 }
 
+// jaccard computes the Jaccard similarity of the two Recommendations sets.
 func jaccard(a []Recommendation, b []Recommendation) float64 {
     occ := make(map[string]int)
     for _,r := range a {
-        occ[r.item] += 1
+        occ[r.Item]++
     }
     for _,r := range b {
-        occ[r.item] += 1
+        occ[r.Item]++
     }
     inter := float64(0)
     for _,v := range occ {
@@ -94,6 +104,8 @@ func jaccard(a []Recommendation, b []Recommendation) float64 {
     return inter / float64(len(occ))
 }
 
+// compare evaluates the list of Measurements from results
+// and returns its AggregatedMeasurement
 func compare(gold [][]Recommendation, results string) AggregatedMeasurement {
     log.Printf("Processing results [%s]\n", results)
     measures := loadMeasure(results)
@@ -110,14 +122,15 @@ func compare(gold [][]Recommendation, results string) AggregatedMeasurement {
     return AggregatedMeasurement{ Name: results, Jaccard: j/float64(len(measures)), ElapsedTime: time.Duration(es/int64(len(measures))) }
 }
 
-type BySign []AggregatedMeasurement
-func (am BySign) Len() int {
+// bySign sorts AggregatedMeasurements by the query complexity
+type bySign []AggregatedMeasurement
+func (am bySign) Len() int {
     return len(am)
 }
-func (am BySign) Swap(i, j int) {
+func (am bySign) Swap(i, j int) {
     am[i], am[j] = am[j], am[i]
 }
-func (am BySign) Less(i, j int) bool {
+func (am bySign) Less(i, j int) bool {
     signi := signRe.FindString(am[i].Name)
     signj := signRe.FindString(am[j].Name)
     si := strings.Split(signi[strings.Index(signi, "_")+1:], "-")
@@ -139,6 +152,7 @@ func (am BySign) Less(i, j int) bool {
 }
 var signRe = regexp.MustCompile("_[0-9]*[0-9-]*[0-9]")
 
+// toLatex exports results to output as LATEX table rows
 func toLatex(output string, results map[string][]AggregatedMeasurement) {
     out, err := os.Create(output)
     if err != nil { log.Fatal(err) }
@@ -148,7 +162,7 @@ func toLatex(output string, results map[string][]AggregatedMeasurement) {
     header := ""
     cmr, cmrI := "", 3
     for _,v := range results {
-        sort.Sort(BySign(v))
+        sort.Sort(bySign(v))
         for i, am := range v {
             if i % 2 == 0 {
                 sign := signRe.FindString(am.Name)
@@ -164,7 +178,7 @@ func toLatex(output string, results map[string][]AggregatedMeasurement) {
     w.WriteString(header + "\n")
     w.WriteString(cmr + "\n")
     for k,v := range results {
-        sort.Sort(BySign(v))
+        sort.Sort(bySign(v))
         w.WriteString(" \\multirow{2}{*}{" + k + "}")
         for i, am := range v {
             if i % 2 == 0 {
@@ -187,6 +201,8 @@ func toLatex(output string, results map[string][]AggregatedMeasurement) {
     }
 }
 
+// Export evaluates and export in latex format the results of the experiment
+// into the output file.
 func Export(output string, gold string, results []string) {
     fi, err := os.Open(gold)
     if err != nil { log.Fatal(err) }

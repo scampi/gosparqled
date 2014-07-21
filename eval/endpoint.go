@@ -9,14 +9,12 @@ import (
     "time"
 )
 
+// Binding maps a variable name to its solution
 type Binding map[string]string
 
-func timeTrack(start time.Time, name string) {
-    elapsed := time.Since(start)
-    log.Printf("%s took %s", name, elapsed)
-}
-
-func ExecuteQuery(endpoint string, query string) (io.ReadCloser, time.Duration) {
+// executeQuery executes the SPARQL query over the endpoint
+// and returns the io.ReadClosers body if successful
+func executeQuery(endpoint string, query string) (io.ReadCloser, time.Duration) {
     time.Sleep(time.Second)
     q := endpoint + "?format=application/json&query=" + url.QueryEscape(query)
     log.Printf("Execute request: [%s]", q)
@@ -28,21 +26,27 @@ func ExecuteQuery(endpoint string, query string) (io.ReadCloser, time.Duration) 
     return resp.Body, time.Since(start)
 }
 
-func GetBindings(body io.ReadCloser) []map[string]Binding {
+// GetBindings returns the list of Bindings for the query over the endpoint.
+func GetBindings(endpoint string, query string) ([]map[string]Binding, time.Duration) {
+    body, et := executeQuery(endpoint, query)
+    defer body.Close()
     dec := json.NewDecoder(body)
     var res = new(struct{Results struct{Bindings []map[string]Binding}})
     if err := dec.Decode(&res); err != nil {
         log.Fatal(err)
     }
-    return res.Results.Bindings
+    return res.Results.Bindings, et
 }
 
-func Ask(body io.ReadCloser) bool {
+// Ask returns the result of the ASK query over the endpoint.
+func Ask(endpoint string, query string) (bool, time.Duration) {
+    body, et := executeQuery(endpoint, query)
+    defer body.Close()
     dec := json.NewDecoder(body)
     var res = new(struct{Boolean bool})
     if err := dec.Decode(&res); err != nil {
         log.Fatal(err)
     }
-    return res.Boolean
+    return res.Boolean, et
 }
 
