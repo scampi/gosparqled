@@ -59,6 +59,18 @@ SELECT * {
 }
 ```
 
+## Path
+
+Recommend possible path of a fixed length, written as `X/`. Below, recommendations about paths of lengths 2 between a Movie and a Person are returned:
+
+```sparql
+SELECT * {
+    ?s a <Movie> .
+    ?o a <Person> .
+    ?s 2/< ?o
+}
+```
+
 # Building
 
 First, install GopherJS:

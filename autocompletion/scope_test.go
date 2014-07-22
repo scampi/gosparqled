@@ -7,7 +7,7 @@ import (
 
 type templateData struct {
     Tps []triplePattern
-    Keyword string ``
+    Keyword, Pof string
 }
 
 func (td *templateData) add(s string, p string, o string) {
@@ -18,7 +18,13 @@ func (td *templateData) setKeyword(kw string) {
     td.Keyword = kw
 }
 
+// Get the RecommendationQuery from query and compare it against the expected one
 func parse(t *testing.T, query string, expected *templateData) {
+    parseWithPof(t, query, expected, "?POF")
+}
+
+// Like parse but use pof as the POF variable expression
+func parseWithPof(t *testing.T, query string, expected *templateData, pof string) {
     s := &Sparql{ Buffer : query, Scope : NewScope() }
     s.Init()
     if err := s.Parse(); err != nil {
@@ -27,11 +33,39 @@ func parse(t *testing.T, query string, expected *templateData) {
     s.Execute()
     actual := s.RecommendationQuery()
     var out bytes.Buffer
+    expected.Pof = pof
     s.template.Execute(&out, expected)
     expectedString := out.String()
     if actual != expectedString {
         t.Errorf("Expected %v\nbut got %v\n", expectedString, actual)
     }
+}
+
+func TestPath1(t *testing.T) {
+    td := &templateData{}
+    td.add("?sFillVar2", "?POF3", "?FillVar")
+    td.add("?s", "?POF1", "?sFillVar1")
+    td.add("?sFillVar1", "?POF2", "?sFillVar2")
+    parseWithPof(t, `
+        SELECT *
+        WHERE {
+          ?s 3/< 
+        }
+        `, td, pathPof(3))
+}
+
+func TestPath2(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "a", "<aaa>")
+    td.add("?sFillVar2", "?POF3", "?FillVar")
+    td.add("?s", "?POF1", "?sFillVar1")
+    td.add("?sFillVar1", "?POF2", "?sFillVar2")
+    parseWithPof(t, `
+        SELECT *
+        WHERE {
+          ?s a <aaa>; 3/< 
+        }
+        `, td, pathPof(3))
 }
 
 func TestEval1(t *testing.T) {

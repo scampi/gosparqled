@@ -91,7 +91,7 @@ offset <- OFFSET INTEGER
 # Point Of Focus
 #
 
-pof <- <[a-zA-Z0-9.\-_+]*> { p.setKeyword(buffer[begin:end]) } '<' whiteSpaces+
+pof <- ( <[2-9][0-9]*>'/' { p.setPathLength(buffer[begin:end]) } / <[a-zA-Z0-9.\-_+]*> { p.setKeyword(buffer[begin:end]) } ) '<' whiteSpaces+
 
 #
 # Terminals
