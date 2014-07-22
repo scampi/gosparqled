@@ -1,0 +1,1 @@
+* [GH-1] Path auto-completion
