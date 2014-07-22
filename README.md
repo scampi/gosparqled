@@ -82,7 +82,7 @@ $ go get github.com/gopherjs/gopherjs
 Run the command below to create the JavaScript library. The `-m` flag minifies the generated JavaScript code.
 
 ```sh
-$ gopherjs build -m gosparqled.go
+$ gopherjs build -m
 ```
 
 The following methods can then be called via JavaScript (see `demo/sparqled.js`).
