@@ -35,7 +35,9 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
                 var completions = [];
                 for (var i = 0; i < data.results.bindings.length; i++) {
                     var binding = data.results.bindings[i];
-                    completions.push(binding.POF.value);
+                    var pof = binding.POF.value
+                    // The YASQE library automatically wraps the string with '<' and '>'
+                    completions.push(pof.substring(1, pof.length - 1));
                 }
                 callback(completions);
             },
