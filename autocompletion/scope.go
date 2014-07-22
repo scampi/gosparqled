@@ -21,6 +21,7 @@ import (
     "strings"
     "text/template"
     "bytes"
+    "strconv"
 )
 
 // A SPARQL triple pattern
@@ -40,12 +41,17 @@ type Scope struct {
     template *template.Template
     // A keyword that the recommended item must match
     Keyword string
+    // The number of properties for a path to be recommended
+    // If 0, it is a direct path
+    pathLength int
+    // The POF expression to project in the SELECT query
+    Pof string
 }
 
 // Scope struct constructor
 func NewScope() *Scope {
     tmpl := `
-        SELECT DISTINCT ?POF
+        SELECT DISTINCT {{.Pof}}
         WHERE {
         {{range .Tps}}
             {{.S}} {{.P}} {{.O}} .
@@ -61,7 +67,7 @@ func NewScope() *Scope {
 
 // Scope struct constructor with the given text template
 func NewScopeWithTemplate(tmpl string) *Scope {
-    scope := &Scope{}
+    scope := &Scope{ Pof : "?POF" }
     tp, _ := template.New("rec").Parse(tmpl)
     scope.template = tp
     return scope
@@ -70,6 +76,8 @@ func NewScopeWithTemplate(tmpl string) *Scope {
 // Reset the scope to prepare for a new query
 func (b *Scope) Reset() {
     b.Keyword = ""
+    b.pathLength = 0
+    b.Pof = "?POF"
     b.Tps = b.Tps[:0]
 }
 
@@ -110,6 +118,11 @@ func (b *Scope) addTriplePattern() {
     b.Tps = append(b.Tps, tp)
 }
 
+// Sets the length of the path to be recommended
+func (b *Scope) setPathLength(lenght string) {
+    b.pathLength, _ = strconv.Atoi(lenght)
+}
+
 // Removes triple patterns from the Scope that are not within the connected
 // component that contains the Point Of Focus
 func (b *Scope) trimToScope() {
@@ -147,11 +160,52 @@ func (tp *triplePattern) addToScope(scope map[string]bool) {
     scope[tp.O] = true
 }
 
+// Adds the property variables for building the path to recommend of length pathLength
+func (b *Scope) addIntermediatePath() {
+    if b.pathLength == 0 {
+        return
+    }
+    for ind,tp := range b.Tps {
+        if tp.P == "?POF" {
+            inter := tp.S
+            // intermediate properties
+            for i := 1; i < b.pathLength; i++ {
+                inter2 := "?" + tp.S[1:] + tp.O[1:] + strconv.Itoa(i)
+                tpInter := triplePattern{ S: inter, P: "?POF" + strconv.Itoa(i), O: inter2 }
+                b.Tps = append(b.Tps, tpInter)
+                inter = inter2
+            }
+            // last property
+            b.Tps[ind].S = inter
+            b.Tps[ind].P = "?POF" + strconv.Itoa(b.pathLength)
+            b.Pof = pathPof(b.pathLength)
+            break
+        }
+    }
+}
+
+// pathPof returns the ?POF projection expression as the concatenation
+// of each intermediate variable properties
+func pathPof(pathLength int) string {
+    pof := "(concat("
+    for i := 1; i <= pathLength; i++ {
+        if i > 1 {
+            pof += ", "
+        }
+        pof += "\"<\", ?POF" + strconv.Itoa(i) + ", \">\""
+        if i < pathLength {
+            pof += ", \" / \""
+        }
+    }
+    return pof + ") as ?POF)"
+}
+
 // Returns the SPARQL query that can be used for retrieving recommendations
 // about the Point Of Focus. The recommended items are bound to the variable
 // labelled "?POF"
 func (b *Scope) RecommendationQuery() string {
     b.trimToScope()
+    b.addIntermediatePath()
     var out bytes.Buffer
     b.template.Execute(&out, b)
     return out.String()
