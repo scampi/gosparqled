@@ -11,7 +11,7 @@ Gosparqled provides a library for retrieving context-aware recommendations for a
 
 # Demo
 
-The folder `demo/` shows how gosparqled can be used with other tools such as [YASR](https://github.com/YASGUI/YASR) and [YASQE](https://github.com/YASGUI/YASQE) in order to have a full-fledged SPARQL query editor with the added recommendation feature.
+The folder `demo/` shows how gosparqled can be used with other tools such as [YASR](https://github.com/YASGUI/YASR) and [YASQE](https://github.com/YASGUI/YASQE) in order to have a full-fledged SPARQL query editor with the added recommendation feature. That demo can be tested at [http://scampi.github.io/gosparqled/](http://scampi.github.io/gosparqled/).
 
 # Auto-Completion
 
