@@ -1,7 +1,3 @@
-var config = {
-    endpoint: "http://dbpedia.org/sparql"
-}
-
 var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
      var cur = yasqe.getCursor(false);
      var begin = yasqe.getRange({line: 0, ch:0}, cur);
@@ -14,7 +10,7 @@ var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
  */
 
 var customAutocompletionFunction = function(yasqe, partialToken, type, callback) {
-    autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q, err) {
+    autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q, type, err) {
         if (err) {
             alert(err)
             return
@@ -26,7 +22,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
         var ajaxConfig = {
             type: "GET",
             crossDomain: true,
-            url: config.endpoint,
+            url: sparqled.config.endpoint,
             data: {
                 format: 'application/json',
                 query: q
@@ -36,8 +32,12 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
                 for (var i = 0; i < data.results.bindings.length; i++) {
                     var binding = data.results.bindings[i];
                     var pof = binding.POF.value
-                    // The YASQE library automatically wraps the string with '<' and '>'
-                    completions.push(pof.substring(1, pof.length - 1));
+                    if (type === autocompletion.PATH) {
+                        // The YASQE library automatically wraps the string with '<' and '>'
+                        completions.push(pof.substring(1, pof.length - 1));
+                    } else {
+                        completions.push(pof);
+                    }
                 }
                 callback(completions);
             },
@@ -54,7 +54,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
 
 var yasqe = YASQE(document.getElementById("yasqe"), {
 	sparql: {
-        endpoint: config.endpoint,
+        endpoint: sparqled.config.endpoint,
 		showQueryButton: true,
 	},
 	autocompletions: {
