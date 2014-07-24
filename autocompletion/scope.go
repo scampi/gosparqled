@@ -24,6 +24,24 @@ import (
     "strconv"
 )
 
+// The kind of recommendation
+type Type uint
+
+const (
+    // No recommendation
+    NONE Type = iota
+    // Class recommendation
+    CLASS
+    // Predicate recommendation
+    PREDICATE
+    // Path recommendation
+    PATH
+    // Subject recommendation
+    SUBJECT
+    // Object recommendation
+    OBJECT
+)
+
 // A SPARQL triple pattern
 type triplePattern struct {
     S, P, O string
@@ -198,6 +216,26 @@ func pathPof(pathLength int) string {
         }
     }
     return pof + ") as ?POF)"
+}
+
+// RecommendationType returns the kind of recommendation for the processed SPARQL query
+func (b *Scope) RecommendationType() Type {
+    if b.pathLength != 0 { return PATH }
+    for _,tp := range b.Tps {
+        if tp.P == "?POF" {
+            return PREDICATE
+        }
+        if tp.P == "a" && tp.O == "?POF" {
+            return CLASS
+        }
+        if tp.O == "?POF" {
+            return OBJECT
+        }
+        if tp.S == "?POF" {
+            return SUBJECT
+        }
+    }
+    return NONE
 }
 
 // Returns the SPARQL query that can be used for retrieving recommendations

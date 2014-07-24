@@ -19,12 +19,12 @@ func (td *templateData) setKeyword(kw string) {
 }
 
 // Get the RecommendationQuery from query and compare it against the expected one
-func parse(t *testing.T, query string, expected *templateData) {
-    parseWithPof(t, query, expected, "?POF")
+func parse(t *testing.T, query string, expected *templateData, rType Type) {
+    parseWithPof(t, query, expected, "?POF", rType)
 }
 
 // Like parse but use pof as the POF variable expression
-func parseWithPof(t *testing.T, query string, expected *templateData, pof string) {
+func parseWithPof(t *testing.T, query string, expected *templateData, pof string, rType Type) {
     s := &Sparql{ Buffer : query, Scope : NewScope() }
     s.Init()
     if err := s.Parse(); err != nil {
@@ -39,6 +39,10 @@ func parseWithPof(t *testing.T, query string, expected *templateData, pof string
     if actual != expectedString {
         t.Errorf("Expected %v\nbut got %v\n", expectedString, actual)
     }
+    aType := s.RecommendationType()
+    if rType != aType {
+        t.Errorf("Expected Recommendation type to be [%v] but got [%v]\n", rType, aType)
+    }
 }
 
 func TestPath1(t *testing.T) {
@@ -51,7 +55,7 @@ func TestPath1(t *testing.T) {
         WHERE {
           ?s 3/< 
         }
-        `, td, pathPof(3))
+        `, td, pathPof(3), PATH)
 }
 
 func TestPath2(t *testing.T) {
@@ -65,7 +69,7 @@ func TestPath2(t *testing.T) {
         WHERE {
           ?s a <aaa>; 3/< 
         }
-        `, td, pathPof(3))
+        `, td, pathPof(3), PATH)
 }
 
 func TestEval1(t *testing.T) {
@@ -80,7 +84,7 @@ func TestEval1(t *testing.T) {
           ?v1 <http://dbpedia.org/ontology/developer> ?v0 .
           ?v1 a <http://dbpedia.org/ontology/Software> .
         }
-        `, td)
+        `, td, CLASS)
 }
 
 func TestEval2(t *testing.T) {
@@ -99,7 +103,7 @@ func TestEval2(t *testing.T) {
             ?v0 <http://dbpedia.org/property/imdbId> ?v3 .
             ?v1 <http://dbpedia.org/property/dateOfBirth> ?v4 .
         }
-        `, td)
+        `, td, CLASS)
 }
 
 func TestEval3(t *testing.T) {
@@ -113,7 +117,7 @@ func TestEval3(t *testing.T) {
         WHERE {
             ?v0 a  <  ;<http://dbpedia.org/ontology/birthdate> ?v1 ;<http://xmlns.com/foaf/0.1/name> ?v2 ;<http://dbpedia.org/property/abstract> ?v3 .
         }
-        `, td)
+        `, td, CLASS)
 }
 
 func TestKeyword1(t *testing.T) {
@@ -125,7 +129,7 @@ func TestKeyword1(t *testing.T) {
           ?s test< 
         }
         LIMIT 10
-    `, td)
+    `, td, PREDICATE)
 }
 
 func TestKeyword2(t *testing.T) {
@@ -137,7 +141,7 @@ func TestKeyword2(t *testing.T) {
           ?s ?p test< 
         }
         LIMIT 10
-    `, td)
+    `, td, OBJECT)
 }
 
 func TestKeyword3(t *testing.T) {
@@ -149,7 +153,7 @@ func TestKeyword3(t *testing.T) {
           ?s a Person-1< 
         }
         LIMIT 10
-    `, td)
+    `, td, CLASS)
 }
 
 func TestEditor(t *testing.T) {
@@ -162,7 +166,7 @@ func TestEditor(t *testing.T) {
           ?sub < 
         }
         LIMIT 10
-    `, td)
+    `, td, PREDICATE)
 }
 
 func TestSubject(t *testing.T) {
@@ -175,7 +179,7 @@ func TestSubject(t *testing.T) {
             ?o ?op ?oo .
             ?a ?b ?c
         }
-    `, td)
+    `, td, SUBJECT)
 }
 
 func TestPredicate(t *testing.T) {
@@ -189,7 +193,7 @@ func TestPredicate(t *testing.T) {
             ?o ?op ?oo .
             ?a ?b ?c
         }
-    `, td)
+    `, td, PREDICATE)
 }
 
 func TestObject(t *testing.T) {
@@ -203,7 +207,7 @@ func TestObject(t *testing.T) {
             ?o ?op ?oo .
             ?a ?b ?c
         }
-    `, td)
+    `, td, OBJECT)
 }
 
 func TestTerms(t *testing.T) {
@@ -216,7 +220,7 @@ func TestTerms(t *testing.T) {
             ?s <p1> < ; a ?o .
             ?o ?p "test" .
         }
-    `, td)
+    `, td, OBJECT)
 }
 
 func TestOptional1(t *testing.T) {
@@ -228,7 +232,7 @@ func TestOptional1(t *testing.T) {
             ?s <p1> ?o .
             OPTIONAL { ?o < } .
         }
-    `, td)
+    `, td, PREDICATE)
 }
 
 func TestOptional2(t *testing.T) {
@@ -240,7 +244,7 @@ func TestOptional2(t *testing.T) {
             OPTIONAL { ?o < } .
             ?s <p1> ?o .
         }
-    `, td)
+    `, td, PREDICATE)
 }
 
 func TestOptional3(t *testing.T) {
@@ -254,6 +258,6 @@ func TestOptional3(t *testing.T) {
             OPTIONAL { ?o < } .
             ?s <p1> ?o .
         }
-    `, td)
+    `, td, PREDICATE)
 }
 

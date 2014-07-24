@@ -10,7 +10,7 @@ var scope = autocompletion.NewScope()
 
 // RecommendationQuery returns a SPARQL query for retrieving recommendations.
 // If the input query does not have a Point Of Focus, an empty string is returned
-func RecommendationQuery(query string, callback func(string,string)) {
+func RecommendationQuery(query string, callback func(string, autocompletion.Type, string)) {
     go func(query string) {
         s := &autocompletion.Sparql{ Buffer : query, Scope : scope }
         scope.Reset()
@@ -18,9 +18,9 @@ func RecommendationQuery(query string, callback func(string,string)) {
         err := s.Parse()
         if err == nil {
             s.Execute()
-            callback(s.RecommendationQuery(), "")
+            callback(s.RecommendationQuery(), s.RecommendationType(), "")
         } else {
-            callback("", "Failed to process query\n" + err.Error())
+            callback("", autocompletion.NONE, "Failed to process query\n" + err.Error())
         }
     }(query)
 }
@@ -28,5 +28,6 @@ func RecommendationQuery(query string, callback func(string,string)) {
 func main() {
     js.Global.Set("autocompletion", map[string]interface{}{
         "RecommendationQuery": RecommendationQuery,
+        "PATH": autocompletion.PATH,
     })
 }
