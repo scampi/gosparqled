@@ -40,7 +40,6 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
                         // The YASQE library automatically wraps the string with '<' and '>'
                         completions.push(pof.substring(1, pof.length - 1));
                     } else {
-                        // The YASQE library automatically wraps the string with '<' and '>'
                         completions.push(pof);
                     }
                 }
