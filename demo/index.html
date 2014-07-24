@@ -4,11 +4,18 @@
     
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta content="utf-8" http-equiv="encoding">
-    
+
         <!--Make sure to store YASR and YASQE css/js files in the current working dir! (these are not included in this gist)-->
     	<link href="yasqe.min.css" rel="stylesheet" type="text/css" />
     	<link href="yasr.min.css" rel="stylesheet" type="text/css" />
-    
+
+        <script type="text/javascript">
+            var sparqled = function() {
+                var config = { endpoint : "http://dbpedia.org/sparql" };
+                return { config : config};
+            }();
+        </script>
+
         <style>
             #loading {
                 position: fixed;
@@ -27,7 +34,12 @@
     
     </head>
     <body style="margin:0px;">
-    
+
+        <form name="endpoint" action="javascript:updateEndpoint()">
+            Endpoint: <input type="text" size="50%" name="url" value="http://dbpedia.org/sparql">
+            <input type="submit" value="Submit">
+        </form>
+
         <div id="loading"></div>
         
         <div id="yasqe"></div>
@@ -38,5 +50,13 @@
         <script src="sparqled.js"></script>
         <script src="../gosparqled.js"></script>
     
+        <script type="text/javascript">
+            // Update the endpoint address
+            function updateEndpoint() {
+                sparqled.config.endpoint = document.endpoint.url.value;
+                yasqe.options.sparql.endpoint = sparqled.config.endpoint;
+            }
+        </script>
+
     </body>
 </html>

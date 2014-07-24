@@ -1,7 +1,3 @@
-var config = {
-    endpoint: "http://dbpedia.org/sparql"
-}
-
 var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
      var cur = yasqe.getCursor(false);
      var begin = yasqe.getRange({line: 0, ch:0}, cur);
@@ -26,7 +22,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
         var ajaxConfig = {
             type: "GET",
             crossDomain: true,
-            url: config.endpoint,
+            url: sparqled.config.endpoint,
             data: {
                 format: 'application/json',
                 query: q
@@ -58,7 +54,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
 
 var yasqe = YASQE(document.getElementById("yasqe"), {
 	sparql: {
-        endpoint: config.endpoint,
+        endpoint: sparqled.config.endpoint,
 		showQueryButton: true,
 	},
 	autocompletions: {
