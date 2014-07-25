@@ -7,11 +7,15 @@ import (
 
 type templateData struct {
     Tps []triplePattern
-    Keyword, Pof string
+    Keyword, Pof, Prefix string
 }
 
 func (td *templateData) add(s string, p string, o string) {
     td.Tps = append(td.Tps, triplePattern{ S : s, P : p, O : o })
+}
+
+func (td *templateData) setPrefix(prefix string) {
+    td.Prefix = prefix
 }
 
 func (td *templateData) setKeyword(kw string) {
@@ -43,6 +47,60 @@ func parseWithPof(t *testing.T, query string, expected *templateData, pof string
     if rType != aType {
         t.Errorf("Expected Recommendation type to be [%v] but got [%v]\n", rType, aType)
     }
+}
+
+func TestPrefixRecommendation1(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "?POF", "?FillVar")
+    td.setPrefix("aaa")
+    parse(t, `
+        PREFIX a: <aaa>
+        SELECT *
+        WHERE {
+            ?s a:< 
+        }
+        `, td, PREDICATE)
+}
+
+func TestPrefixRecommendation2(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "?POF", "?FillVar")
+    td.setPrefix("aaa")
+    parse(t, `
+        PREFIX : <aaa>
+        SELECT *
+        WHERE {
+            ?s :< 
+        }
+        `, td, PREDICATE)
+}
+
+func TestPrefixRecommendation3(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", "a", "?POF")
+    td.setPrefix("bbb")
+    parse(t, `
+        PREFIX a: <aaa>
+        PREFIX b: <bbb>
+        PREFIX c: <ccc>
+        SELECT *
+        WHERE {
+            ?s a b:< 
+        }
+        `, td, CLASS)
+}
+
+func TestPrefixRecommendation4(t *testing.T) {
+    td := &templateData{}
+    td.add("?s", ":bbb", "?o")
+    td.add("?s", "?POF", "?FillVar")
+    parse(t, `
+        PREFIX : <aaa>
+        SELECT * WHERE {
+          ?s :bbb ?o; <
+        } 
+        LIMIT 10
+        `, td, PREDICATE)
 }
 
 func TestPath1(t *testing.T) {
