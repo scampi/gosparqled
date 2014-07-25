@@ -10,8 +10,12 @@ func parse(t *testing.T, query string) {
     }
 }
 
-func TestQName(t *testing.T) {
+func TestQName1(t *testing.T) {
     parse(t, "select * from acme:test { ?s acme:p ?o }")
+}
+
+func TestQName2(t *testing.T) {
+    parse(t, "prefix : <acme.org/> select * { ?s :p ?o }")
 }
 
 func TestTriplesSameSubject1(t *testing.T) {

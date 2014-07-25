@@ -7,7 +7,7 @@ queryContainer <- ws prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX [^: ]+ COLON iri
+prefixDecl <- PREFIX [^: ]* COLON iri
 
 baseDecl <- BASE iri
 
@@ -96,7 +96,7 @@ iriref <- iri / prefixedName
 
 iri <- '<' [^>]* '>' ws
 
-prefixedName <- [^: ]+ ':' [a-zA-Z0-9.-_:%]* ws
+prefixedName <- [^: ]* ':' [a-zA-Z0-9.-_:%]* ws
 
 literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? ws
 
