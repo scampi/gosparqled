@@ -39,7 +39,7 @@ SELECT * {
 
 ## Relation
 
-Recommend possible relations between two variables:
+Recommend possible relations between a `Person` and a `Document`:
 
 ```sparql
 SELECT * {
@@ -51,7 +51,7 @@ SELECT * {
 
 ## Keyword
 
-Recommend possible terms (e.g., classes or predicates) which URI contains a keyword. Below, it presents classes which contain the word `movie`, case-insensitive:
+Recommend possible terms (e.g., classes or predicates) which URI contains a keyword, case-insensitive. Below, it presents classes which contain the word `movie`:
 
 ```sparql
 SELECT * {
@@ -61,7 +61,7 @@ SELECT * {
 
 ## Path
 
-Recommend possible path of a fixed length, written as `X/`. Below, recommendations about paths of lengths 2 between a Movie and a Person are returned:
+Recommend possible path of a fixed length, written as `X/`. Below, recommendations about paths of lengths 2 between a `Movie` and a `Person` are returned:
 
 ```sparql
 SELECT * {
@@ -89,5 +89,5 @@ The following methods can then be called via JavaScript (see `demo/sparqled.js`)
 
 - `RecommendationQuery` in the `autocompletion` namespace
 
-    It takes in the SPARQL query with the character `<` indicating the position in the query to auto-complete. It returns a processed SPARQL query, which can then be sent to the SPARQL endpoint in order to retrieve the recommendations. The recommendations are bound to the variable `?POF`.
+    It takes in the SPARQL query with the character `<` indicating the position in the query to auto-complete. It returns the processed SPARQL query, which can then be sent to the SPARQL endpoint in order to retrieve the possible recommendations. The recommendations are bound to the variable `?POF`.
 
