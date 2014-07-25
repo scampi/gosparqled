@@ -71,7 +71,7 @@ type Scope struct {
 // Scope struct constructor
 func NewScope() *Scope {
     tmpl := `
-        SELECT {{.Pof}}
+        SELECT DISTINCT {{.Pof}}
         WHERE {
         {{range .Tps}}
             {{.S}} {{.P}} {{.O}} .
