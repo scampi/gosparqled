@@ -21,7 +21,7 @@ subSelect <- select whereClause
 
 projectionElem <- var
 
-datasetClause <- FROM NAMED? iri
+datasetClause <- FROM NAMED? iriref
 
 whereClause <- WHERE? groupGraphPattern
 
@@ -43,7 +43,7 @@ triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propert
 
 varOrTerm <- var / graphTerm
 
-graphTerm <- iri / literal / numericLiteral / booleanLiteral / blankNode / nil
+graphTerm <- iriref / literal / numericLiteral / booleanLiteral / blankNode / nil
 
 triplesNodePath <- collectionPath / blankNodePropertyListPath
 
@@ -64,11 +64,11 @@ pathSequence <- pathElt ( SLASH pathSequence )*
 # TODO: support pathmod rule.
 pathElt <- INVERSE? pathPrimary #pathMod?
 
-pathPrimary <- iri / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
+pathPrimary <- iriref / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
 
 pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet ( PIPE pathOneInPropertySet )* )? RPAREN
 
-pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
+pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
 #pathMod <- STAR / QUESTION / PLUS
 
@@ -92,9 +92,13 @@ offset <- OFFSET INTEGER
 
 var <- ('?' / '$') VARNAME ws
 
+iriref <- iri / prefixedName
+
 iri <- '<' [^>]* '>' ws
 
-literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iri )? ws
+prefixedName <- [^: ]+ ':' [a-zA-Z0-9.-_:%]* ws
+
+literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? ws
 
 string <- '\"' [^"]* '\"'
 
