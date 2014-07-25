@@ -1,3 +1,4 @@
 * [GH-1] Path auto-completion
 * [GH-4] Return recommendation type
 * [GH-7] Support PrefixeNamed
+* [GH-6] Prefix auto-completion

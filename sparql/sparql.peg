@@ -1,3 +1,5 @@
+# SPARQL grammar
+
 package sparql
 
 type Sparql Peg {

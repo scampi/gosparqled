@@ -1,3 +1,5 @@
+# SPARQL grammar modified to support auto-completion
+
 package autocompletion
 
 type Sparql Peg {
@@ -8,7 +10,7 @@ queryContainer <- ws prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX [^: ]+ COLON iri
+prefixDecl <- PREFIX <[^: ]* COLON iri> { p.addPrefix(buffer[begin:end]) }
 
 baseDecl <- BASE iri
 
@@ -22,7 +24,7 @@ subSelect <- select whereClause
 
 projectionElem <- var
 
-datasetClause <- FROM NAMED? iri
+datasetClause <- FROM NAMED? iriref
 
 whereClause <- WHERE? groupGraphPattern
 
@@ -44,7 +46,7 @@ triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propert
 
 varOrTerm <- <var> { p.setSubject(buffer[begin:end]) } / <graphTerm> { p.setSubject(buffer[begin:end]) } / pof { p.setSubject("?POF") } 
 
-graphTerm <- iri / literal / numericLiteral / booleanLiteral / blankNode / nil
+graphTerm <- iriref / literal / numericLiteral / booleanLiteral / blankNode / nil
 
 triplesNodePath <- collectionPath / blankNodePropertyListPath
 
@@ -65,11 +67,11 @@ pathSequence <- <pathElt> { p.setPredicate(buffer[begin:end]) } ( SLASH pathSequ
 # TODO: support pathmod rule.
 pathElt <- INVERSE? pathPrimary #pathMod?
 
-pathPrimary <- iri / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
+pathPrimary <- iriref / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
 
 pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet ( PIPE pathOneInPropertySet )* )? RPAREN
 
-pathOneInPropertySet <- iri / ISA / INVERSE ( iri / ISA )
+pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
 #pathMod <- STAR / QUESTION / PLUS
 
@@ -91,7 +93,7 @@ offset <- OFFSET INTEGER
 # Point Of Focus
 #
 
-pof <- ( <[2-9][0-9]*>'/' { p.setPathLength(buffer[begin:end]) } / <[a-zA-Z0-9.\-_+]*> { p.setKeyword(buffer[begin:end]) } ) '<' whiteSpaces+
+pof <- ( <[[a-z]]*>':' { p.setPrefix(buffer[begin:end]) } / <[2-9][0-9]*>'/' { p.setPathLength(buffer[begin:end]) } / <[a-zA-Z0-9.\-_+]*> { p.setKeyword(buffer[begin:end]) } ) '<' whiteSpaces+
 
 #
 # Terminals
@@ -99,9 +101,13 @@ pof <- ( <[2-9][0-9]*>'/' { p.setPathLength(buffer[begin:end]) } / <[a-zA-Z0-9.\
 
 var <- ('?' / '$') VARNAME ws
 
+iriref <- iri / prefixedName
+
 iri <- '<' [^>]* '>' ws
 
-literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iri )? ws
+prefixedName <- [^: ]* ':' [a-zA-Z0-9.-_:%]* ws
+
+literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? ws
 
 string <- '\"' [^"]* '\"'
 

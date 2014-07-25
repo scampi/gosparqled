@@ -64,6 +64,10 @@ type Scope struct {
     pathLength int
     // The POF expression to project in the SELECT query
     Pof string
+    // The prefix of the recommended item
+    Prefix string
+    // The set of declared prefixes
+    prefixes map[string]string
 }
 
 // Scope struct constructor
@@ -76,6 +80,8 @@ func NewScope() *Scope {
         {{end}}
         {{if .Keyword}}
             FILTER regex(?POF, "{{.Keyword}}", "i")
+        {{else if .Prefix}}
+            FILTER regex(?POF, "^{{.Prefix}}")
         {{end}}
         }
         LIMIT 10
@@ -88,15 +94,30 @@ func NewScopeWithTemplate(tmpl string) *Scope {
     scope := &Scope{ Pof : "?POF" }
     tp, _ := template.New("rec").Parse(tmpl)
     scope.template = tp
+    scope.prefixes = make(map[string]string)
     return scope
 }
 
 // Reset the scope to prepare for a new query
 func (b *Scope) Reset() {
     b.Keyword = ""
+    b.Prefix = ""
     b.pathLength = 0
     b.Pof = "?POF"
     b.Tps = b.Tps[:0]
+}
+
+// Add a prefix definition to the set.
+// The prefix definition is of the form ".*:\s*<[^>]*>".
+func (b *Scope) addPrefix(prefix string) {
+    parts := strings.SplitN(prefix, ":", 2)
+    uri := strings.Trim(parts[1], " \n\t\v\f\r\040")
+    b.prefixes[parts[0]] = uri[1:len(uri)-1]
+}
+
+// Sets the prefix of the Point Of Focus.
+func (b *Scope) setPrefix(prefix string) {
+    b.Prefix = b.prefixes[prefix]
 }
 
 // Sets the keyword that the recommended item must match
