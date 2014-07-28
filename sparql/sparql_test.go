@@ -10,6 +10,21 @@ func parse(t *testing.T, query string) {
     }
 }
 
+func TestDescribe(t *testing.T) {
+    parse(t, "describe *")
+    parse(t, "describe ?p")
+    parse(t, "describe <aaa>")
+    parse(t, "describe * { ?s ?p ?o }")
+}
+
+func TestAsk(t *testing.T) {
+    parse(t, "ASK { ?s ?p ?o }")
+}
+
+func TestConstruct(t *testing.T) {
+    parse(t, "CONSTRUCT { ?a ?b ?c } { ?s ?p ?o }")
+}
+
 func TestQName1(t *testing.T) {
     parse(t, "select * from acme:test { ?s acme:p ?o }")
 }
