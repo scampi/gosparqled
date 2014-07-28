@@ -70,6 +70,18 @@ SELECT * {
     ?s 2/< ?o
 }
 ```
+## Prefix
+
+Recommend possible terms (e.g., classes or predicates) with the given prefix. Below, it presents only the predicates within the `rdfs` prefix:
+
+```sparql
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT * {
+    ?s rdfs:<
+}
+```
+
 
 # Building
 
