@@ -13,13 +13,15 @@ prefixDecl <- PREFIX [^: ]* COLON iri
 
 baseDecl <- BASE iri
 
-query <- selectQuery
-
+query <- selectQuery / constructQuery / describeQuery / askQuery
 selectQuery <- select datasetClause? whereClause solutionModifier
-
 select <- SELECT ( DISTINCT / REDUCED )? ( STAR / projectionElem+ )
-
 subSelect <- select whereClause
+constructQuery <- construct datasetClause? whereClause solutionModifier
+construct <- CONSTRUCT LBRACE triplesBlock? RBRACE
+describeQuery <- describe datasetClause? whereClause? solutionModifier
+describe <- DESCRIBE ( STAR / var / iriref )
+askQuery <- ASK datasetClause? whereClause
 
 projectionElem <- var
 
@@ -161,5 +163,8 @@ UNION <- "UNION" ws
 LIMIT <- "LIMIT" ws
 OFFSET <- "OFFSET" ws
 INTEGER <- [0-9]+ ws
+CONSTRUCT <- "CONSTRUCT" ws
+DESCRIBE <- "DESCRIBE" ws
+ASK <- "ASK" ws
 
 ws <- ( '\040' / '\t' / '\r' / '\n' / '\f' / '\v' )*

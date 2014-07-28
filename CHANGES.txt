@@ -2,3 +2,4 @@
 * [GH-4] Return recommendation type
 * [GH-7] Support PrefixeNamed
 * [GH-6] Prefix auto-completion
+* [GH-10] Add construct/ask/describe query to the grammar
