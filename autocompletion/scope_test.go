@@ -82,31 +82,25 @@ func TestComment3(t *testing.T) {
         `, td, OBJECT)
 }
 
-//func TestComment4(t *testing.T) {
-//    query := `
-//        SELECT *
-//        WHERE {
-//            ?a ?b ?c .
-//            ?s <
-//            # test
-//        }
-//    `
-//    scope := NewScope()
-//    s := &Sparql{ Buffer : query, Scope : scope, Skip : &Skip{} }
-//    s.Init()
-//
-//    td := newTemplateData()
-//    td.add("?s", "?POF", "?FillVar")
-//    fmt.Println(s.commentBegin)
-//    parseWithSparql(t, s, td, PREDICATE)
-//    fmt.Println(s.commentBegin)
-//    scope.Reset()
-//    s.Reset()
-//    fmt.Println(s.commentBegin)
-//    parseWithSparql(t, s, td, PREDICATE)
-//    fmt.Println(s.commentBegin)
-//    fmt.Println(s.RecommendationQuery())
-//}
+func TestComment4(t *testing.T) {
+    query := `
+        SELECT *
+        WHERE {
+            ?a ?b ?c .
+            ?s <
+            # test
+        }
+    `
+    scope := NewScope()
+    s := &Sparql{ Buffer : query, Scope : scope, Skip : &Skip{} }
+    s.Init()
+
+    td := newTemplateData()
+    td.add("?s", "?POF", "?FillVar")
+    parseWithSparql(t, s, td, PREDICATE)
+    Reset(s)
+    parseWithSparql(t, s, td, PREDICATE)
+}
 
 func TestReset(t *testing.T) {
     query := `
@@ -122,8 +116,7 @@ func TestReset(t *testing.T) {
     td := newTemplateData()
     td.add("?s", "?POF", "?FillVar")
     parseWithSparql(t, s, td, PREDICATE)
-    scope.Reset()
-    s.Reset()
+    Reset(s)
     parseWithSparql(t, s, td, PREDICATE)
 }
 

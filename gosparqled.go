@@ -12,9 +12,9 @@ var scope = autocompletion.NewScope()
 // If the input query does not have a Point Of Focus, an empty string is returned
 func RecommendationQuery(query string, callback func(string, autocompletion.Type, string)) {
     go func(query string) {
-        s := &autocompletion.Sparql{ Buffer : query, Scope : scope }
-        scope.Reset()
+        s := &autocompletion.Sparql{ Buffer : query, Scope : scope, Skip : &autocompletion.Skip{} }
         s.Init()
+        autocompletion.Reset(s)
         err := s.Parse()
         if err == nil {
             s.Execute()

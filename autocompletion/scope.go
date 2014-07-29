@@ -110,13 +110,25 @@ func NewScopeWithTemplate(tmpl string) *Scope {
     return scope
 }
 
+// Reset re-initialises the internal structures in preparation for a new query
+func Reset(s *Sparql) {
+    s.Reset()
+    s.resetScope()
+    s.resetSkip()
+}
+
 // Reset the scope to prepare for a new query
-func (b *Scope) Reset() {
+func (b *Scope) resetScope() {
     b.Keyword = ""
     b.Prefix = ""
     b.pathLength = 0
     b.Pof = "?POF"
     b.Tps = b.Tps[:0]
+}
+
+// Reset the skip to prepare for a new query
+func (s *Skip) resetSkip() {
+    s.commentBegin = 0
 }
 
 // Add a prefix definition to the set.
