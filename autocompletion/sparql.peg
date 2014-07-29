@@ -6,11 +6,11 @@ type Sparql Peg {
     *Scope
 }
 
-queryContainer <- ws prolog query !.
+queryContainer <- skip prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX <[^: ]* COLON iri> { p.addPrefix(buffer[begin:end]) }
+prefixDecl <- PREFIX <[^: ]* COLON iri> { p.addPrefix(p.skipComment(buffer, begin, end)) }
 
 baseDecl <- BASE iri
 
@@ -46,7 +46,7 @@ triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
 
 triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath )
 
-varOrTerm <- <var> { p.setSubject(buffer[begin:end]) } / <graphTerm> { p.setSubject(buffer[begin:end]) } / pof { p.setSubject("?POF") } 
+varOrTerm <- <var> { p.setSubject(p.skipComment(buffer, begin, end)) } / <graphTerm> { p.setSubject(p.skipComment(buffer, begin, end)) } / pof { p.setSubject("?POF") } 
 
 graphTerm <- iriref / literal / numericLiteral / booleanLiteral / blankNode / nil
 
@@ -56,7 +56,7 @@ collectionPath <- LPAREN graphNodePath+ RPAREN
 
 blankNodePropertyListPath <- LBRACK propertyListPath RBRACK
 
-propertyListPath <- ( pof { p.setPredicate("?POF") } / <var> { p.setPredicate(buffer[begin:end]) } / verbPath ) objectListPath ( SEMICOLON propertyListPath )?
+propertyListPath <- ( pof { p.setPredicate("?POF") } / <var> { p.setPredicate(p.skipComment(buffer, begin, end)) } / verbPath ) objectListPath ( SEMICOLON propertyListPath )?
 
 verbPath <- path
 
@@ -64,7 +64,7 @@ path <- pathAlternative
 
 pathAlternative <- pathSequence ( PIPE pathAlternative )*
 
-pathSequence <- <pathElt> { p.setPredicate(buffer[begin:end]) } ( SLASH pathSequence )*
+pathSequence <- <pathElt> { p.setPredicate(p.skipComment(buffer, begin, end)) } ( SLASH pathSequence )*
 
 # TODO: support pathmod rule.
 pathElt <- INVERSE? pathPrimary #pathMod?
@@ -79,7 +79,7 @@ pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
 objectListPath <- objectPath ( COMMA objectListPath )*
 
-objectPath <- pof { p.setObject("?POF"); p.addTriplePattern() } / <graphNodePath> { p.setObject(buffer[begin:end]); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
+objectPath <- pof { p.setObject("?POF"); p.addTriplePattern() } / <graphNodePath> { p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
 
 graphNodePath <- var / graphTerm
 
@@ -112,36 +112,40 @@ argList <- nil / LPAREN expression ( COMMA expression )* RPAREN
 # Point Of Focus
 #
 
-pof <- ( <[[a-z]]*>':' { p.setPrefix(buffer[begin:end]) } / <[2-9][0-9]*>'/' { p.setPathLength(buffer[begin:end]) } / <[a-zA-Z0-9.\-_+]*> { p.setKeyword(buffer[begin:end]) } ) '<' whiteSpaces+
+pof <- (
+        <[[a-z]]*>':' { p.setPrefix(p.skipComment(buffer, begin, end)) } /
+        <[2-9][0-9]*>'/' { p.setPathLength(p.skipComment(buffer, begin, end)) } /
+        <[a-zA-Z0-9.\-_+]*> { p.setKeyword(p.skipComment(buffer, begin, end)) }
+       ) '<' ws skip
 
 #
 # Terminals
 #
 
-var <- ('?' / '$') VARNAME ws
+var <- ('?' / '$') VARNAME skip
 
 iriref <- iri / prefixedName
 
-iri <- '<' [^>]* '>' ws
+iri <- '<' [^>]* '>' skip
 
-prefixedName <- [^: ]* ':' [a-zA-Z0-9.-_:%]* ws
+prefixedName <- [^: ]* ':' [a-zA-Z0-9.-_:%]* skip
 
-literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? ws
+literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? skip
 
 string <- '\"' [^"]* '\"'
 
-numericLiteral <- ('+' / '-')? [0-9]+ ('.' [0-9]*)? ws
-signedNumericLiteral <- ('+' / '-') [0-9]+ ('.' [0-9]*)? ws
+numericLiteral <- ('+' / '-')? [0-9]+ ('.' [0-9]*)? skip
+signedNumericLiteral <- ('+' / '-') [0-9]+ ('.' [0-9]*)? skip
 
 booleanLiteral <- TRUE / FALSE
 
 blankNode <- blankNodeLabel / anon
 
-blankNodeLabel <- "_:" [a-zA-Z0-9] ([a-zA-Z0-9.-_]?) ws
+blankNodeLabel <- "_:" [a-zA-Z0-9][a-zA-Z0-9.-_] ?skip
 
-anon <- '[' ws ']' ws
+anon <- '[' ws* ']' skip
 
-nil <- '(' ws ')' ws
+nil <- '(' ws* ')' skip
 
 #
 # Labels
@@ -155,54 +159,60 @@ PN_CHARS_BASE <- [[a-z]]
 # Tokens
 #
 
-PREFIX <- "PREFIX" ws
-TRUE <- "TRUE" ws
-FALSE <- "FALSE" ws
-BASE <- "BASE" ws
-SELECT <- "SELECT" ws
-REDUCED <- "REDUCED" ws
-DISTINCT <- "DISTINCT" ws
-FROM <- "FROM" ws
-NAMED <- "NAMED" ws
-WHERE <- "WHERE" ws
-LBRACE <- '{' ws
-RBRACE <- '}' ws
-LBRACK <- '[' ws
-RBRACK <- ']' ws
-SEMICOLON <- ';' ws
-COMMA <- ',' ws
-DOT <- '.' ws
-COLON <- ':' ws
-PIPE <- '|' ws
-SLASH <- '/' ws
-INVERSE <- '^' ws
-LPAREN <- '(' ws
-RPAREN <- ')' ws
-ISA <- 'a' ws
-NOT <- '!' ws
-STAR <- '*' ws
-#QUESTION <- '?' ws
-PLUS <- '+' ws
-MINUS <- '-' ws
-OPTIONAL <- "OPTIONAL" ws
-UNION <- "UNION" ws
-LIMIT <- "LIMIT" ws
-OFFSET <- "OFFSET" ws
-INTEGER <- [0-9]+ ws
-CONSTRUCT <- "CONSTRUCT" ws
-DESCRIBE <- "DESCRIBE" ws
-ASK <- "ASK" ws
-OR <- "||" ws
-AND <- "&&" ws
-EQ <- '=' ws
-NE <- '!=' ws
-GT <- '>' ws
-LT <- '<' ws
-LE <- '<=' ws
-GE <- '>=' ws
-IN <- "in" ws
-NOTIN <- "not in" ws
-AS <- "AS" ws
+PREFIX <- "PREFIX" skip
+TRUE <- "TRUE" skip
+FALSE <- "FALSE" skip
+BASE <- "BASE" skip
+SELECT <- "SELECT" skip
+REDUCED <- "REDUCED" skip
+DISTINCT <- "DISTINCT" skip
+FROM <- "FROM" skip
+NAMED <- "NAMED" skip
+WHERE <- "WHERE" skip
+LBRACE <- '{' skip
+RBRACE <- '}' skip
+LBRACK <- '[' skip
+RBRACK <- ']' skip
+SEMICOLON <- ';' skip
+COMMA <- ',' skip
+DOT <- '.' skip
+COLON <- ':' skip
+PIPE <- '|' skip
+SLASH <- '/' skip
+INVERSE <- '^' skip
+LPAREN <- '(' skip
+RPAREN <- ')' skip
+ISA <- 'a' skip
+NOT <- '!' skip
+STAR <- '*' skip
+#QUESTION <- '?' skip
+PLUS <- '+' skip
+MINUS <- '-' skip
+OPTIONAL <- "OPTIONAL" skip
+UNION <- "UNION" skip
+LIMIT <- "LIMIT" skip
+OFFSET <- "OFFSET" skip
+INTEGER <- [0-9]+ skip
+CONSTRUCT <- "CONSTRUCT" skip
+DESCRIBE <- "DESCRIBE" skip
+ASK <- "ASK" skip
+OR <- "||" skip
+AND <- "&&" skip
+EQ <- '=' skip
+NE <- '!=' skip
+GT <- '>' skip
+LT <- '<' skip
+LE <- '<=' skip
+GE <- '>=' skip
+IN <- "in" skip
+NOTIN <- "not in" skip
+AS <- "AS" skip
 
-whiteSpaces <- '\040' / '\t' / '\r' / '\n' / '\f' / '\v'
-ws <- whiteSpaces*
+skip <- ( ws / comment )*
+
+ws <- '\040' / '\t' / '\f' / '\v' / endOfLine
+
+comment <- < '#' (!endOfLine .)* endOfLine > { p.commentBegin = begin }
+
+endOfLine <- '\r\n' / '\n' / '\r'
+

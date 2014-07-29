@@ -12,6 +12,16 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestComments(t *testing.T) {
+    parse(t, `   # this is sparta
+    select  #blabla
+            * { ?s # sub!
+            ?p # pred !
+            ?o # obj  !!
+        }
+    `)
+}
+
 func TestExpressions(t *testing.T) {
     parse(t, "select ( ?s as ?e ) { ?s ?p ?o }")
     parse(t, "select ( !?s -?s + ?s as ?e ) { ?s ?p ?o }")

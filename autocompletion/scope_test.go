@@ -19,10 +19,11 @@ func (td *templateData) add(s string, p string, o string) {
 }
 
 // Gets the RecommendationQuery from query and compare it against the expected one
-func parse(t *testing.T, query string, expected *templateData, rType Type) {
+func parse(t *testing.T, query string, expected *templateData, rType Type) *Sparql {
     s := &Sparql{ Buffer : query, Scope : NewScope() }
     s.Init()
     parseWithSparql(t, s, expected, rType)
+    return s
 }
 
 // Like parse but pass the Sparql object as argument instead
@@ -44,6 +45,63 @@ func parseWithSparql(t *testing.T, s *Sparql, expected *templateData, rType Type
     }
 }
 
+func TestComment1(t *testing.T) {
+    td := newTemplateData()
+    td.add("?POF", "?p", "?o")
+    parse(t, `# Test comment
+        SELECT *
+        WHERE {
+            <   
+            # blabla
+            ?p ?o 
+        }
+        `, td, SUBJECT)
+}
+
+func TestComment2(t *testing.T) {
+    td := newTemplateData()
+    td.add("?s", "?POF", "?FillVar")
+    parse(t, `# Test comment
+        SELECT *
+        WHERE {
+            ?s # blabla
+                < 
+        }
+        `, td, PREDICATE)
+}
+
+func TestComment3(t *testing.T) {
+    td := newTemplateData()
+    td.add("?s", "?p", "?POF")
+    parse(t, `# Test comment
+        SELECT *
+        WHERE {
+            ?s ?p # blabla
+                < 
+        }
+        `, td, OBJECT)
+}
+
+func TestComment4(t *testing.T) {
+    query := `
+        SELECT *
+        WHERE {
+            ?a ?b ?c .
+            ?s <
+            # test
+        }
+    `
+    scope := NewScope()
+    s := &Sparql{ Buffer : query, Scope : scope }
+    s.Init()
+
+    td := newTemplateData()
+    td.add("?s", "?POF", "?FillVar")
+    parseWithSparql(t, s, td, PREDICATE)
+    Reset(s)
+    parseWithSparql(t, s, td, PREDICATE)
+}
+
 func TestReset(t *testing.T) {
     query := `
         SELECT *
@@ -58,8 +116,7 @@ func TestReset(t *testing.T) {
     td := newTemplateData()
     td.add("?s", "?POF", "?FillVar")
     parseWithSparql(t, s, td, PREDICATE)
-    scope.Reset()
-    s.Reset()
+    Reset(s)
     parseWithSparql(t, s, td, PREDICATE)
 }
 

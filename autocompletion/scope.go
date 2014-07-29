@@ -51,7 +51,10 @@ type triplePattern struct {
 // A triple pattern is relevant only if it is part of the connected component
 // that contains the Point Of Focus.
 type Scope struct {
+    // The start offset of a comment
+    commentBegin int
     triplePattern
+
     // The list of triple patterns
     Tps []triplePattern
     scope map[string]bool
@@ -98,13 +101,24 @@ func NewScopeWithTemplate(tmpl string) *Scope {
     return scope
 }
 
-// Reset the scope to prepare for a new query
-func (b *Scope) Reset() {
-    b.Keyword = ""
-    b.Prefix = ""
-    b.pathLength = 0
-    b.Pof = "?POF"
-    b.Tps = b.Tps[:0]
+// Reset re-initialises the internal structures in preparation for a new query
+func Reset(s *Sparql) {
+    s.Reset()
+    s.commentBegin = 0
+    s.Keyword = ""
+    s.Prefix = ""
+    s.pathLength = 0
+    s.Pof = "?POF"
+    s.Tps = s.Tps[:0]
+}
+
+// Skip ignores comments in the buffer
+func (s *Scope) skipComment(buffer string, begin int, end int) string {
+    if begin <= s.commentBegin {
+        return buffer[begin:s.commentBegin]
+    } else {
+        return buffer[begin:end]
+    }
 }
 
 // Add a prefix definition to the set.

@@ -13,8 +13,8 @@ var scope = autocompletion.NewScope()
 func RecommendationQuery(query string, callback func(string, autocompletion.Type, string)) {
     go func(query string) {
         s := &autocompletion.Sparql{ Buffer : query, Scope : scope }
-        scope.Reset()
         s.Init()
+        autocompletion.Reset(s)
         err := s.Parse()
         if err == nil {
             s.Execute()
