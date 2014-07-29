@@ -2,12 +2,24 @@ package sparql
 
 import "testing"
 
-func parse(t *testing.T, query string) {
+// Parses the query and asserts that there is no error
+func parse(t *testing.T, query string) *Sparql {
     s := &Sparql{ Buffer : query }
     s.Init()
     if err := s.Parse(); err != nil {
         t.Errorf("Failed to parse query\n%v", err)
     }
+    return s
+}
+
+func TestExpressions(t *testing.T) {
+    parse(t, "select ( ?s as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( !?s -?s + ?s as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( ( ?a + ?b ) * 2 as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( ?s / 2 + 42 as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( ?s = ?o && ?p in ( ?o1, ?o2 ) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( <aaa> + \"23\" - true + ( 32 = ?s ) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( ?s not in (?o) as ?e ) { ?s ?p ?o }")
 }
 
 func TestDescribe(t *testing.T) {

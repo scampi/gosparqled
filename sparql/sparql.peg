@@ -23,7 +23,7 @@ describeQuery <- describe datasetClause? whereClause? solutionModifier
 describe <- DESCRIBE ( STAR / var / iriref )
 askQuery <- ASK datasetClause? whereClause
 
-projectionElem <- var
+projectionElem <- var / LPAREN expression AS var RPAREN
 
 datasetClause <- FROM NAMED? iriref
 
@@ -90,6 +90,23 @@ limit <- LIMIT INTEGER
 
 offset <- OFFSET INTEGER
 
+# Expressions
+
+expression <- conditionalOrExpression
+conditionalOrExpression <- conditionalAndExpression ( OR conditionalOrExpression )?
+conditionalAndExpression <- valueLogical ( AND conditionalAndExpression )?
+valueLogical <- numericExpression ( ( EQ / NE / LT / LE / GE / GT ) numericExpression / in / notin )?
+numericExpression <- multiplicativeExpression ( ( PLUS / MINUS ) multiplicativeExpression / signedNumericLiteral )*
+multiplicativeExpression <- unaryExpression ( ( STAR / SLASH ) unaryExpression )*
+unaryExpression <- ( NOT / MINUS / PLUS )? primaryExpression
+primaryExpression <- brackettedExpression / iriref / literal / numericLiteral / booleanLiteral / var
+brackettedExpression <- LPAREN expression RPAREN
+
+in <- IN argList
+notin <- NOTIN argList
+
+argList <- nil / LPAREN expression ( COMMA expression )* RPAREN
+
 #
 # Terminals
 #
@@ -107,6 +124,7 @@ literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? ws
 string <- '\"' [^"]* '\"'
 
 numericLiteral <- ('+' / '-')? [0-9]+ ('.' [0-9]*)? ws
+signedNumericLiteral <- ('+' / '-') [0-9]+ ('.' [0-9]*)? ws
 
 booleanLiteral <- TRUE / FALSE
 
@@ -157,7 +175,8 @@ ISA <- 'a' ws
 NOT <- '!' ws
 STAR <- '*' ws
 #QUESTION <- '?' ws
-#PLUS <- '+' ws
+PLUS <- '+' ws
+MINUS <- '-' ws
 OPTIONAL <- "OPTIONAL" ws
 UNION <- "UNION" ws
 LIMIT <- "LIMIT" ws
@@ -166,5 +185,16 @@ INTEGER <- [0-9]+ ws
 CONSTRUCT <- "CONSTRUCT" ws
 DESCRIBE <- "DESCRIBE" ws
 ASK <- "ASK" ws
+OR <- "||" ws
+AND <- "&&" ws
+EQ <- '=' ws
+NE <- '!=' ws
+GT <- '>' ws
+LT <- '<' ws
+LE <- '<=' ws
+GE <- '>=' ws
+IN <- "in" ws
+NOTIN <- "not in" ws
+AS <- "AS" ws
 
 ws <- ( '\040' / '\t' / '\r' / '\n' / '\f' / '\v' )*
