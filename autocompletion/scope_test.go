@@ -20,7 +20,7 @@ func (td *templateData) add(s string, p string, o string) {
 
 // Gets the RecommendationQuery from query and compare it against the expected one
 func parse(t *testing.T, query string, expected *templateData, rType Type) *Sparql {
-    s := &Sparql{ Buffer : query, Scope : NewScope(), Skip : &Skip{} }
+    s := &Sparql{ Buffer : query, Scope : NewScope() }
     s.Init()
     parseWithSparql(t, s, expected, rType)
     return s
@@ -92,7 +92,7 @@ func TestComment4(t *testing.T) {
         }
     `
     scope := NewScope()
-    s := &Sparql{ Buffer : query, Scope : scope, Skip : &Skip{} }
+    s := &Sparql{ Buffer : query, Scope : scope }
     s.Init()
 
     td := newTemplateData()
@@ -110,7 +110,7 @@ func TestReset(t *testing.T) {
         }
     `
     scope := NewScope()
-    s := &Sparql{ Buffer : query, Scope : scope, Skip : &Skip{} }
+    s := &Sparql{ Buffer : query, Scope : scope }
     s.Init()
 
     td := newTemplateData()

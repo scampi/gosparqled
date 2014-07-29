@@ -867,7 +867,6 @@ func (t *tokens32) Expand(index int) tokenTree {
 
 type Sparql struct {
 	*Scope
-	*Skip
 
 	Buffer string
 	buffer []rune
@@ -947,34 +946,34 @@ func (p *Sparql) Execute() {
 		case rulePegText:
 			begin, end = int(token.begin), int(token.end)
 		case ruleAction0:
-			p.addPrefix(p.skip(buffer, begin, end))
+			p.addPrefix(p.skipComment(buffer, begin, end))
 		case ruleAction1:
-			p.setSubject(p.skip(buffer, begin, end))
+			p.setSubject(p.skipComment(buffer, begin, end))
 		case ruleAction2:
-			p.setSubject(p.skip(buffer, begin, end))
+			p.setSubject(p.skipComment(buffer, begin, end))
 		case ruleAction3:
 			p.setSubject("?POF")
 		case ruleAction4:
 			p.setPredicate("?POF")
 		case ruleAction5:
-			p.setPredicate(p.skip(buffer, begin, end))
+			p.setPredicate(p.skipComment(buffer, begin, end))
 		case ruleAction6:
-			p.setPredicate(p.skip(buffer, begin, end))
+			p.setPredicate(p.skipComment(buffer, begin, end))
 		case ruleAction7:
 			p.setObject("?POF")
 			p.addTriplePattern()
 		case ruleAction8:
-			p.setObject(p.skip(buffer, begin, end))
+			p.setObject(p.skipComment(buffer, begin, end))
 			p.addTriplePattern()
 		case ruleAction9:
 			p.setObject("?FillVar")
 			p.addTriplePattern()
 		case ruleAction10:
-			p.setPrefix(p.skip(buffer, begin, end))
+			p.setPrefix(p.skipComment(buffer, begin, end))
 		case ruleAction11:
-			p.setPathLength(p.skip(buffer, begin, end))
+			p.setPathLength(p.skipComment(buffer, begin, end))
 		case ruleAction12:
-			p.setKeyword(p.skip(buffer, begin, end))
+			p.setKeyword(p.skipComment(buffer, begin, end))
 		case ruleAction13:
 			p.commentBegin = begin
 
@@ -6270,31 +6269,31 @@ func (p *Sparql) Init() {
 			return false
 		},
 		nil,
-		/* 127 Action0 <- <{ p.addPrefix(p.skip(buffer, begin, end)) }> */
+		/* 127 Action0 <- <{ p.addPrefix(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 128 Action1 <- <{ p.setSubject(p.skip(buffer, begin, end)) }> */
+		/* 128 Action1 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 129 Action2 <- <{ p.setSubject(p.skip(buffer, begin, end)) }> */
+		/* 129 Action2 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
 		nil,
 		/* 130 Action3 <- <{ p.setSubject("?POF") }> */
 		nil,
 		/* 131 Action4 <- <{ p.setPredicate("?POF") }> */
 		nil,
-		/* 132 Action5 <- <{ p.setPredicate(p.skip(buffer, begin, end)) }> */
+		/* 132 Action5 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 133 Action6 <- <{ p.setPredicate(p.skip(buffer, begin, end)) }> */
+		/* 133 Action6 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
 		nil,
 		/* 134 Action7 <- <{ p.setObject("?POF"); p.addTriplePattern() }> */
 		nil,
-		/* 135 Action8 <- <{ p.setObject(p.skip(buffer, begin, end)); p.addTriplePattern() }> */
+		/* 135 Action8 <- <{ p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() }> */
 		nil,
 		/* 136 Action9 <- <{ p.setObject("?FillVar"); p.addTriplePattern() }> */
 		nil,
-		/* 137 Action10 <- <{ p.setPrefix(p.skip(buffer, begin, end)) }> */
+		/* 137 Action10 <- <{ p.setPrefix(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 138 Action11 <- <{ p.setPathLength(p.skip(buffer, begin, end)) }> */
+		/* 138 Action11 <- <{ p.setPathLength(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 139 Action12 <- <{ p.setKeyword(p.skip(buffer, begin, end)) }> */
+		/* 139 Action12 <- <{ p.setKeyword(p.skipComment(buffer, begin, end)) }> */
 		nil,
 		/* 140 Action13 <- <{ p.commentBegin = begin }> */
 		nil,
