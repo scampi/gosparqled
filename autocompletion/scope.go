@@ -70,6 +70,18 @@ type Scope struct {
     prefixes map[string]string
 }
 
+type Skip struct {
+    commentBegin int
+}
+
+func (s *Skip) skip(buffer string, begin int, end int) string {
+    if begin <= s.commentBegin {
+        return buffer[begin:s.commentBegin]
+    } else {
+        return buffer[begin:end]
+    }
+}
+
 // Scope struct constructor
 func NewScope() *Scope {
     tmpl := `
