@@ -39,6 +39,7 @@
             Endpoint: <input type="text" size="50%" name="url" value="http://dbpedia.org/sparql">
             <input type="submit" value="Submit">
         </form>
+        <pre><span id='endpoint'></span></pre>
 
         <div id="loading"></div>
         
@@ -55,6 +56,7 @@
             function updateEndpoint() {
                 sparqled.config.endpoint = document.endpoint.url.value;
                 yasqe.options.sparql.endpoint = sparqled.config.endpoint;
+                $("#endpoint").text(sparqled.config.endpoint);
             }
         </script>
 
