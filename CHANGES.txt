@@ -3,3 +3,4 @@
 * [GH-7] Support PrefixeNamed
 * [GH-6] Prefix auto-completion
 * [GH-10] Add construct/ask/describe query to the grammar
+* [GH-12] Support SPARQL expressions
