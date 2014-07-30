@@ -12,6 +12,24 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestGroupBy(t *testing.T) {
+    parse(t, `
+            select (count(*) as ?c) {
+                ?s ?p ?o
+            }
+            group by ( bound(?s) as ?sss )
+        `)
+}
+
+func TestOrderBy(t *testing.T) {
+    parse(t, `
+            select (count(*) as ?c) {
+                ?s ?p ?o
+            }
+            order by desc (?s + ?p)
+        `)
+}
+
 func TestAggregate(t *testing.T) {
     parse(t, `
             select (count(*) as ?c) {
@@ -201,9 +219,10 @@ func TestOptional(t *testing.T) {
 func TestSubSelect(t *testing.T) {
     parse(t, `
         SELECT * {
-            SELECT * {
+            SELECT (count(*) as ?c) {
                 ?s ?p ?o
             }
+            group by ?s
         }
     `)
 }
