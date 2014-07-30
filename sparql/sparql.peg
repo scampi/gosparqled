@@ -16,7 +16,7 @@ baseDecl <- BASE iri
 query <- selectQuery / constructQuery / describeQuery / askQuery
 selectQuery <- select datasetClause? whereClause solutionModifier
 select <- SELECT ( DISTINCT / REDUCED )? ( STAR / projectionElem+ )
-subSelect <- select whereClause
+subSelect <- select whereClause solutionModifier
 constructQuery <- construct datasetClause? whereClause solutionModifier
 construct <- CONSTRUCT LBRACE triplesBlock? RBRACE
 describeQuery <- describe datasetClause? whereClause? solutionModifier

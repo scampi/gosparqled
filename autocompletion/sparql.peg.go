@@ -2306,7 +2306,7 @@ func (p *Sparql) Init() {
 			position, tokenIndex, depth = position111, tokenIndex111, depth111
 			return false
 		},
-		/* 7 subSelect <- <(select whereClause)> */
+		/* 7 subSelect <- <(select whereClause solutionModifier)> */
 		func() bool {
 			position155, tokenIndex155, depth155 := position, tokenIndex, depth
 			{
@@ -2316,6 +2316,9 @@ func (p *Sparql) Init() {
 					goto l155
 				}
 				if !rules[rulewhereClause]() {
+					goto l155
+				}
+				if !rules[rulesolutionModifier]() {
 					goto l155
 				}
 				depth--

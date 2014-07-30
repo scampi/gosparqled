@@ -219,9 +219,10 @@ func TestOptional(t *testing.T) {
 func TestSubSelect(t *testing.T) {
     parse(t, `
         SELECT * {
-            SELECT * {
+            SELECT (count(*) as ?c) {
                 ?s ?p ?o
             }
+            group by ?s
         }
     `)
 }
