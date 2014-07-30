@@ -6,3 +6,4 @@
 * [GH-12] Support SPARQL expressions
 * [GH-14] Skip SPARQL comments
 * [GH-16] Support SPARQL builtins
+* [GH-18] Support SPARQL filter and bind

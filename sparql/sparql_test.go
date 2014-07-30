@@ -12,6 +12,49 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestFilterOrBind1(t *testing.T) {
+    parse(t, `
+            select * {
+                filter ( str(?s) = "en" )
+                filter bound(?o)
+            }
+        `)
+}
+
+func TestFilterOrBind2(t *testing.T) {
+    parse(t, `
+            select * {
+                ?s ?p ?o
+                filter bound(?o)
+            }
+        `)
+}
+
+func TestFilterOrBind3(t *testing.T) {
+    parse(t, `
+            select * {
+                filter bound(?o)
+                ?s ?p ?o
+            }
+        `)
+}
+
+func TestFilterOrBind4(t *testing.T) {
+    parse(t, `
+            select * {
+                filter xsd:long(?o)
+            }
+        `)
+}
+
+func TestFilterOrBind5(t *testing.T) {
+    parse(t, `
+            select * {
+                bind(23 + ?price as ?o)
+            }
+        `)
+}
+
 func TestFunctionCall(t *testing.T) {
     parse(t, "select ( <aaa>(?test) as ?e ) { ?s ?p ?o }")
     parse(t, `
