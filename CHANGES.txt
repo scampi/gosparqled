@@ -8,3 +8,4 @@
 * [GH-16] Support SPARQL builtins
 * [GH-18] Support SPARQL filter and bind
 * [GH-20] Support SPARQL aggregates
+* [GH-22] Support SPARQL solutions modifiers
