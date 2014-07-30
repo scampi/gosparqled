@@ -12,6 +12,14 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestAggregate(t *testing.T) {
+    parse(t, `
+            select (count(*) as ?c) {
+                filter ( count(?s) > 5 )
+            }
+        `)
+}
+
 func TestFilterOrBind1(t *testing.T) {
     parse(t, `
             select * {
