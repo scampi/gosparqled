@@ -87,7 +87,10 @@ objectPath <- pof { p.setObject("?POF"); p.addTriplePattern() } / <graphNodePath
 
 graphNodePath <- var / graphTerm
 
-solutionModifier <- limitOffsetClauses?
+solutionModifier <- ( GROUP BY groupCondition+ / HAVING constraint / ORDER BY orderCondition+ / limitOffsetClauses )?
+
+groupCondition <- functionCall / builtinCall / LPAREN expression ( AS var )? RPAREN / var
+orderCondition <- ( ASC / DESC )? brackettedExpression / functionCall / builtinCall / var
 
 limitOffsetClauses <- limit offset? / offset limit?
 
@@ -332,6 +335,12 @@ SAMPLE <- "SAMPLE" skip
 COUNT <- "COUNT" skip
 GROUPCONCAT <- "GROUP_CONCAT" skip
 SEPARATOR <- "SEPARATOR" skip
+ASC <- "ASC" skip
+DESC <- "DESC" skip
+ORDER <- "ORDER" skip
+GROUP <- "GROUP" skip
+BY <- "BY" skip
+HAVING <- "HAVING" skip
 
 skip <- ( ws / comment )*
 
