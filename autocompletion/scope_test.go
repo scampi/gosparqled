@@ -45,6 +45,20 @@ func parseWithSparql(t *testing.T, s *Sparql, expected *templateData, rType Type
     }
 }
 
+func TestFilter(t *testing.T) {
+    td := newTemplateData()
+    td.add("?s", "a", "?POF")
+    td.add("?s", "<name>", "?name")
+    parse(t, `# Test comment
+        SELECT *
+        WHERE {
+            ?s a <
+            FILTER (lang(?name) = "en")
+            ?s <name> ?name
+        }
+        `, td, CLASS)
+}
+
 func TestComment1(t *testing.T) {
     td := newTemplateData()
     td.add("?POF", "?p", "?o")

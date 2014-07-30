@@ -39,7 +39,11 @@ optionalGraphPattern <- OPTIONAL LBRACE ( subSelect / graphPattern ) RBRACE
 
 groupOrUnionGraphPattern <- groupGraphPattern ( UNION groupOrUnionGraphPattern )?
 
-basicGraphPattern <- triplesBlock
+basicGraphPattern <- triplesBlock ( filterOrBind DOT? triplesBlock? ) * / ( filterOrBind DOT? triplesBlock? )+
+
+filterOrBind <- FILTER constraint / BIND LPAREN expression AS var RPAREN
+
+constraint <- brackettedExpression / builtinCall / functionCall
 
 triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
 
@@ -303,6 +307,8 @@ IF <- "IF" skip
 EXISTS <- "EXISTS" skip
 NOTEXIST <- "NOT EXISTS" skip
 COALESCE <- "COALESCE" skip
+FILTER <- "FILTER" skip
+BIND <- "BIND" skip
 
 skip <- ( ws / comment )*
 
