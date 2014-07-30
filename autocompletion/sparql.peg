@@ -100,13 +100,66 @@ valueLogical <- numericExpression ( ( EQ / NE / LT / LE / GE / GT ) numericExpre
 numericExpression <- multiplicativeExpression ( ( PLUS / MINUS ) multiplicativeExpression / signedNumericLiteral )*
 multiplicativeExpression <- unaryExpression ( ( STAR / SLASH ) unaryExpression )*
 unaryExpression <- ( NOT / MINUS / PLUS )? primaryExpression
-primaryExpression <- brackettedExpression / iriref / literal / numericLiteral / booleanLiteral / var
+primaryExpression <- brackettedExpression / builtinCall / functionCall / iriref / literal / numericLiteral / booleanLiteral / var
 brackettedExpression <- LPAREN expression RPAREN
+functionCall <- iriref argList
 
 in <- IN argList
 notin <- NOTIN argList
 
 argList <- nil / LPAREN expression ( COMMA expression )* RPAREN
+
+builtinCall <- (
+                STR /
+                LANG /
+                DATATYPE /
+                IRI /
+                URI /
+                ABS /
+                CEIL /
+                ROUND /
+                FLOOR /
+                STRLEN /
+                UCASE /
+                LCASE /
+                ENCODEFORURI /
+                YEAR /
+                MONTH /
+                DAY /
+                HOURS /
+                MINUTES /
+                SECONDS /
+                TIMEZONE /
+                TZ /
+                MD5 /
+                SHA1 /
+                SHA256 /
+                SHA384 /
+                SHA512 /
+                ISIRI /
+                ISURI /
+                ISBLANK /
+                ISLITERAL /
+                ISNUMERIC
+               ) LPAREN expression RPAREN /
+               (
+                LANGMATCHES /
+                CONTAINS /
+                STRSTARTS /
+                STRENDS /
+                STRBEFORE /
+                STRAFTER /
+                STRLANG /
+                STRDT /
+                SAMETERM
+               ) LPAREN expression COMMA expression RPAREN /
+               BOUND LPAREN var RPAREN /
+               BNODE ( LPAREN expression RPAREN / nil ) /
+               ( RAND / NOW / UUID / STRUUID ) nil /
+               ( CONCAT / COALESCE ) argList /
+               ( SUBSTR / REPLACE / REGEX ) LPAREN expression COMMA expression ( COMMA expression )? RPAREN /
+               IF LPAREN expression COMMA expression COMMA expression RPAREN /
+               ( EXISTS / NOTEXIST ) groupGraphPattern
 
 #
 # Point Of Focus
@@ -207,6 +260,60 @@ GE <- '>=' skip
 IN <- "in" skip
 NOTIN <- "not in" skip
 AS <- "AS" skip
+STR <- "STR" skip
+LANG <- "LANG" skip
+DATATYPE <- "DATATYPE" skip
+IRI <- "IRI" skip
+URI <- "URI" skip
+ABS <- "ABS" skip
+CEIL <- "CEIL" skip
+ROUND <- "ROUND" skip
+FLOOR <- "FLOOR" skip
+STRLEN <- "STRLEN" skip
+UCASE <- "UCASE" skip
+LCASE <- "LCASE" skip
+ENCODEFORURI <- "ENCODE_FOR_URI" skip
+YEAR <- "YEAR" skip
+MONTH <- "MONTH" skip
+DAY <- "DAY" skip
+HOURS <- "HOURS" skip
+MINUTES <- "MINUTES" skip
+SECONDS <- "SECONDS" skip
+TIMEZONE <- "TIMEZONE" skip
+TZ <- "TZ" skip
+MD5 <- "MD" skip
+SHA1 <- "SHA1" skip
+SHA256 <- "SHA256" skip
+SHA384 <- "SHA384" skip
+SHA512 <- "SHA512" skip
+ISIRI <- "ISIRI" skip
+ISURI <- "ISURI" skip
+ISBLANK <- "ISBLANK" skip
+ISLITERAL <- "ISLITERAL" skip
+ISNUMERIC <-"ISNUMERIC" skip
+LANGMATCHES <- "LANGMATCHES" skip
+CONTAINS <- "CONTAINS" skip
+STRSTARTS <- "STRSTARTS" skip
+STRENDS <- "STRENDS" skip
+STRBEFORE <- "STRBEFORE" skip
+STRAFTER <- "STRAFTER" skip
+STRLANG <- "STRLANG" skip
+STRDT <- "STRDT" skip
+SAMETERM <- "SAMETERM" skip
+BOUND <- "BOUND" skip
+BNODE <- "BNODE" skip
+RAND <- "RAND" skip
+NOW <- "NOW" skip
+UUID <- "UUID" skip
+STRUUID <- "STRUUID" skip
+CONCAT <- "CONCAT" skip
+SUBSTR <- "SUBSTR" skip
+REPLACE <- "REPLACE" skip
+REGEX <- "REGEX" skip
+IF <- "IF" skip
+EXISTS <- "EXISTS" skip
+NOTEXIST <- "NOT EXISTS" skip
+COALESCE <- "COALESCE" skip
 
 skip <- ( ws / comment )*
 

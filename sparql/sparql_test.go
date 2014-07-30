@@ -12,6 +12,30 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestFunctionCall(t *testing.T) {
+    parse(t, "select ( <aaa>(?test) as ?e ) { ?s ?p ?o }")
+    parse(t, `
+            prefix : <aaa>
+            select ( :(?test) as ?e ) {
+                ?s ?p ?o
+            }
+        `)
+}
+
+func TestBuiltinCall(t *testing.T) {
+    parse(t, "select ( str(?test) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( floor(?test) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( contains(?test, \"bla\") as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( bound(?test) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( bnode(?test) && bnode() as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( now() as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( concat(\"l\", \"u\", ?tt, \"f\", \"y\") as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( regex(?a, ?b) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( regex(?a, ?b, \"i\") as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( if(?i, ?t, ?e) as ?e ) { ?s ?p ?o }")
+    parse(t, "select ( exists { ?i ?t ?e } as ?e ) { ?s ?p ?o }")
+}
+
 func TestComments(t *testing.T) {
     parse(t, `   # this is sparta
     select  #blabla
