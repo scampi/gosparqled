@@ -104,7 +104,7 @@ valueLogical <- numericExpression ( ( EQ / NE / LT / LE / GE / GT ) numericExpre
 numericExpression <- multiplicativeExpression ( ( PLUS / MINUS ) multiplicativeExpression / signedNumericLiteral )*
 multiplicativeExpression <- unaryExpression ( ( STAR / SLASH ) unaryExpression )*
 unaryExpression <- ( NOT / MINUS / PLUS )? primaryExpression
-primaryExpression <- brackettedExpression / builtinCall / functionCall / iriref / literal / numericLiteral / booleanLiteral / var
+primaryExpression <- brackettedExpression / builtinCall / functionCall / iriref / literal / numericLiteral / booleanLiteral / var / aggregate
 brackettedExpression <- LPAREN expression RPAREN
 functionCall <- iriref argList
 
@@ -112,6 +112,10 @@ in <- IN argList
 notin <- NOTIN argList
 
 argList <- nil / LPAREN expression ( COMMA expression )* RPAREN
+
+aggregate <- count / groupConcat / ( SUM / MIN / MAX / AVG / SAMPLE ) LPAREN DISTINCT? expression RPAREN
+count <- COUNT LPAREN DISTINCT? ( STAR / expression ) RPAREN
+groupConcat <- GROUPCONCAT LPAREN DISTINCT? expression ( SEMICOLON SEPARATOR EQ string )? RPAREN
 
 builtinCall <- (
                 STR /
@@ -320,6 +324,14 @@ NOTEXIST <- "NOT EXISTS" skip
 COALESCE <- "COALESCE" skip
 FILTER <- "FILTER" skip
 BIND <- "BIND" skip
+SUM <- "SUM" skip
+MIN <- "MIN" skip
+MAX <- "MAX" skip
+AVG <- "AVG" skip
+SAMPLE <- "SAMPLE" skip
+COUNT <- "COUNT" skip
+GROUPCONCAT <- "GROUP_CONCAT" skip
+SEPARATOR <- "SEPARATOR" skip
 
 skip <- ( ws / comment )*
 

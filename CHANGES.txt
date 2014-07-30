@@ -7,3 +7,4 @@
 * [GH-14] Skip SPARQL comments
 * [GH-16] Support SPARQL builtins
 * [GH-18] Support SPARQL filter and bind
+* [GH-20] Support SPARQL aggregates
