@@ -45,6 +45,18 @@ func parseWithSparql(t *testing.T, s *Sparql, expected *templateData, rType Type
     }
 }
 
+func TestTwoTypes(t *testing.T) {
+    td := newTemplateData()
+    td.add("?s", "a", ":Person")
+    td.add("?s", "a", "?POF")
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?s a :Person; a <
+        }
+        `, td, CLASS)
+}
+
 func TestFilter(t *testing.T) {
     td := newTemplateData()
     td.add("?s", "a", "?POF")

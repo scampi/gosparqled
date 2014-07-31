@@ -10,19 +10,19 @@ queryContainer <- skip prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX <[^: ]* COLON iri> { p.addPrefix(p.skipComment(buffer, begin, end)) }
+prefixDecl <- PREFIX <pnPrefix? COLON iri> { p.addPrefix(p.skipComment(buffer, begin, end)) }
 
 baseDecl <- BASE iri
 
 query <- selectQuery / constructQuery / describeQuery / askQuery
-selectQuery <- select datasetClause? whereClause solutionModifier
+selectQuery <- select datasetClause* whereClause solutionModifier
 select <- SELECT ( DISTINCT / REDUCED )? ( STAR / projectionElem+ )
 subSelect <- select whereClause solutionModifier
-constructQuery <- construct datasetClause? whereClause solutionModifier
+constructQuery <- construct datasetClause* whereClause solutionModifier
 construct <- CONSTRUCT LBRACE triplesBlock? RBRACE
-describeQuery <- describe datasetClause? whereClause? solutionModifier
+describeQuery <- describe datasetClause* whereClause? solutionModifier
 describe <- DESCRIBE ( STAR / var / iriref )
-askQuery <- ASK datasetClause? whereClause
+askQuery <- ASK datasetClause* whereClause
 
 projectionElem <- var / LPAREN expression AS var RPAREN
 
@@ -34,21 +34,25 @@ groupGraphPattern <- LBRACE ( subSelect / graphPattern ) RBRACE
 
 graphPattern <- basicGraphPattern? ( graphPatternNotTriples DOT? graphPattern )?
 
-graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern
+graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern / graphGraphPattern / minusGraphPattern
 
 optionalGraphPattern <- OPTIONAL LBRACE ( subSelect / graphPattern ) RBRACE
 
 groupOrUnionGraphPattern <- groupGraphPattern ( UNION groupOrUnionGraphPattern )?
 
-basicGraphPattern <- triplesBlock ( filterOrBind DOT? triplesBlock? ) * / ( filterOrBind DOT? triplesBlock? )+
+graphGraphPattern <- GRAPH ( var / iriref ) groupGraphPattern
+
+minusGraphPattern <- MINUSSETOPER groupGraphPattern
+
+basicGraphPattern <- triplesBlock ( filterOrBind DOT? triplesBlock? )* / ( filterOrBind DOT? triplesBlock? )+
 
 filterOrBind <- FILTER constraint / BIND LPAREN expression AS var RPAREN
 
 constraint <- brackettedExpression / builtinCall / functionCall
 
-triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
+triplesBlock <- triplesSameSubjectPath+
 
-triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath )
+triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath? ) DOT?
 
 varOrTerm <- <var> { p.setSubject(p.skipComment(buffer, begin, end)) } / <graphTerm> { p.setSubject(p.skipComment(buffer, begin, end)) } / pof { p.setSubject("?POF") } 
 
@@ -60,18 +64,17 @@ collectionPath <- LPAREN graphNodePath+ RPAREN
 
 blankNodePropertyListPath <- LBRACK propertyListPath RBRACK
 
-propertyListPath <- ( pof { p.setPredicate("?POF") } / <var> { p.setPredicate(p.skipComment(buffer, begin, end)) } / verbPath ) objectListPath ( SEMICOLON propertyListPath )?
+propertyListPath <- ( pof { p.setPredicate("?POF") } / <var> { p.setPredicate(p.skipComment(buffer, begin, end)) } / verbPath ) objectListPath ( SEMICOLON propertyListPath? )?
 
 verbPath <- path
 
 path <- pathAlternative
 
-pathAlternative <- pathSequence ( PIPE pathAlternative )*
+pathAlternative <- pathSequence ( PIPE pathSequence )*
 
 pathSequence <- <pathElt> { p.setPredicate(p.skipComment(buffer, begin, end)) } ( SLASH pathSequence )*
 
-# TODO: support pathmod rule.
-pathElt <- INVERSE? pathPrimary #pathMod?
+pathElt <- INVERSE? pathPrimary pathMod?
 
 pathPrimary <- iriref / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
 
@@ -79,13 +82,13 @@ pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet (
 
 pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
-#pathMod <- STAR / QUESTION / PLUS
+pathMod <- ( STAR / QUESTION / PLUS ) !skip
 
-objectListPath <- objectPath ( COMMA objectListPath )*
+objectListPath <- objectPath ( COMMA objectPath )*
 
 objectPath <- pof { p.setObject("?POF"); p.addTriplePattern() } / <graphNodePath> { p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
 
-graphNodePath <- var / graphTerm
+graphNodePath <- var / graphTerm / triplesNodePath
 
 solutionModifier <- ( GROUP BY groupCondition+ / HAVING constraint / ORDER BY orderCondition+ / limitOffsetClauses )?
 
@@ -192,7 +195,7 @@ iriref <- iri / prefixedName
 
 iri <- '<' [^>]* '>' skip
 
-prefixedName <- [^: ]* ':' [a-zA-Z0-9.-_:%]* skip
+prefixedName <- pnPrefix? ':' pnLocal skip
 
 literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? skip
 
@@ -205,7 +208,10 @@ booleanLiteral <- TRUE / FALSE
 
 blankNode <- blankNodeLabel / anon
 
-blankNodeLabel <- "_:" [a-zA-Z0-9][a-zA-Z0-9.-_] ?skip
+# '_:' ( PN_CHARS_U | [0-9] ) ((PN_CHARS|'.')* PN_CHARS)?
+# FIXME: (peg) the rule has too "much" nesting written as above,
+# which makes a problem matching bnode labels
+blankNodeLabel <- "_:" ( pnCharsU / [0-9] ) ( ( pnCharsU / [0-9\-.] )* pnCharsU / [0-9\-] )? skip
 
 anon <- '[' ws* ']' skip
 
@@ -215,9 +221,18 @@ nil <- '(' ws* ')' skip
 # Labels
 #
 
-VARNAME <- ( PN_CHARS_U / [0-9] )+ 
-PN_CHARS_U <- PN_CHARS_BASE / '_'
-PN_CHARS_BASE <- [[a-z]]
+VARNAME <- ( pnCharsU / [0-9] ) ( pnCharsU / [0-9] / '\0x00B7' / [\0x0300-\0x036F] / [\0x203F-\0x2040] )*
+
+pnPrefix <- pnCharsBase pnChars*
+pnLocal <- ( pnCharsU / ':' / [0-9] / plx )+
+
+pnChars <- pnCharsU / '-' / [0-9]
+pnCharsU <- pnCharsBase / '_'
+pnCharsBase <- [a-zA-Z\0x00C0-\0x00D6\0x00D8-\0x00F6\0x00F8-\0x02FF\0x0370-\0x037D\0x037F-\0x1FFF\0x200C-\0x200D\0x2070-\0x218F\0x2C00-\0x2FEF\0x3001-\0xD7FF\0xF900-\0xFDCF\0xFDF0-\0xFFFD\0x10000-\0xEFFFF]
+plx <- percent / pnLocalEsc
+percent <- '%' hex hex
+hex <- [0-9a-fA-Z]
+pnLocalEsc <- '\\' [_~.\-!$&\'()*+,;=/?#@%]
 
 #
 # Tokens
@@ -249,7 +264,7 @@ RPAREN <- ')' skip
 ISA <- 'a' skip
 NOT <- '!' skip
 STAR <- '*' skip
-#QUESTION <- '?' skip
+QUESTION <- '?' skip
 PLUS <- '+' skip
 MINUS <- '-' skip
 OPTIONAL <- "OPTIONAL" skip
@@ -341,6 +356,8 @@ ORDER <- "ORDER" skip
 GROUP <- "GROUP" skip
 BY <- "BY" skip
 HAVING <- "HAVING" skip
+GRAPH <- "GRAPH" skip
+MINUSSETOPER <- "MINUS" skip
 
 skip <- ( ws / comment )*
 

@@ -9,7 +9,7 @@ queryContainer <- skip prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX [^: ]* COLON iri
+prefixDecl <- PREFIX pnPrefix? COLON iri
 
 baseDecl <- BASE iri
 
@@ -184,7 +184,7 @@ iriref <- iri / prefixedName
 
 iri <- '<' [^>]* '>' skip
 
-prefixedName <- [^: ]* ':' [a-zA-Z0-9.-_:%]* skip
+prefixedName <- pnPrefix? ':' pnLocal skip
 
 literal <- string ( '@' [[a-z]]+ ('-' ([[a-z]] / [0-9])+)* / "^^" iriref )? skip
 
@@ -197,7 +197,10 @@ booleanLiteral <- TRUE / FALSE
 
 blankNode <- blankNodeLabel / anon
 
-blankNodeLabel <- "_:" [a-zA-Z0-9][a-zA-Z0-9.-_] ?skip
+# '_:' ( PN_CHARS_U | [0-9] ) ((PN_CHARS|'.')* PN_CHARS)?
+# FIXME: (peg) the rule has too "much" nesting written as above,
+# which makes a problem matching bnode labels
+blankNodeLabel <- "_:" ( pnCharsU / [0-9] ) ( ( pnCharsU / [0-9\-.] )* pnCharsU / [0-9\-] )? skip
 
 anon <- '[' ws* ']' skip
 
@@ -207,9 +210,18 @@ nil <- '(' ws* ')' skip
 # Labels
 #
 
-VARNAME <- ( PN_CHARS_U / [0-9] )+ 
-PN_CHARS_U <- PN_CHARS_BASE / '_'
-PN_CHARS_BASE <- [[a-z]]
+VARNAME <- ( pnCharsU / [0-9] ) ( pnCharsU / [0-9] / '\0x00B7' / [\0x0300-\0x036F] / [\0x203F-\0x2040] )*
+
+pnPrefix <- pnCharsBase pnChars*
+pnLocal <- ( pnCharsU / ':' / [0-9] / plx )+
+
+pnChars <- pnCharsU / '-' / [0-9]
+pnCharsU <- pnCharsBase / '_'
+pnCharsBase <- [a-zA-Z\0x00C0-\0x00D6\0x00D8-\0x00F6\0x00F8-\0x02FF\0x0370-\0x037D\0x037F-\0x1FFF\0x200C-\0x200D\0x2070-\0x218F\0x2C00-\0x2FEF\0x3001-\0xD7FF\0xF900-\0xFDCF\0xFDF0-\0xFFFD\0x10000-\0xEFFFF]
+plx <- percent / pnLocalEsc
+percent <- '%' hex hex
+hex <- [0-9a-fA-Z]
+pnLocalEsc <- '\\' [_~.\-!$&\'()*+,;=/?#@%]
 
 #
 # Tokens

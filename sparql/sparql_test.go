@@ -12,6 +12,15 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestTwoTypes(t *testing.T) {
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?s a :Person; a <aaa>
+        }
+        `)
+}
+
 func TestObjectNodePath(t *testing.T) {
     parse(t, `
             select * {
@@ -170,11 +179,14 @@ func TestFilterOrBind5(t *testing.T) {
         `)
 }
 
-func TestFunctionCall(t *testing.T) {
+func TestFunctionCall1(t *testing.T) {
     parse(t, "select ( <aaa>(?test) as ?e ) { ?s ?p ?o }")
+}
+
+func TestFunctionCall2(t *testing.T) {
     parse(t, `
             prefix : <aaa>
-            select ( :(?test) as ?e ) {
+            select ( :doit(?test) as ?e ) {
                 ?s ?p ?o
             }
         `)
