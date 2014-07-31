@@ -12,6 +12,95 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestObjectNodePath(t *testing.T) {
+    parse(t, `
+            select * {
+                ?s ?p [ <p1> ?o1; ]
+            }
+        `)
+}
+
+func TestTrailingSemiColon(t *testing.T) {
+    parse(t, `
+            select * {
+                ?s <p1> ?o1;
+            }
+        `)
+    parse(t, `
+            select * {
+                [ <p1> ?o1; ]
+            }
+        `)
+}
+
+func TestTriplesNodePath(t *testing.T) {
+    parse(t, `
+            select * {
+                [
+                    <p1> ?o1;
+                    <p2> ?o2
+                ]
+            }
+        `)
+}
+
+func TestMultipleDatasets(t *testing.T) {
+    parse(t, `
+            select *
+            from <aaa>
+            from <bbb> {
+                ?s ?p ?o
+            }
+        `)
+    parse(t, `
+            construct { ?a ?b ?c }
+            from <aaa>
+            from <bbb> {
+                ?s ?p ?o
+            }
+        `)
+    parse(t, `
+            ASK
+            from <aaa>
+            from <bbb> {
+                ?s ?p ?o
+            }
+        `)
+    parse(t, `
+            describe ?s
+            from <aaa>
+            from <bbb> {
+                ?s ?p ?o
+            }
+        `)
+}
+
+func TestGraph(t *testing.T) {
+    parse(t, `
+            select * {
+                graph ?g {
+                    ?s ?p ?o
+                }
+                graph <aaa> {
+                    ?s ?p ?o
+                }
+                graph a:b {
+                    ?s ?p ?o
+                }
+            }
+        `)
+}
+
+func TestMinus(t *testing.T) {
+    parse(t, `
+            select * {
+                minus {
+                    ?s ?p ?o
+                }
+            }
+        `)
+}
+
 func TestGroupBy(t *testing.T) {
     parse(t, `
             select (count(*) as ?c) {

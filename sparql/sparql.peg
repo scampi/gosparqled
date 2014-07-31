@@ -14,14 +14,14 @@ prefixDecl <- PREFIX [^: ]* COLON iri
 baseDecl <- BASE iri
 
 query <- selectQuery / constructQuery / describeQuery / askQuery
-selectQuery <- select datasetClause? whereClause solutionModifier
+selectQuery <- select datasetClause* whereClause solutionModifier
 select <- SELECT ( DISTINCT / REDUCED )? ( STAR / projectionElem+ )
 subSelect <- select whereClause solutionModifier
-constructQuery <- construct datasetClause? whereClause solutionModifier
+constructQuery <- construct datasetClause* whereClause solutionModifier
 construct <- CONSTRUCT LBRACE triplesBlock? RBRACE
-describeQuery <- describe datasetClause? whereClause? solutionModifier
+describeQuery <- describe datasetClause* whereClause? solutionModifier
 describe <- DESCRIBE ( STAR / var / iriref )
-askQuery <- ASK datasetClause? whereClause
+askQuery <- ASK datasetClause* whereClause
 
 projectionElem <- var / LPAREN expression AS var RPAREN
 
@@ -33,21 +33,25 @@ groupGraphPattern <- LBRACE ( subSelect / graphPattern ) RBRACE
 
 graphPattern <- basicGraphPattern? ( graphPatternNotTriples DOT? graphPattern )?
 
-graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern
+graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern / graphGraphPattern / minusGraphPattern
 
 optionalGraphPattern <- OPTIONAL LBRACE ( subSelect / graphPattern ) RBRACE
 
 groupOrUnionGraphPattern <- groupGraphPattern ( UNION groupOrUnionGraphPattern )?
 
-basicGraphPattern <- triplesBlock ( filterOrBind DOT? triplesBlock? ) * / ( filterOrBind DOT? triplesBlock? )+
+graphGraphPattern <- GRAPH ( var / iriref ) groupGraphPattern
+
+minusGraphPattern <- MINUSSETOPER groupGraphPattern
+
+basicGraphPattern <- triplesBlock ( filterOrBind DOT? triplesBlock? )* / ( filterOrBind DOT? triplesBlock? )+
 
 filterOrBind <- FILTER constraint / BIND LPAREN expression AS var RPAREN
 
 constraint <- brackettedExpression / builtinCall / functionCall
 
-triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
+triplesBlock <- triplesSameSubjectPath+
 
-triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath )
+triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath? ) DOT?
 
 varOrTerm <- var / graphTerm
 
@@ -59,18 +63,17 @@ collectionPath <- LPAREN graphNodePath+ RPAREN
 
 blankNodePropertyListPath <- LBRACK propertyListPath RBRACK
 
-propertyListPath <- ( var / verbPath ) objectListPath ( SEMICOLON propertyListPath )?
+propertyListPath <- ( var / verbPath ) objectListPath ( SEMICOLON propertyListPath? )?
 
 verbPath <- path
 
 path <- pathAlternative
 
-pathAlternative <- pathSequence ( PIPE pathAlternative )*
+pathAlternative <- pathSequence ( PIPE pathSequence )*
 
-pathSequence <- pathElt ( SLASH pathSequence )*
+pathSequence <- pathElt ( SLASH pathElt )*
 
-# TODO: support pathmod rule.
-pathElt <- INVERSE? pathPrimary #pathMod?
+pathElt <- INVERSE? pathPrimary pathMod?
 
 pathPrimary <- iriref / ISA / NOT pathNegatedPropertySet / LPAREN path RPAREN
 
@@ -78,13 +81,13 @@ pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet (
 
 pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
-#pathMod <- STAR / QUESTION / PLUS
+pathMod <- ( STAR / QUESTION / PLUS ) !skip
 
-objectListPath <- objectPath ( COMMA objectListPath )*
+objectListPath <- objectPath ( COMMA objectPath )*
 
 objectPath <- graphNodePath
 
-graphNodePath <- varOrTerm
+graphNodePath <- varOrTerm / triplesNodePath
 
 solutionModifier <- ( GROUP BY groupCondition+ / HAVING constraint / ORDER BY orderCondition+ / limitOffsetClauses )?
 
@@ -238,7 +241,7 @@ RPAREN <- ')' skip
 ISA <- 'a' skip
 NOT <- '!' skip
 STAR <- '*' skip
-#QUESTION <- '?' skip
+QUESTION <- '?' skip
 PLUS <- '+' skip
 MINUS <- '-' skip
 OPTIONAL <- "OPTIONAL" skip
@@ -330,6 +333,8 @@ ORDER <- "ORDER" skip
 GROUP <- "GROUP" skip
 BY <- "BY" skip
 HAVING <- "HAVING" skip
+GRAPH <- "GRAPH" skip
+MINUSSETOPER <- "MINUS" skip
 
 skip <- ( ws / comment )*
 
