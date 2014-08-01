@@ -49,9 +49,9 @@ filterOrBind <- FILTER constraint / BIND LPAREN expression AS var RPAREN
 
 constraint <- brackettedExpression / builtinCall / functionCall
 
-triplesBlock <- triplesSameSubjectPath+
+triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
 
-triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath? ) DOT?
+triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath? )
 
 varOrTerm <- var / graphTerm
 
@@ -81,7 +81,7 @@ pathNegatedPropertySet <- pathOneInPropertySet / LPAREN ( pathOneInPropertySet (
 
 pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
-pathMod <- ( STAR / QUESTION / PLUS ) !skip
+pathMod <- ( STAR / QUESTION / PLUS ) !.
 
 objectListPath <- objectPath ( COMMA objectPath )*
 
