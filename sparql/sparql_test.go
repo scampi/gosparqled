@@ -12,6 +12,15 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestEscapedQuotes(t *testing.T) {
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?s <aaa> "a\"b"
+        }
+        `)
+}
+
 func TestTwoTypes(t *testing.T) {
     parse(t, `
         SELECT *
