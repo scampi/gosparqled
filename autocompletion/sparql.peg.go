@@ -35,6 +35,8 @@ const (
 	rulegraphPatternNotTriples
 	ruleoptionalGraphPattern
 	rulegroupOrUnionGraphPattern
+	rulegraphGraphPattern
+	ruleminusGraphPattern
 	rulebasicGraphPattern
 	rulefilterOrBind
 	ruleconstraint
@@ -54,6 +56,7 @@ const (
 	rulepathPrimary
 	rulepathNegatedPropertySet
 	rulepathOneInPropertySet
+	rulepathMod
 	ruleobjectListPath
 	ruleobjectPath
 	rulegraphNodePath
@@ -87,6 +90,11 @@ const (
 	ruleprefixedName
 	ruleliteral
 	rulestring
+	rulestringLiteralA
+	rulestringLiteralB
+	rulestringLiteralLongA
+	rulestringLiteralLongB
+	ruleechar
 	rulenumericLiteral
 	rulesignedNumericLiteral
 	rulebooleanLiteral
@@ -95,8 +103,15 @@ const (
 	ruleanon
 	rulenil
 	ruleVARNAME
-	rulePN_CHARS_U
-	rulePN_CHARS_BASE
+	rulepnPrefix
+	rulepnLocal
+	rulepnChars
+	rulepnCharsU
+	rulepnCharsBase
+	ruleplx
+	rulepercent
+	rulehex
+	rulepnLocalEsc
 	rulePREFIX
 	ruleTRUE
 	ruleFALSE
@@ -123,6 +138,7 @@ const (
 	ruleISA
 	ruleNOT
 	ruleSTAR
+	ruleQUESTION
 	rulePLUS
 	ruleMINUS
 	ruleOPTIONAL
@@ -214,6 +230,8 @@ const (
 	ruleGROUP
 	ruleBY
 	ruleHAVING
+	ruleGRAPH
+	ruleMINUSSETOPER
 	ruleskip
 	rulews
 	rulecomment
@@ -262,6 +280,8 @@ var rul3s = [...]string{
 	"graphPatternNotTriples",
 	"optionalGraphPattern",
 	"groupOrUnionGraphPattern",
+	"graphGraphPattern",
+	"minusGraphPattern",
 	"basicGraphPattern",
 	"filterOrBind",
 	"constraint",
@@ -281,6 +301,7 @@ var rul3s = [...]string{
 	"pathPrimary",
 	"pathNegatedPropertySet",
 	"pathOneInPropertySet",
+	"pathMod",
 	"objectListPath",
 	"objectPath",
 	"graphNodePath",
@@ -314,6 +335,11 @@ var rul3s = [...]string{
 	"prefixedName",
 	"literal",
 	"string",
+	"stringLiteralA",
+	"stringLiteralB",
+	"stringLiteralLongA",
+	"stringLiteralLongB",
+	"echar",
 	"numericLiteral",
 	"signedNumericLiteral",
 	"booleanLiteral",
@@ -322,8 +348,15 @@ var rul3s = [...]string{
 	"anon",
 	"nil",
 	"VARNAME",
-	"PN_CHARS_U",
-	"PN_CHARS_BASE",
+	"pnPrefix",
+	"pnLocal",
+	"pnChars",
+	"pnCharsU",
+	"pnCharsBase",
+	"plx",
+	"percent",
+	"hex",
+	"pnLocalEsc",
 	"PREFIX",
 	"TRUE",
 	"FALSE",
@@ -350,6 +383,7 @@ var rul3s = [...]string{
 	"ISA",
 	"NOT",
 	"STAR",
+	"QUESTION",
 	"PLUS",
 	"MINUS",
 	"OPTIONAL",
@@ -441,6 +475,8 @@ var rul3s = [...]string{
 	"GROUP",
 	"BY",
 	"HAVING",
+	"GRAPH",
+	"MINUSSETOPER",
 	"skip",
 	"ws",
 	"comment",
@@ -1028,7 +1064,7 @@ type Sparql struct {
 
 	Buffer string
 	buffer []rune
-	rules  [220]func() bool
+	rules  [238]func() bool
 	Parse  func(rule ...int) error
 	Reset  func()
 	tokenTree
@@ -1322,39 +1358,18 @@ func (p *Sparql) Init() {
 								{
 									position21 := position
 									depth++
-								l22:
 									{
-										position23, tokenIndex23, depth23 := position, tokenIndex, depth
-										{
-											position24, tokenIndex24, depth24 := position, tokenIndex, depth
-											{
-												position25, tokenIndex25, depth25 := position, tokenIndex, depth
-												if buffer[position] != rune(':') {
-													goto l26
-												}
-												position++
-												goto l25
-											l26:
-												position, tokenIndex, depth = position25, tokenIndex25, depth25
-												if buffer[position] != rune(' ') {
-													goto l24
-												}
-												position++
-											}
-										l25:
-											goto l23
-										l24:
-											position, tokenIndex, depth = position24, tokenIndex24, depth24
+										position22, tokenIndex22, depth22 := position, tokenIndex, depth
+										if !rules[rulepnPrefix]() {
+											goto l22
 										}
-										if !matchDot() {
-											goto l23
-										}
-										goto l22
-									l23:
-										position, tokenIndex, depth = position23, tokenIndex23, depth23
+										goto l23
+									l22:
+										position, tokenIndex, depth = position22, tokenIndex22, depth22
 									}
+								l23:
 									{
-										position27 := position
+										position24 := position
 										depth++
 										if buffer[position] != rune(':') {
 											goto l6
@@ -1364,7 +1379,7 @@ func (p *Sparql) Init() {
 											goto l6
 										}
 										depth--
-										add(ruleCOLON, position27)
+										add(ruleCOLON, position24)
 									}
 									if !rules[ruleiri]() {
 										goto l6
@@ -1382,82 +1397,82 @@ func (p *Sparql) Init() {
 						l6:
 							position, tokenIndex, depth = position5, tokenIndex5, depth5
 							{
-								position29 := position
+								position26 := position
 								depth++
 								{
-									position30 := position
+									position27 := position
 									depth++
 									{
-										position31, tokenIndex31, depth31 := position, tokenIndex, depth
+										position28, tokenIndex28, depth28 := position, tokenIndex, depth
 										if buffer[position] != rune('b') {
-											goto l32
+											goto l29
 										}
 										position++
-										goto l31
-									l32:
-										position, tokenIndex, depth = position31, tokenIndex31, depth31
+										goto l28
+									l29:
+										position, tokenIndex, depth = position28, tokenIndex28, depth28
 										if buffer[position] != rune('B') {
 											goto l4
 										}
 										position++
 									}
-								l31:
+								l28:
 									{
-										position33, tokenIndex33, depth33 := position, tokenIndex, depth
+										position30, tokenIndex30, depth30 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											goto l34
+											goto l31
 										}
 										position++
-										goto l33
-									l34:
-										position, tokenIndex, depth = position33, tokenIndex33, depth33
+										goto l30
+									l31:
+										position, tokenIndex, depth = position30, tokenIndex30, depth30
 										if buffer[position] != rune('A') {
 											goto l4
 										}
 										position++
 									}
-								l33:
+								l30:
 									{
-										position35, tokenIndex35, depth35 := position, tokenIndex, depth
+										position32, tokenIndex32, depth32 := position, tokenIndex, depth
 										if buffer[position] != rune('s') {
-											goto l36
+											goto l33
 										}
 										position++
-										goto l35
-									l36:
-										position, tokenIndex, depth = position35, tokenIndex35, depth35
+										goto l32
+									l33:
+										position, tokenIndex, depth = position32, tokenIndex32, depth32
 										if buffer[position] != rune('S') {
 											goto l4
 										}
 										position++
 									}
-								l35:
+								l32:
 									{
-										position37, tokenIndex37, depth37 := position, tokenIndex, depth
+										position34, tokenIndex34, depth34 := position, tokenIndex, depth
 										if buffer[position] != rune('e') {
-											goto l38
+											goto l35
 										}
 										position++
-										goto l37
-									l38:
-										position, tokenIndex, depth = position37, tokenIndex37, depth37
+										goto l34
+									l35:
+										position, tokenIndex, depth = position34, tokenIndex34, depth34
 										if buffer[position] != rune('E') {
 											goto l4
 										}
 										position++
 									}
-								l37:
+								l34:
 									if !rules[ruleskip]() {
 										goto l4
 									}
 									depth--
-									add(ruleBASE, position30)
+									add(ruleBASE, position27)
 								}
 								if !rules[ruleiri]() {
 									goto l4
 								}
 								depth--
-								add(rulebaseDecl, position29)
+								add(rulebaseDecl, position26)
 							}
 						}
 					l5:
@@ -1469,450 +1484,451 @@ func (p *Sparql) Init() {
 					add(ruleprolog, position2)
 				}
 				{
-					position39 := position
+					position36 := position
 					depth++
 					{
 						switch buffer[position] {
 						case 'A', 'a':
 							{
-								position41 := position
+								position38 := position
 								depth++
 								{
-									position42 := position
+									position39 := position
 									depth++
 									{
-										position43, tokenIndex43, depth43 := position, tokenIndex, depth
+										position40, tokenIndex40, depth40 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											goto l44
+											goto l41
 										}
 										position++
-										goto l43
-									l44:
-										position, tokenIndex, depth = position43, tokenIndex43, depth43
+										goto l40
+									l41:
+										position, tokenIndex, depth = position40, tokenIndex40, depth40
 										if buffer[position] != rune('A') {
 											goto l0
 										}
 										position++
 									}
-								l43:
+								l40:
 									{
-										position45, tokenIndex45, depth45 := position, tokenIndex, depth
+										position42, tokenIndex42, depth42 := position, tokenIndex, depth
 										if buffer[position] != rune('s') {
-											goto l46
+											goto l43
 										}
 										position++
-										goto l45
-									l46:
-										position, tokenIndex, depth = position45, tokenIndex45, depth45
+										goto l42
+									l43:
+										position, tokenIndex, depth = position42, tokenIndex42, depth42
 										if buffer[position] != rune('S') {
 											goto l0
 										}
 										position++
 									}
-								l45:
+								l42:
 									{
-										position47, tokenIndex47, depth47 := position, tokenIndex, depth
+										position44, tokenIndex44, depth44 := position, tokenIndex, depth
 										if buffer[position] != rune('k') {
-											goto l48
+											goto l45
 										}
 										position++
-										goto l47
-									l48:
-										position, tokenIndex, depth = position47, tokenIndex47, depth47
+										goto l44
+									l45:
+										position, tokenIndex, depth = position44, tokenIndex44, depth44
 										if buffer[position] != rune('K') {
 											goto l0
 										}
 										position++
 									}
-								l47:
+								l44:
 									if !rules[ruleskip]() {
 										goto l0
 									}
 									depth--
-									add(ruleASK, position42)
+									add(ruleASK, position39)
 								}
+							l46:
 								{
-									position49, tokenIndex49, depth49 := position, tokenIndex, depth
+									position47, tokenIndex47, depth47 := position, tokenIndex, depth
 									if !rules[ruledatasetClause]() {
-										goto l49
+										goto l47
 									}
-									goto l50
-								l49:
-									position, tokenIndex, depth = position49, tokenIndex49, depth49
+									goto l46
+								l47:
+									position, tokenIndex, depth = position47, tokenIndex47, depth47
 								}
-							l50:
 								if !rules[rulewhereClause]() {
 									goto l0
 								}
 								depth--
-								add(ruleaskQuery, position41)
+								add(ruleaskQuery, position38)
 							}
 							break
 						case 'D', 'd':
 							{
-								position51 := position
+								position48 := position
 								depth++
 								{
-									position52 := position
+									position49 := position
 									depth++
 									{
-										position53 := position
+										position50 := position
 										depth++
 										{
-											position54, tokenIndex54, depth54 := position, tokenIndex, depth
+											position51, tokenIndex51, depth51 := position, tokenIndex, depth
 											if buffer[position] != rune('d') {
-												goto l55
+												goto l52
 											}
 											position++
-											goto l54
-										l55:
-											position, tokenIndex, depth = position54, tokenIndex54, depth54
+											goto l51
+										l52:
+											position, tokenIndex, depth = position51, tokenIndex51, depth51
 											if buffer[position] != rune('D') {
 												goto l0
 											}
 											position++
 										}
-									l54:
+									l51:
 										{
-											position56, tokenIndex56, depth56 := position, tokenIndex, depth
+											position53, tokenIndex53, depth53 := position, tokenIndex, depth
 											if buffer[position] != rune('e') {
-												goto l57
+												goto l54
 											}
 											position++
-											goto l56
-										l57:
-											position, tokenIndex, depth = position56, tokenIndex56, depth56
+											goto l53
+										l54:
+											position, tokenIndex, depth = position53, tokenIndex53, depth53
 											if buffer[position] != rune('E') {
 												goto l0
 											}
 											position++
 										}
-									l56:
+									l53:
 										{
-											position58, tokenIndex58, depth58 := position, tokenIndex, depth
+											position55, tokenIndex55, depth55 := position, tokenIndex, depth
 											if buffer[position] != rune('s') {
-												goto l59
+												goto l56
 											}
 											position++
-											goto l58
-										l59:
-											position, tokenIndex, depth = position58, tokenIndex58, depth58
+											goto l55
+										l56:
+											position, tokenIndex, depth = position55, tokenIndex55, depth55
 											if buffer[position] != rune('S') {
 												goto l0
 											}
 											position++
 										}
-									l58:
+									l55:
 										{
-											position60, tokenIndex60, depth60 := position, tokenIndex, depth
+											position57, tokenIndex57, depth57 := position, tokenIndex, depth
 											if buffer[position] != rune('c') {
-												goto l61
+												goto l58
 											}
 											position++
-											goto l60
-										l61:
-											position, tokenIndex, depth = position60, tokenIndex60, depth60
+											goto l57
+										l58:
+											position, tokenIndex, depth = position57, tokenIndex57, depth57
 											if buffer[position] != rune('C') {
 												goto l0
 											}
 											position++
 										}
-									l60:
+									l57:
 										{
-											position62, tokenIndex62, depth62 := position, tokenIndex, depth
+											position59, tokenIndex59, depth59 := position, tokenIndex, depth
 											if buffer[position] != rune('r') {
-												goto l63
+												goto l60
 											}
 											position++
-											goto l62
-										l63:
-											position, tokenIndex, depth = position62, tokenIndex62, depth62
+											goto l59
+										l60:
+											position, tokenIndex, depth = position59, tokenIndex59, depth59
 											if buffer[position] != rune('R') {
 												goto l0
 											}
 											position++
 										}
-									l62:
+									l59:
 										{
-											position64, tokenIndex64, depth64 := position, tokenIndex, depth
+											position61, tokenIndex61, depth61 := position, tokenIndex, depth
 											if buffer[position] != rune('i') {
-												goto l65
+												goto l62
 											}
 											position++
-											goto l64
-										l65:
-											position, tokenIndex, depth = position64, tokenIndex64, depth64
+											goto l61
+										l62:
+											position, tokenIndex, depth = position61, tokenIndex61, depth61
 											if buffer[position] != rune('I') {
 												goto l0
 											}
 											position++
 										}
-									l64:
+									l61:
 										{
-											position66, tokenIndex66, depth66 := position, tokenIndex, depth
+											position63, tokenIndex63, depth63 := position, tokenIndex, depth
 											if buffer[position] != rune('b') {
-												goto l67
+												goto l64
 											}
 											position++
-											goto l66
-										l67:
-											position, tokenIndex, depth = position66, tokenIndex66, depth66
+											goto l63
+										l64:
+											position, tokenIndex, depth = position63, tokenIndex63, depth63
 											if buffer[position] != rune('B') {
 												goto l0
 											}
 											position++
 										}
-									l66:
+									l63:
 										{
-											position68, tokenIndex68, depth68 := position, tokenIndex, depth
+											position65, tokenIndex65, depth65 := position, tokenIndex, depth
 											if buffer[position] != rune('e') {
-												goto l69
+												goto l66
 											}
 											position++
-											goto l68
-										l69:
-											position, tokenIndex, depth = position68, tokenIndex68, depth68
+											goto l65
+										l66:
+											position, tokenIndex, depth = position65, tokenIndex65, depth65
 											if buffer[position] != rune('E') {
 												goto l0
 											}
 											position++
 										}
-									l68:
+									l65:
 										if !rules[ruleskip]() {
 											goto l0
 										}
 										depth--
-										add(ruleDESCRIBE, position53)
+										add(ruleDESCRIBE, position50)
 									}
 									{
-										position70, tokenIndex70, depth70 := position, tokenIndex, depth
-										if !rules[ruleSTAR]() {
-											goto l71
-										}
-										goto l70
-									l71:
-										position, tokenIndex, depth = position70, tokenIndex70, depth70
-										if !rules[rulevar]() {
-											goto l72
-										}
-										goto l70
-									l72:
-										position, tokenIndex, depth = position70, tokenIndex70, depth70
-										if !rules[ruleiriref]() {
-											goto l0
+										switch buffer[position] {
+										case '*':
+											if !rules[ruleSTAR]() {
+												goto l0
+											}
+											break
+										case '$', '?':
+											if !rules[rulevar]() {
+												goto l0
+											}
+											break
+										default:
+											if !rules[ruleiriref]() {
+												goto l0
+											}
+											break
 										}
 									}
-								l70:
+
 									depth--
-									add(ruledescribe, position52)
+									add(ruledescribe, position49)
 								}
+							l68:
 								{
-									position73, tokenIndex73, depth73 := position, tokenIndex, depth
+									position69, tokenIndex69, depth69 := position, tokenIndex, depth
 									if !rules[ruledatasetClause]() {
-										goto l73
+										goto l69
 									}
-									goto l74
-								l73:
-									position, tokenIndex, depth = position73, tokenIndex73, depth73
+									goto l68
+								l69:
+									position, tokenIndex, depth = position69, tokenIndex69, depth69
 								}
-							l74:
 								{
-									position75, tokenIndex75, depth75 := position, tokenIndex, depth
+									position70, tokenIndex70, depth70 := position, tokenIndex, depth
 									if !rules[rulewhereClause]() {
-										goto l75
+										goto l70
 									}
-									goto l76
-								l75:
-									position, tokenIndex, depth = position75, tokenIndex75, depth75
+									goto l71
+								l70:
+									position, tokenIndex, depth = position70, tokenIndex70, depth70
 								}
-							l76:
+							l71:
 								if !rules[rulesolutionModifier]() {
 									goto l0
 								}
 								depth--
-								add(ruledescribeQuery, position51)
+								add(ruledescribeQuery, position48)
 							}
 							break
 						case 'C', 'c':
 							{
-								position77 := position
+								position72 := position
 								depth++
 								{
-									position78 := position
+									position73 := position
 									depth++
 									{
-										position79 := position
+										position74 := position
 										depth++
 										{
-											position80, tokenIndex80, depth80 := position, tokenIndex, depth
+											position75, tokenIndex75, depth75 := position, tokenIndex, depth
 											if buffer[position] != rune('c') {
-												goto l81
+												goto l76
 											}
 											position++
-											goto l80
-										l81:
-											position, tokenIndex, depth = position80, tokenIndex80, depth80
+											goto l75
+										l76:
+											position, tokenIndex, depth = position75, tokenIndex75, depth75
 											if buffer[position] != rune('C') {
 												goto l0
 											}
 											position++
 										}
-									l80:
+									l75:
 										{
-											position82, tokenIndex82, depth82 := position, tokenIndex, depth
+											position77, tokenIndex77, depth77 := position, tokenIndex, depth
 											if buffer[position] != rune('o') {
-												goto l83
+												goto l78
 											}
 											position++
-											goto l82
-										l83:
-											position, tokenIndex, depth = position82, tokenIndex82, depth82
+											goto l77
+										l78:
+											position, tokenIndex, depth = position77, tokenIndex77, depth77
 											if buffer[position] != rune('O') {
 												goto l0
 											}
 											position++
 										}
-									l82:
+									l77:
 										{
-											position84, tokenIndex84, depth84 := position, tokenIndex, depth
+											position79, tokenIndex79, depth79 := position, tokenIndex, depth
 											if buffer[position] != rune('n') {
-												goto l85
+												goto l80
 											}
 											position++
-											goto l84
-										l85:
-											position, tokenIndex, depth = position84, tokenIndex84, depth84
+											goto l79
+										l80:
+											position, tokenIndex, depth = position79, tokenIndex79, depth79
 											if buffer[position] != rune('N') {
 												goto l0
 											}
 											position++
 										}
-									l84:
+									l79:
 										{
-											position86, tokenIndex86, depth86 := position, tokenIndex, depth
+											position81, tokenIndex81, depth81 := position, tokenIndex, depth
 											if buffer[position] != rune('s') {
-												goto l87
+												goto l82
 											}
 											position++
-											goto l86
-										l87:
-											position, tokenIndex, depth = position86, tokenIndex86, depth86
+											goto l81
+										l82:
+											position, tokenIndex, depth = position81, tokenIndex81, depth81
 											if buffer[position] != rune('S') {
 												goto l0
 											}
 											position++
 										}
-									l86:
+									l81:
 										{
-											position88, tokenIndex88, depth88 := position, tokenIndex, depth
+											position83, tokenIndex83, depth83 := position, tokenIndex, depth
 											if buffer[position] != rune('t') {
-												goto l89
+												goto l84
 											}
 											position++
-											goto l88
-										l89:
-											position, tokenIndex, depth = position88, tokenIndex88, depth88
+											goto l83
+										l84:
+											position, tokenIndex, depth = position83, tokenIndex83, depth83
 											if buffer[position] != rune('T') {
 												goto l0
 											}
 											position++
 										}
-									l88:
+									l83:
 										{
-											position90, tokenIndex90, depth90 := position, tokenIndex, depth
+											position85, tokenIndex85, depth85 := position, tokenIndex, depth
 											if buffer[position] != rune('r') {
-												goto l91
+												goto l86
 											}
 											position++
-											goto l90
-										l91:
-											position, tokenIndex, depth = position90, tokenIndex90, depth90
+											goto l85
+										l86:
+											position, tokenIndex, depth = position85, tokenIndex85, depth85
 											if buffer[position] != rune('R') {
 												goto l0
 											}
 											position++
 										}
-									l90:
+									l85:
 										{
-											position92, tokenIndex92, depth92 := position, tokenIndex, depth
+											position87, tokenIndex87, depth87 := position, tokenIndex, depth
 											if buffer[position] != rune('u') {
-												goto l93
+												goto l88
 											}
 											position++
-											goto l92
-										l93:
-											position, tokenIndex, depth = position92, tokenIndex92, depth92
+											goto l87
+										l88:
+											position, tokenIndex, depth = position87, tokenIndex87, depth87
 											if buffer[position] != rune('U') {
 												goto l0
 											}
 											position++
 										}
-									l92:
+									l87:
 										{
-											position94, tokenIndex94, depth94 := position, tokenIndex, depth
+											position89, tokenIndex89, depth89 := position, tokenIndex, depth
 											if buffer[position] != rune('c') {
-												goto l95
+												goto l90
 											}
 											position++
-											goto l94
-										l95:
-											position, tokenIndex, depth = position94, tokenIndex94, depth94
+											goto l89
+										l90:
+											position, tokenIndex, depth = position89, tokenIndex89, depth89
 											if buffer[position] != rune('C') {
 												goto l0
 											}
 											position++
 										}
-									l94:
+									l89:
 										{
-											position96, tokenIndex96, depth96 := position, tokenIndex, depth
+											position91, tokenIndex91, depth91 := position, tokenIndex, depth
 											if buffer[position] != rune('t') {
-												goto l97
+												goto l92
 											}
 											position++
-											goto l96
-										l97:
-											position, tokenIndex, depth = position96, tokenIndex96, depth96
+											goto l91
+										l92:
+											position, tokenIndex, depth = position91, tokenIndex91, depth91
 											if buffer[position] != rune('T') {
 												goto l0
 											}
 											position++
 										}
-									l96:
+									l91:
 										if !rules[ruleskip]() {
 											goto l0
 										}
 										depth--
-										add(ruleCONSTRUCT, position79)
+										add(ruleCONSTRUCT, position74)
 									}
 									if !rules[ruleLBRACE]() {
 										goto l0
 									}
 									{
-										position98, tokenIndex98, depth98 := position, tokenIndex, depth
+										position93, tokenIndex93, depth93 := position, tokenIndex, depth
 										if !rules[ruletriplesBlock]() {
-											goto l98
+											goto l93
 										}
-										goto l99
-									l98:
-										position, tokenIndex, depth = position98, tokenIndex98, depth98
+										goto l94
+									l93:
+										position, tokenIndex, depth = position93, tokenIndex93, depth93
 									}
-								l99:
+								l94:
 									if !rules[ruleRBRACE]() {
 										goto l0
 									}
 									depth--
-									add(ruleconstruct, position78)
+									add(ruleconstruct, position73)
 								}
+							l95:
 								{
-									position100, tokenIndex100, depth100 := position, tokenIndex, depth
+									position96, tokenIndex96, depth96 := position, tokenIndex, depth
 									if !rules[ruledatasetClause]() {
-										goto l100
+										goto l96
 									}
-									goto l101
-								l100:
-									position, tokenIndex, depth = position100, tokenIndex100, depth100
+									goto l95
+								l96:
+									position, tokenIndex, depth = position96, tokenIndex96, depth96
 								}
-							l101:
 								if !rules[rulewhereClause]() {
 									goto l0
 								}
@@ -1920,26 +1936,26 @@ func (p *Sparql) Init() {
 									goto l0
 								}
 								depth--
-								add(ruleconstructQuery, position77)
+								add(ruleconstructQuery, position72)
 							}
 							break
 						default:
 							{
-								position102 := position
+								position97 := position
 								depth++
 								if !rules[ruleselect]() {
 									goto l0
 								}
+							l98:
 								{
-									position103, tokenIndex103, depth103 := position, tokenIndex, depth
+									position99, tokenIndex99, depth99 := position, tokenIndex, depth
 									if !rules[ruledatasetClause]() {
-										goto l103
+										goto l99
 									}
-									goto l104
-								l103:
-									position, tokenIndex, depth = position103, tokenIndex103, depth103
+									goto l98
+								l99:
+									position, tokenIndex, depth = position99, tokenIndex99, depth99
 								}
-							l104:
 								if !rules[rulewhereClause]() {
 									goto l0
 								}
@@ -1947,23 +1963,23 @@ func (p *Sparql) Init() {
 									goto l0
 								}
 								depth--
-								add(ruleselectQuery, position102)
+								add(ruleselectQuery, position97)
 							}
 							break
 						}
 					}
 
 					depth--
-					add(rulequery, position39)
+					add(rulequery, position36)
 				}
 				{
-					position105, tokenIndex105, depth105 := position, tokenIndex, depth
+					position100, tokenIndex100, depth100 := position, tokenIndex, depth
 					if !matchDot() {
-						goto l105
+						goto l100
 					}
 					goto l0
-				l105:
-					position, tokenIndex, depth = position105, tokenIndex105, depth105
+				l100:
+					position, tokenIndex, depth = position100, tokenIndex100, depth100
 				}
 				depth--
 				add(rulequeryContainer, position1)
@@ -1975,4156 +1991,4159 @@ func (p *Sparql) Init() {
 		},
 		/* 1 prolog <- <(prefixDecl / baseDecl)*> */
 		nil,
-		/* 2 prefixDecl <- <(PREFIX <((!(':' / ' ') .)* COLON iri)> Action0)> */
+		/* 2 prefixDecl <- <(PREFIX <(pnPrefix? COLON iri)> Action0)> */
 		nil,
 		/* 3 baseDecl <- <(BASE iri)> */
 		nil,
 		/* 4 query <- <((&('A' | 'a') askQuery) | (&('D' | 'd') describeQuery) | (&('C' | 'c') constructQuery) | (&('S' | 's') selectQuery))> */
 		nil,
-		/* 5 selectQuery <- <(select datasetClause? whereClause solutionModifier)> */
+		/* 5 selectQuery <- <(select datasetClause* whereClause solutionModifier)> */
 		nil,
 		/* 6 select <- <(SELECT (DISTINCT / REDUCED)? (STAR / projectionElem+))> */
 		func() bool {
-			position111, tokenIndex111, depth111 := position, tokenIndex, depth
+			position106, tokenIndex106, depth106 := position, tokenIndex, depth
 			{
-				position112 := position
+				position107 := position
 				depth++
 				{
-					position113 := position
+					position108 := position
 					depth++
 					{
-						position114, tokenIndex114, depth114 := position, tokenIndex, depth
+						position109, tokenIndex109, depth109 := position, tokenIndex, depth
 						if buffer[position] != rune('s') {
-							goto l115
+							goto l110
 						}
 						position++
-						goto l114
-					l115:
-						position, tokenIndex, depth = position114, tokenIndex114, depth114
+						goto l109
+					l110:
+						position, tokenIndex, depth = position109, tokenIndex109, depth109
 						if buffer[position] != rune('S') {
-							goto l111
+							goto l106
 						}
 						position++
 					}
-				l114:
+				l109:
 					{
-						position116, tokenIndex116, depth116 := position, tokenIndex, depth
+						position111, tokenIndex111, depth111 := position, tokenIndex, depth
 						if buffer[position] != rune('e') {
-							goto l117
+							goto l112
 						}
 						position++
-						goto l116
-					l117:
-						position, tokenIndex, depth = position116, tokenIndex116, depth116
-						if buffer[position] != rune('E') {
-							goto l111
-						}
-						position++
-					}
-				l116:
-					{
-						position118, tokenIndex118, depth118 := position, tokenIndex, depth
-						if buffer[position] != rune('l') {
-							goto l119
-						}
-						position++
-						goto l118
-					l119:
-						position, tokenIndex, depth = position118, tokenIndex118, depth118
-						if buffer[position] != rune('L') {
-							goto l111
-						}
-						position++
-					}
-				l118:
-					{
-						position120, tokenIndex120, depth120 := position, tokenIndex, depth
-						if buffer[position] != rune('e') {
-							goto l121
-						}
-						position++
-						goto l120
-					l121:
-						position, tokenIndex, depth = position120, tokenIndex120, depth120
-						if buffer[position] != rune('E') {
-							goto l111
-						}
-						position++
-					}
-				l120:
-					{
-						position122, tokenIndex122, depth122 := position, tokenIndex, depth
-						if buffer[position] != rune('c') {
-							goto l123
-						}
-						position++
-						goto l122
-					l123:
-						position, tokenIndex, depth = position122, tokenIndex122, depth122
-						if buffer[position] != rune('C') {
-							goto l111
-						}
-						position++
-					}
-				l122:
-					{
-						position124, tokenIndex124, depth124 := position, tokenIndex, depth
-						if buffer[position] != rune('t') {
-							goto l125
-						}
-						position++
-						goto l124
-					l125:
-						position, tokenIndex, depth = position124, tokenIndex124, depth124
-						if buffer[position] != rune('T') {
-							goto l111
-						}
-						position++
-					}
-				l124:
-					if !rules[ruleskip]() {
 						goto l111
+					l112:
+						position, tokenIndex, depth = position111, tokenIndex111, depth111
+						if buffer[position] != rune('E') {
+							goto l106
+						}
+						position++
+					}
+				l111:
+					{
+						position113, tokenIndex113, depth113 := position, tokenIndex, depth
+						if buffer[position] != rune('l') {
+							goto l114
+						}
+						position++
+						goto l113
+					l114:
+						position, tokenIndex, depth = position113, tokenIndex113, depth113
+						if buffer[position] != rune('L') {
+							goto l106
+						}
+						position++
+					}
+				l113:
+					{
+						position115, tokenIndex115, depth115 := position, tokenIndex, depth
+						if buffer[position] != rune('e') {
+							goto l116
+						}
+						position++
+						goto l115
+					l116:
+						position, tokenIndex, depth = position115, tokenIndex115, depth115
+						if buffer[position] != rune('E') {
+							goto l106
+						}
+						position++
+					}
+				l115:
+					{
+						position117, tokenIndex117, depth117 := position, tokenIndex, depth
+						if buffer[position] != rune('c') {
+							goto l118
+						}
+						position++
+						goto l117
+					l118:
+						position, tokenIndex, depth = position117, tokenIndex117, depth117
+						if buffer[position] != rune('C') {
+							goto l106
+						}
+						position++
+					}
+				l117:
+					{
+						position119, tokenIndex119, depth119 := position, tokenIndex, depth
+						if buffer[position] != rune('t') {
+							goto l120
+						}
+						position++
+						goto l119
+					l120:
+						position, tokenIndex, depth = position119, tokenIndex119, depth119
+						if buffer[position] != rune('T') {
+							goto l106
+						}
+						position++
+					}
+				l119:
+					if !rules[ruleskip]() {
+						goto l106
 					}
 					depth--
-					add(ruleSELECT, position113)
+					add(ruleSELECT, position108)
 				}
 				{
-					position126, tokenIndex126, depth126 := position, tokenIndex, depth
+					position121, tokenIndex121, depth121 := position, tokenIndex, depth
 					{
-						position128, tokenIndex128, depth128 := position, tokenIndex, depth
+						position123, tokenIndex123, depth123 := position, tokenIndex, depth
 						if !rules[ruleDISTINCT]() {
-							goto l129
+							goto l124
 						}
-						goto l128
-					l129:
-						position, tokenIndex, depth = position128, tokenIndex128, depth128
+						goto l123
+					l124:
+						position, tokenIndex, depth = position123, tokenIndex123, depth123
 						{
-							position130 := position
+							position125 := position
 							depth++
 							{
-								position131, tokenIndex131, depth131 := position, tokenIndex, depth
+								position126, tokenIndex126, depth126 := position, tokenIndex, depth
 								if buffer[position] != rune('r') {
-									goto l132
+									goto l127
 								}
 								position++
-								goto l131
-							l132:
-								position, tokenIndex, depth = position131, tokenIndex131, depth131
-								if buffer[position] != rune('R') {
-									goto l126
-								}
-								position++
-							}
-						l131:
-							{
-								position133, tokenIndex133, depth133 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l134
-								}
-								position++
-								goto l133
-							l134:
-								position, tokenIndex, depth = position133, tokenIndex133, depth133
-								if buffer[position] != rune('E') {
-									goto l126
-								}
-								position++
-							}
-						l133:
-							{
-								position135, tokenIndex135, depth135 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l136
-								}
-								position++
-								goto l135
-							l136:
-								position, tokenIndex, depth = position135, tokenIndex135, depth135
-								if buffer[position] != rune('D') {
-									goto l126
-								}
-								position++
-							}
-						l135:
-							{
-								position137, tokenIndex137, depth137 := position, tokenIndex, depth
-								if buffer[position] != rune('u') {
-									goto l138
-								}
-								position++
-								goto l137
-							l138:
-								position, tokenIndex, depth = position137, tokenIndex137, depth137
-								if buffer[position] != rune('U') {
-									goto l126
-								}
-								position++
-							}
-						l137:
-							{
-								position139, tokenIndex139, depth139 := position, tokenIndex, depth
-								if buffer[position] != rune('c') {
-									goto l140
-								}
-								position++
-								goto l139
-							l140:
-								position, tokenIndex, depth = position139, tokenIndex139, depth139
-								if buffer[position] != rune('C') {
-									goto l126
-								}
-								position++
-							}
-						l139:
-							{
-								position141, tokenIndex141, depth141 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l142
-								}
-								position++
-								goto l141
-							l142:
-								position, tokenIndex, depth = position141, tokenIndex141, depth141
-								if buffer[position] != rune('E') {
-									goto l126
-								}
-								position++
-							}
-						l141:
-							{
-								position143, tokenIndex143, depth143 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l144
-								}
-								position++
-								goto l143
-							l144:
-								position, tokenIndex, depth = position143, tokenIndex143, depth143
-								if buffer[position] != rune('D') {
-									goto l126
-								}
-								position++
-							}
-						l143:
-							if !rules[ruleskip]() {
 								goto l126
+							l127:
+								position, tokenIndex, depth = position126, tokenIndex126, depth126
+								if buffer[position] != rune('R') {
+									goto l121
+								}
+								position++
+							}
+						l126:
+							{
+								position128, tokenIndex128, depth128 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l129
+								}
+								position++
+								goto l128
+							l129:
+								position, tokenIndex, depth = position128, tokenIndex128, depth128
+								if buffer[position] != rune('E') {
+									goto l121
+								}
+								position++
+							}
+						l128:
+							{
+								position130, tokenIndex130, depth130 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l131
+								}
+								position++
+								goto l130
+							l131:
+								position, tokenIndex, depth = position130, tokenIndex130, depth130
+								if buffer[position] != rune('D') {
+									goto l121
+								}
+								position++
+							}
+						l130:
+							{
+								position132, tokenIndex132, depth132 := position, tokenIndex, depth
+								if buffer[position] != rune('u') {
+									goto l133
+								}
+								position++
+								goto l132
+							l133:
+								position, tokenIndex, depth = position132, tokenIndex132, depth132
+								if buffer[position] != rune('U') {
+									goto l121
+								}
+								position++
+							}
+						l132:
+							{
+								position134, tokenIndex134, depth134 := position, tokenIndex, depth
+								if buffer[position] != rune('c') {
+									goto l135
+								}
+								position++
+								goto l134
+							l135:
+								position, tokenIndex, depth = position134, tokenIndex134, depth134
+								if buffer[position] != rune('C') {
+									goto l121
+								}
+								position++
+							}
+						l134:
+							{
+								position136, tokenIndex136, depth136 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l137
+								}
+								position++
+								goto l136
+							l137:
+								position, tokenIndex, depth = position136, tokenIndex136, depth136
+								if buffer[position] != rune('E') {
+									goto l121
+								}
+								position++
+							}
+						l136:
+							{
+								position138, tokenIndex138, depth138 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l139
+								}
+								position++
+								goto l138
+							l139:
+								position, tokenIndex, depth = position138, tokenIndex138, depth138
+								if buffer[position] != rune('D') {
+									goto l121
+								}
+								position++
+							}
+						l138:
+							if !rules[ruleskip]() {
+								goto l121
 							}
 							depth--
-							add(ruleREDUCED, position130)
+							add(ruleREDUCED, position125)
 						}
 					}
-				l128:
-					goto l127
-				l126:
-					position, tokenIndex, depth = position126, tokenIndex126, depth126
+				l123:
+					goto l122
+				l121:
+					position, tokenIndex, depth = position121, tokenIndex121, depth121
 				}
-			l127:
+			l122:
 				{
-					position145, tokenIndex145, depth145 := position, tokenIndex, depth
+					position140, tokenIndex140, depth140 := position, tokenIndex, depth
 					if !rules[ruleSTAR]() {
-						goto l146
+						goto l141
 					}
-					goto l145
-				l146:
-					position, tokenIndex, depth = position145, tokenIndex145, depth145
+					goto l140
+				l141:
+					position, tokenIndex, depth = position140, tokenIndex140, depth140
 					{
-						position149 := position
+						position144 := position
 						depth++
 						{
-							position150, tokenIndex150, depth150 := position, tokenIndex, depth
+							position145, tokenIndex145, depth145 := position, tokenIndex, depth
 							if !rules[rulevar]() {
-								goto l151
+								goto l146
 							}
-							goto l150
-						l151:
-							position, tokenIndex, depth = position150, tokenIndex150, depth150
+							goto l145
+						l146:
+							position, tokenIndex, depth = position145, tokenIndex145, depth145
 							if !rules[ruleLPAREN]() {
-								goto l111
+								goto l106
 							}
 							if !rules[ruleexpression]() {
-								goto l111
+								goto l106
 							}
 							if !rules[ruleAS]() {
-								goto l111
+								goto l106
 							}
 							if !rules[rulevar]() {
-								goto l111
+								goto l106
 							}
 							if !rules[ruleRPAREN]() {
-								goto l111
+								goto l106
 							}
 						}
-					l150:
+					l145:
 						depth--
-						add(ruleprojectionElem, position149)
+						add(ruleprojectionElem, position144)
 					}
-				l147:
+				l142:
 					{
-						position148, tokenIndex148, depth148 := position, tokenIndex, depth
+						position143, tokenIndex143, depth143 := position, tokenIndex, depth
 						{
-							position152 := position
+							position147 := position
 							depth++
 							{
-								position153, tokenIndex153, depth153 := position, tokenIndex, depth
+								position148, tokenIndex148, depth148 := position, tokenIndex, depth
 								if !rules[rulevar]() {
-									goto l154
+									goto l149
 								}
-								goto l153
-							l154:
-								position, tokenIndex, depth = position153, tokenIndex153, depth153
+								goto l148
+							l149:
+								position, tokenIndex, depth = position148, tokenIndex148, depth148
 								if !rules[ruleLPAREN]() {
-									goto l148
+									goto l143
 								}
 								if !rules[ruleexpression]() {
-									goto l148
+									goto l143
 								}
 								if !rules[ruleAS]() {
-									goto l148
+									goto l143
 								}
 								if !rules[rulevar]() {
-									goto l148
+									goto l143
 								}
 								if !rules[ruleRPAREN]() {
-									goto l148
+									goto l143
 								}
 							}
-						l153:
+						l148:
 							depth--
-							add(ruleprojectionElem, position152)
+							add(ruleprojectionElem, position147)
 						}
-						goto l147
-					l148:
-						position, tokenIndex, depth = position148, tokenIndex148, depth148
+						goto l142
+					l143:
+						position, tokenIndex, depth = position143, tokenIndex143, depth143
 					}
 				}
-			l145:
+			l140:
 				depth--
-				add(ruleselect, position112)
+				add(ruleselect, position107)
 			}
 			return true
-		l111:
-			position, tokenIndex, depth = position111, tokenIndex111, depth111
+		l106:
+			position, tokenIndex, depth = position106, tokenIndex106, depth106
 			return false
 		},
 		/* 7 subSelect <- <(select whereClause solutionModifier)> */
 		func() bool {
-			position155, tokenIndex155, depth155 := position, tokenIndex, depth
+			position150, tokenIndex150, depth150 := position, tokenIndex, depth
 			{
-				position156 := position
+				position151 := position
 				depth++
 				if !rules[ruleselect]() {
-					goto l155
+					goto l150
 				}
 				if !rules[rulewhereClause]() {
-					goto l155
+					goto l150
 				}
 				if !rules[rulesolutionModifier]() {
-					goto l155
+					goto l150
 				}
 				depth--
-				add(rulesubSelect, position156)
+				add(rulesubSelect, position151)
 			}
 			return true
-		l155:
-			position, tokenIndex, depth = position155, tokenIndex155, depth155
+		l150:
+			position, tokenIndex, depth = position150, tokenIndex150, depth150
 			return false
 		},
-		/* 8 constructQuery <- <(construct datasetClause? whereClause solutionModifier)> */
+		/* 8 constructQuery <- <(construct datasetClause* whereClause solutionModifier)> */
 		nil,
 		/* 9 construct <- <(CONSTRUCT LBRACE triplesBlock? RBRACE)> */
 		nil,
-		/* 10 describeQuery <- <(describe datasetClause? whereClause? solutionModifier)> */
+		/* 10 describeQuery <- <(describe datasetClause* whereClause? solutionModifier)> */
 		nil,
-		/* 11 describe <- <(DESCRIBE (STAR / var / iriref))> */
+		/* 11 describe <- <(DESCRIBE ((&('*') STAR) | (&('$' | '?') var) | (&(':' | '<' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'Ã' | 'Ä' | 'Å' | 'Æ' | 'Ç' | 'È' | 'É' | 'Ê' | 'Ë' | 'Í' | 'Î' | 'Ï' | 'Ð' | 'Ñ' | 'Ò' | 'Ó' | 'Ô' | 'Õ' | 'Ö' | '×' | 'Ø' | 'Ù' | 'Ú' | 'Û' | 'Ü' | 'Ý' | 'Þ' | 'ß' | 'à' | 'á' | 'â' | 'ã' | 'ä' | 'å' | 'æ' | 'ç' | 'è' | 'é' | 'ê' | 'ë' | 'ì' | 'í' | 'ï' | 'ð' | 'ñ' | 'ò' | 'ó') iriref)))> */
 		nil,
-		/* 12 askQuery <- <(ASK datasetClause? whereClause)> */
+		/* 12 askQuery <- <(ASK datasetClause* whereClause)> */
 		nil,
 		/* 13 projectionElem <- <(var / (LPAREN expression AS var RPAREN))> */
 		nil,
 		/* 14 datasetClause <- <(FROM NAMED? iriref)> */
 		func() bool {
-			position163, tokenIndex163, depth163 := position, tokenIndex, depth
+			position158, tokenIndex158, depth158 := position, tokenIndex, depth
 			{
-				position164 := position
+				position159 := position
 				depth++
 				{
-					position165 := position
+					position160 := position
 					depth++
 					{
-						position166, tokenIndex166, depth166 := position, tokenIndex, depth
+						position161, tokenIndex161, depth161 := position, tokenIndex, depth
 						if buffer[position] != rune('f') {
-							goto l167
+							goto l162
 						}
 						position++
-						goto l166
-					l167:
-						position, tokenIndex, depth = position166, tokenIndex166, depth166
+						goto l161
+					l162:
+						position, tokenIndex, depth = position161, tokenIndex161, depth161
 						if buffer[position] != rune('F') {
-							goto l163
+							goto l158
 						}
 						position++
 					}
-				l166:
+				l161:
 					{
-						position168, tokenIndex168, depth168 := position, tokenIndex, depth
+						position163, tokenIndex163, depth163 := position, tokenIndex, depth
 						if buffer[position] != rune('r') {
-							goto l169
+							goto l164
 						}
 						position++
-						goto l168
-					l169:
-						position, tokenIndex, depth = position168, tokenIndex168, depth168
-						if buffer[position] != rune('R') {
-							goto l163
-						}
-						position++
-					}
-				l168:
-					{
-						position170, tokenIndex170, depth170 := position, tokenIndex, depth
-						if buffer[position] != rune('o') {
-							goto l171
-						}
-						position++
-						goto l170
-					l171:
-						position, tokenIndex, depth = position170, tokenIndex170, depth170
-						if buffer[position] != rune('O') {
-							goto l163
-						}
-						position++
-					}
-				l170:
-					{
-						position172, tokenIndex172, depth172 := position, tokenIndex, depth
-						if buffer[position] != rune('m') {
-							goto l173
-						}
-						position++
-						goto l172
-					l173:
-						position, tokenIndex, depth = position172, tokenIndex172, depth172
-						if buffer[position] != rune('M') {
-							goto l163
-						}
-						position++
-					}
-				l172:
-					if !rules[ruleskip]() {
 						goto l163
+					l164:
+						position, tokenIndex, depth = position163, tokenIndex163, depth163
+						if buffer[position] != rune('R') {
+							goto l158
+						}
+						position++
+					}
+				l163:
+					{
+						position165, tokenIndex165, depth165 := position, tokenIndex, depth
+						if buffer[position] != rune('o') {
+							goto l166
+						}
+						position++
+						goto l165
+					l166:
+						position, tokenIndex, depth = position165, tokenIndex165, depth165
+						if buffer[position] != rune('O') {
+							goto l158
+						}
+						position++
+					}
+				l165:
+					{
+						position167, tokenIndex167, depth167 := position, tokenIndex, depth
+						if buffer[position] != rune('m') {
+							goto l168
+						}
+						position++
+						goto l167
+					l168:
+						position, tokenIndex, depth = position167, tokenIndex167, depth167
+						if buffer[position] != rune('M') {
+							goto l158
+						}
+						position++
+					}
+				l167:
+					if !rules[ruleskip]() {
+						goto l158
 					}
 					depth--
-					add(ruleFROM, position165)
+					add(ruleFROM, position160)
 				}
 				{
-					position174, tokenIndex174, depth174 := position, tokenIndex, depth
+					position169, tokenIndex169, depth169 := position, tokenIndex, depth
 					{
-						position176 := position
+						position171 := position
 						depth++
 						{
-							position177, tokenIndex177, depth177 := position, tokenIndex, depth
+							position172, tokenIndex172, depth172 := position, tokenIndex, depth
 							if buffer[position] != rune('n') {
-								goto l178
+								goto l173
 							}
 							position++
-							goto l177
-						l178:
-							position, tokenIndex, depth = position177, tokenIndex177, depth177
+							goto l172
+						l173:
+							position, tokenIndex, depth = position172, tokenIndex172, depth172
 							if buffer[position] != rune('N') {
-								goto l174
+								goto l169
 							}
 							position++
 						}
-					l177:
+					l172:
 						{
-							position179, tokenIndex179, depth179 := position, tokenIndex, depth
+							position174, tokenIndex174, depth174 := position, tokenIndex, depth
 							if buffer[position] != rune('a') {
-								goto l180
+								goto l175
 							}
 							position++
-							goto l179
-						l180:
-							position, tokenIndex, depth = position179, tokenIndex179, depth179
-							if buffer[position] != rune('A') {
-								goto l174
-							}
-							position++
-						}
-					l179:
-						{
-							position181, tokenIndex181, depth181 := position, tokenIndex, depth
-							if buffer[position] != rune('m') {
-								goto l182
-							}
-							position++
-							goto l181
-						l182:
-							position, tokenIndex, depth = position181, tokenIndex181, depth181
-							if buffer[position] != rune('M') {
-								goto l174
-							}
-							position++
-						}
-					l181:
-						{
-							position183, tokenIndex183, depth183 := position, tokenIndex, depth
-							if buffer[position] != rune('e') {
-								goto l184
-							}
-							position++
-							goto l183
-						l184:
-							position, tokenIndex, depth = position183, tokenIndex183, depth183
-							if buffer[position] != rune('E') {
-								goto l174
-							}
-							position++
-						}
-					l183:
-						{
-							position185, tokenIndex185, depth185 := position, tokenIndex, depth
-							if buffer[position] != rune('d') {
-								goto l186
-							}
-							position++
-							goto l185
-						l186:
-							position, tokenIndex, depth = position185, tokenIndex185, depth185
-							if buffer[position] != rune('D') {
-								goto l174
-							}
-							position++
-						}
-					l185:
-						if !rules[ruleskip]() {
 							goto l174
+						l175:
+							position, tokenIndex, depth = position174, tokenIndex174, depth174
+							if buffer[position] != rune('A') {
+								goto l169
+							}
+							position++
+						}
+					l174:
+						{
+							position176, tokenIndex176, depth176 := position, tokenIndex, depth
+							if buffer[position] != rune('m') {
+								goto l177
+							}
+							position++
+							goto l176
+						l177:
+							position, tokenIndex, depth = position176, tokenIndex176, depth176
+							if buffer[position] != rune('M') {
+								goto l169
+							}
+							position++
+						}
+					l176:
+						{
+							position178, tokenIndex178, depth178 := position, tokenIndex, depth
+							if buffer[position] != rune('e') {
+								goto l179
+							}
+							position++
+							goto l178
+						l179:
+							position, tokenIndex, depth = position178, tokenIndex178, depth178
+							if buffer[position] != rune('E') {
+								goto l169
+							}
+							position++
+						}
+					l178:
+						{
+							position180, tokenIndex180, depth180 := position, tokenIndex, depth
+							if buffer[position] != rune('d') {
+								goto l181
+							}
+							position++
+							goto l180
+						l181:
+							position, tokenIndex, depth = position180, tokenIndex180, depth180
+							if buffer[position] != rune('D') {
+								goto l169
+							}
+							position++
+						}
+					l180:
+						if !rules[ruleskip]() {
+							goto l169
 						}
 						depth--
-						add(ruleNAMED, position176)
+						add(ruleNAMED, position171)
 					}
-					goto l175
-				l174:
-					position, tokenIndex, depth = position174, tokenIndex174, depth174
+					goto l170
+				l169:
+					position, tokenIndex, depth = position169, tokenIndex169, depth169
 				}
-			l175:
+			l170:
 				if !rules[ruleiriref]() {
-					goto l163
+					goto l158
 				}
 				depth--
-				add(ruledatasetClause, position164)
+				add(ruledatasetClause, position159)
 			}
 			return true
-		l163:
-			position, tokenIndex, depth = position163, tokenIndex163, depth163
+		l158:
+			position, tokenIndex, depth = position158, tokenIndex158, depth158
 			return false
 		},
 		/* 15 whereClause <- <(WHERE? groupGraphPattern)> */
 		func() bool {
-			position187, tokenIndex187, depth187 := position, tokenIndex, depth
+			position182, tokenIndex182, depth182 := position, tokenIndex, depth
 			{
-				position188 := position
+				position183 := position
 				depth++
 				{
-					position189, tokenIndex189, depth189 := position, tokenIndex, depth
+					position184, tokenIndex184, depth184 := position, tokenIndex, depth
 					{
-						position191 := position
+						position186 := position
 						depth++
 						{
-							position192, tokenIndex192, depth192 := position, tokenIndex, depth
+							position187, tokenIndex187, depth187 := position, tokenIndex, depth
 							if buffer[position] != rune('w') {
-								goto l193
+								goto l188
 							}
 							position++
-							goto l192
-						l193:
-							position, tokenIndex, depth = position192, tokenIndex192, depth192
+							goto l187
+						l188:
+							position, tokenIndex, depth = position187, tokenIndex187, depth187
 							if buffer[position] != rune('W') {
-								goto l189
+								goto l184
 							}
 							position++
 						}
-					l192:
+					l187:
 						{
-							position194, tokenIndex194, depth194 := position, tokenIndex, depth
+							position189, tokenIndex189, depth189 := position, tokenIndex, depth
 							if buffer[position] != rune('h') {
-								goto l195
+								goto l190
 							}
 							position++
-							goto l194
-						l195:
-							position, tokenIndex, depth = position194, tokenIndex194, depth194
-							if buffer[position] != rune('H') {
-								goto l189
-							}
-							position++
-						}
-					l194:
-						{
-							position196, tokenIndex196, depth196 := position, tokenIndex, depth
-							if buffer[position] != rune('e') {
-								goto l197
-							}
-							position++
-							goto l196
-						l197:
-							position, tokenIndex, depth = position196, tokenIndex196, depth196
-							if buffer[position] != rune('E') {
-								goto l189
-							}
-							position++
-						}
-					l196:
-						{
-							position198, tokenIndex198, depth198 := position, tokenIndex, depth
-							if buffer[position] != rune('r') {
-								goto l199
-							}
-							position++
-							goto l198
-						l199:
-							position, tokenIndex, depth = position198, tokenIndex198, depth198
-							if buffer[position] != rune('R') {
-								goto l189
-							}
-							position++
-						}
-					l198:
-						{
-							position200, tokenIndex200, depth200 := position, tokenIndex, depth
-							if buffer[position] != rune('e') {
-								goto l201
-							}
-							position++
-							goto l200
-						l201:
-							position, tokenIndex, depth = position200, tokenIndex200, depth200
-							if buffer[position] != rune('E') {
-								goto l189
-							}
-							position++
-						}
-					l200:
-						if !rules[ruleskip]() {
 							goto l189
+						l190:
+							position, tokenIndex, depth = position189, tokenIndex189, depth189
+							if buffer[position] != rune('H') {
+								goto l184
+							}
+							position++
+						}
+					l189:
+						{
+							position191, tokenIndex191, depth191 := position, tokenIndex, depth
+							if buffer[position] != rune('e') {
+								goto l192
+							}
+							position++
+							goto l191
+						l192:
+							position, tokenIndex, depth = position191, tokenIndex191, depth191
+							if buffer[position] != rune('E') {
+								goto l184
+							}
+							position++
+						}
+					l191:
+						{
+							position193, tokenIndex193, depth193 := position, tokenIndex, depth
+							if buffer[position] != rune('r') {
+								goto l194
+							}
+							position++
+							goto l193
+						l194:
+							position, tokenIndex, depth = position193, tokenIndex193, depth193
+							if buffer[position] != rune('R') {
+								goto l184
+							}
+							position++
+						}
+					l193:
+						{
+							position195, tokenIndex195, depth195 := position, tokenIndex, depth
+							if buffer[position] != rune('e') {
+								goto l196
+							}
+							position++
+							goto l195
+						l196:
+							position, tokenIndex, depth = position195, tokenIndex195, depth195
+							if buffer[position] != rune('E') {
+								goto l184
+							}
+							position++
+						}
+					l195:
+						if !rules[ruleskip]() {
+							goto l184
 						}
 						depth--
-						add(ruleWHERE, position191)
+						add(ruleWHERE, position186)
 					}
-					goto l190
-				l189:
-					position, tokenIndex, depth = position189, tokenIndex189, depth189
+					goto l185
+				l184:
+					position, tokenIndex, depth = position184, tokenIndex184, depth184
 				}
-			l190:
+			l185:
 				if !rules[rulegroupGraphPattern]() {
-					goto l187
+					goto l182
 				}
 				depth--
-				add(rulewhereClause, position188)
+				add(rulewhereClause, position183)
 			}
 			return true
-		l187:
-			position, tokenIndex, depth = position187, tokenIndex187, depth187
+		l182:
+			position, tokenIndex, depth = position182, tokenIndex182, depth182
 			return false
 		},
 		/* 16 groupGraphPattern <- <(LBRACE (subSelect / graphPattern) RBRACE)> */
 		func() bool {
-			position202, tokenIndex202, depth202 := position, tokenIndex, depth
+			position197, tokenIndex197, depth197 := position, tokenIndex, depth
 			{
-				position203 := position
+				position198 := position
 				depth++
 				if !rules[ruleLBRACE]() {
-					goto l202
+					goto l197
 				}
 				{
-					position204, tokenIndex204, depth204 := position, tokenIndex, depth
+					position199, tokenIndex199, depth199 := position, tokenIndex, depth
 					if !rules[rulesubSelect]() {
-						goto l205
+						goto l200
 					}
-					goto l204
-				l205:
-					position, tokenIndex, depth = position204, tokenIndex204, depth204
+					goto l199
+				l200:
+					position, tokenIndex, depth = position199, tokenIndex199, depth199
 					if !rules[rulegraphPattern]() {
-						goto l202
+						goto l197
 					}
 				}
-			l204:
+			l199:
 				if !rules[ruleRBRACE]() {
-					goto l202
+					goto l197
 				}
 				depth--
-				add(rulegroupGraphPattern, position203)
+				add(rulegroupGraphPattern, position198)
 			}
 			return true
-		l202:
-			position, tokenIndex, depth = position202, tokenIndex202, depth202
+		l197:
+			position, tokenIndex, depth = position197, tokenIndex197, depth197
 			return false
 		},
 		/* 17 graphPattern <- <(basicGraphPattern? (graphPatternNotTriples DOT? graphPattern)?)> */
 		func() bool {
 			{
-				position207 := position
+				position202 := position
 				depth++
 				{
-					position208, tokenIndex208, depth208 := position, tokenIndex, depth
+					position203, tokenIndex203, depth203 := position, tokenIndex, depth
 					{
-						position210 := position
+						position205 := position
 						depth++
 						{
-							position211, tokenIndex211, depth211 := position, tokenIndex, depth
+							position206, tokenIndex206, depth206 := position, tokenIndex, depth
 							if !rules[ruletriplesBlock]() {
-								goto l212
+								goto l207
 							}
-						l213:
+						l208:
 							{
-								position214, tokenIndex214, depth214 := position, tokenIndex, depth
+								position209, tokenIndex209, depth209 := position, tokenIndex, depth
 								if !rules[rulefilterOrBind]() {
-									goto l214
+									goto l209
 								}
 								{
-									position215, tokenIndex215, depth215 := position, tokenIndex, depth
+									position210, tokenIndex210, depth210 := position, tokenIndex, depth
 									if !rules[ruleDOT]() {
-										goto l215
+										goto l210
 									}
-									goto l216
-								l215:
-									position, tokenIndex, depth = position215, tokenIndex215, depth215
+									goto l211
+								l210:
+									position, tokenIndex, depth = position210, tokenIndex210, depth210
 								}
-							l216:
+							l211:
 								{
-									position217, tokenIndex217, depth217 := position, tokenIndex, depth
+									position212, tokenIndex212, depth212 := position, tokenIndex, depth
 									if !rules[ruletriplesBlock]() {
-										goto l217
+										goto l212
 									}
-									goto l218
-								l217:
-									position, tokenIndex, depth = position217, tokenIndex217, depth217
+									goto l213
+								l212:
+									position, tokenIndex, depth = position212, tokenIndex212, depth212
 								}
-							l218:
-								goto l213
-							l214:
-								position, tokenIndex, depth = position214, tokenIndex214, depth214
-							}
-							goto l211
-						l212:
-							position, tokenIndex, depth = position211, tokenIndex211, depth211
-							if !rules[rulefilterOrBind]() {
+							l213:
 								goto l208
+							l209:
+								position, tokenIndex, depth = position209, tokenIndex209, depth209
+							}
+							goto l206
+						l207:
+							position, tokenIndex, depth = position206, tokenIndex206, depth206
+							if !rules[rulefilterOrBind]() {
+								goto l203
 							}
 							{
-								position221, tokenIndex221, depth221 := position, tokenIndex, depth
+								position216, tokenIndex216, depth216 := position, tokenIndex, depth
 								if !rules[ruleDOT]() {
-									goto l221
+									goto l216
 								}
-								goto l222
-							l221:
-								position, tokenIndex, depth = position221, tokenIndex221, depth221
+								goto l217
+							l216:
+								position, tokenIndex, depth = position216, tokenIndex216, depth216
 							}
-						l222:
+						l217:
 							{
-								position223, tokenIndex223, depth223 := position, tokenIndex, depth
+								position218, tokenIndex218, depth218 := position, tokenIndex, depth
 								if !rules[ruletriplesBlock]() {
-									goto l223
+									goto l218
 								}
-								goto l224
-							l223:
-								position, tokenIndex, depth = position223, tokenIndex223, depth223
-							}
-						l224:
-						l219:
-							{
-								position220, tokenIndex220, depth220 := position, tokenIndex, depth
-								if !rules[rulefilterOrBind]() {
-									goto l220
-								}
-								{
-									position225, tokenIndex225, depth225 := position, tokenIndex, depth
-									if !rules[ruleDOT]() {
-										goto l225
-									}
-									goto l226
-								l225:
-									position, tokenIndex, depth = position225, tokenIndex225, depth225
-								}
-							l226:
-								{
-									position227, tokenIndex227, depth227 := position, tokenIndex, depth
-									if !rules[ruletriplesBlock]() {
-										goto l227
-									}
-									goto l228
-								l227:
-									position, tokenIndex, depth = position227, tokenIndex227, depth227
-								}
-							l228:
 								goto l219
-							l220:
-								position, tokenIndex, depth = position220, tokenIndex220, depth220
+							l218:
+								position, tokenIndex, depth = position218, tokenIndex218, depth218
+							}
+						l219:
+						l214:
+							{
+								position215, tokenIndex215, depth215 := position, tokenIndex, depth
+								if !rules[rulefilterOrBind]() {
+									goto l215
+								}
+								{
+									position220, tokenIndex220, depth220 := position, tokenIndex, depth
+									if !rules[ruleDOT]() {
+										goto l220
+									}
+									goto l221
+								l220:
+									position, tokenIndex, depth = position220, tokenIndex220, depth220
+								}
+							l221:
+								{
+									position222, tokenIndex222, depth222 := position, tokenIndex, depth
+									if !rules[ruletriplesBlock]() {
+										goto l222
+									}
+									goto l223
+								l222:
+									position, tokenIndex, depth = position222, tokenIndex222, depth222
+								}
+							l223:
+								goto l214
+							l215:
+								position, tokenIndex, depth = position215, tokenIndex215, depth215
 							}
 						}
-					l211:
+					l206:
 						depth--
-						add(rulebasicGraphPattern, position210)
+						add(rulebasicGraphPattern, position205)
 					}
-					goto l209
-				l208:
-					position, tokenIndex, depth = position208, tokenIndex208, depth208
+					goto l204
+				l203:
+					position, tokenIndex, depth = position203, tokenIndex203, depth203
 				}
-			l209:
+			l204:
 				{
-					position229, tokenIndex229, depth229 := position, tokenIndex, depth
+					position224, tokenIndex224, depth224 := position, tokenIndex, depth
 					{
-						position231 := position
+						position226 := position
 						depth++
 						{
-							position232, tokenIndex232, depth232 := position, tokenIndex, depth
-							{
-								position234 := position
-								depth++
+							switch buffer[position] {
+							case 'M', 'm':
 								{
-									position235 := position
+									position228 := position
 									depth++
 									{
-										position236, tokenIndex236, depth236 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l237
+										position229 := position
+										depth++
+										{
+											position230, tokenIndex230, depth230 := position, tokenIndex, depth
+											if buffer[position] != rune('m') {
+												goto l231
+											}
+											position++
+											goto l230
+										l231:
+											position, tokenIndex, depth = position230, tokenIndex230, depth230
+											if buffer[position] != rune('M') {
+												goto l224
+											}
+											position++
 										}
-										position++
-										goto l236
-									l237:
-										position, tokenIndex, depth = position236, tokenIndex236, depth236
-										if buffer[position] != rune('O') {
-											goto l233
+									l230:
+										{
+											position232, tokenIndex232, depth232 := position, tokenIndex, depth
+											if buffer[position] != rune('i') {
+												goto l233
+											}
+											position++
+											goto l232
+										l233:
+											position, tokenIndex, depth = position232, tokenIndex232, depth232
+											if buffer[position] != rune('I') {
+												goto l224
+											}
+											position++
 										}
-										position++
+									l232:
+										{
+											position234, tokenIndex234, depth234 := position, tokenIndex, depth
+											if buffer[position] != rune('n') {
+												goto l235
+											}
+											position++
+											goto l234
+										l235:
+											position, tokenIndex, depth = position234, tokenIndex234, depth234
+											if buffer[position] != rune('N') {
+												goto l224
+											}
+											position++
+										}
+									l234:
+										{
+											position236, tokenIndex236, depth236 := position, tokenIndex, depth
+											if buffer[position] != rune('u') {
+												goto l237
+											}
+											position++
+											goto l236
+										l237:
+											position, tokenIndex, depth = position236, tokenIndex236, depth236
+											if buffer[position] != rune('U') {
+												goto l224
+											}
+											position++
+										}
+									l236:
+										{
+											position238, tokenIndex238, depth238 := position, tokenIndex, depth
+											if buffer[position] != rune('s') {
+												goto l239
+											}
+											position++
+											goto l238
+										l239:
+											position, tokenIndex, depth = position238, tokenIndex238, depth238
+											if buffer[position] != rune('S') {
+												goto l224
+											}
+											position++
+										}
+									l238:
+										if !rules[ruleskip]() {
+											goto l224
+										}
+										depth--
+										add(ruleMINUSSETOPER, position229)
 									}
-								l236:
-									{
-										position238, tokenIndex238, depth238 := position, tokenIndex, depth
-										if buffer[position] != rune('p') {
-											goto l239
-										}
-										position++
-										goto l238
-									l239:
-										position, tokenIndex, depth = position238, tokenIndex238, depth238
-										if buffer[position] != rune('P') {
-											goto l233
-										}
-										position++
-									}
-								l238:
-									{
-										position240, tokenIndex240, depth240 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l241
-										}
-										position++
-										goto l240
-									l241:
-										position, tokenIndex, depth = position240, tokenIndex240, depth240
-										if buffer[position] != rune('T') {
-											goto l233
-										}
-										position++
-									}
-								l240:
-									{
-										position242, tokenIndex242, depth242 := position, tokenIndex, depth
-										if buffer[position] != rune('i') {
-											goto l243
-										}
-										position++
-										goto l242
-									l243:
-										position, tokenIndex, depth = position242, tokenIndex242, depth242
-										if buffer[position] != rune('I') {
-											goto l233
-										}
-										position++
-									}
-								l242:
-									{
-										position244, tokenIndex244, depth244 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l245
-										}
-										position++
-										goto l244
-									l245:
-										position, tokenIndex, depth = position244, tokenIndex244, depth244
-										if buffer[position] != rune('O') {
-											goto l233
-										}
-										position++
-									}
-								l244:
-									{
-										position246, tokenIndex246, depth246 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
-											goto l247
-										}
-										position++
-										goto l246
-									l247:
-										position, tokenIndex, depth = position246, tokenIndex246, depth246
-										if buffer[position] != rune('N') {
-											goto l233
-										}
-										position++
-									}
-								l246:
-									{
-										position248, tokenIndex248, depth248 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l249
-										}
-										position++
-										goto l248
-									l249:
-										position, tokenIndex, depth = position248, tokenIndex248, depth248
-										if buffer[position] != rune('A') {
-											goto l233
-										}
-										position++
-									}
-								l248:
-									{
-										position250, tokenIndex250, depth250 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
-											goto l251
-										}
-										position++
-										goto l250
-									l251:
-										position, tokenIndex, depth = position250, tokenIndex250, depth250
-										if buffer[position] != rune('L') {
-											goto l233
-										}
-										position++
-									}
-								l250:
-									if !rules[ruleskip]() {
-										goto l233
+									if !rules[rulegroupGraphPattern]() {
+										goto l224
 									}
 									depth--
-									add(ruleOPTIONAL, position235)
+									add(ruleminusGraphPattern, position228)
 								}
-								if !rules[ruleLBRACE]() {
-									goto l233
-								}
+								break
+							case 'G', 'g':
 								{
-									position252, tokenIndex252, depth252 := position, tokenIndex, depth
-									if !rules[rulesubSelect]() {
-										goto l253
+									position240 := position
+									depth++
+									{
+										position241 := position
+										depth++
+										{
+											position242, tokenIndex242, depth242 := position, tokenIndex, depth
+											if buffer[position] != rune('g') {
+												goto l243
+											}
+											position++
+											goto l242
+										l243:
+											position, tokenIndex, depth = position242, tokenIndex242, depth242
+											if buffer[position] != rune('G') {
+												goto l224
+											}
+											position++
+										}
+									l242:
+										{
+											position244, tokenIndex244, depth244 := position, tokenIndex, depth
+											if buffer[position] != rune('r') {
+												goto l245
+											}
+											position++
+											goto l244
+										l245:
+											position, tokenIndex, depth = position244, tokenIndex244, depth244
+											if buffer[position] != rune('R') {
+												goto l224
+											}
+											position++
+										}
+									l244:
+										{
+											position246, tokenIndex246, depth246 := position, tokenIndex, depth
+											if buffer[position] != rune('a') {
+												goto l247
+											}
+											position++
+											goto l246
+										l247:
+											position, tokenIndex, depth = position246, tokenIndex246, depth246
+											if buffer[position] != rune('A') {
+												goto l224
+											}
+											position++
+										}
+									l246:
+										{
+											position248, tokenIndex248, depth248 := position, tokenIndex, depth
+											if buffer[position] != rune('p') {
+												goto l249
+											}
+											position++
+											goto l248
+										l249:
+											position, tokenIndex, depth = position248, tokenIndex248, depth248
+											if buffer[position] != rune('P') {
+												goto l224
+											}
+											position++
+										}
+									l248:
+										{
+											position250, tokenIndex250, depth250 := position, tokenIndex, depth
+											if buffer[position] != rune('h') {
+												goto l251
+											}
+											position++
+											goto l250
+										l251:
+											position, tokenIndex, depth = position250, tokenIndex250, depth250
+											if buffer[position] != rune('H') {
+												goto l224
+											}
+											position++
+										}
+									l250:
+										if !rules[ruleskip]() {
+											goto l224
+										}
+										depth--
+										add(ruleGRAPH, position241)
 									}
-									goto l252
-								l253:
-									position, tokenIndex, depth = position252, tokenIndex252, depth252
-									if !rules[rulegraphPattern]() {
-										goto l233
+									{
+										position252, tokenIndex252, depth252 := position, tokenIndex, depth
+										if !rules[rulevar]() {
+											goto l253
+										}
+										goto l252
+									l253:
+										position, tokenIndex, depth = position252, tokenIndex252, depth252
+										if !rules[ruleiriref]() {
+											goto l224
+										}
 									}
+								l252:
+									if !rules[rulegroupGraphPattern]() {
+										goto l224
+									}
+									depth--
+									add(rulegraphGraphPattern, position240)
 								}
-							l252:
-								if !rules[ruleRBRACE]() {
-									goto l233
+								break
+							case '{':
+								if !rules[rulegroupOrUnionGraphPattern]() {
+									goto l224
 								}
-								depth--
-								add(ruleoptionalGraphPattern, position234)
-							}
-							goto l232
-						l233:
-							position, tokenIndex, depth = position232, tokenIndex232, depth232
-							if !rules[rulegroupOrUnionGraphPattern]() {
-								goto l229
+								break
+							default:
+								{
+									position254 := position
+									depth++
+									{
+										position255 := position
+										depth++
+										{
+											position256, tokenIndex256, depth256 := position, tokenIndex, depth
+											if buffer[position] != rune('o') {
+												goto l257
+											}
+											position++
+											goto l256
+										l257:
+											position, tokenIndex, depth = position256, tokenIndex256, depth256
+											if buffer[position] != rune('O') {
+												goto l224
+											}
+											position++
+										}
+									l256:
+										{
+											position258, tokenIndex258, depth258 := position, tokenIndex, depth
+											if buffer[position] != rune('p') {
+												goto l259
+											}
+											position++
+											goto l258
+										l259:
+											position, tokenIndex, depth = position258, tokenIndex258, depth258
+											if buffer[position] != rune('P') {
+												goto l224
+											}
+											position++
+										}
+									l258:
+										{
+											position260, tokenIndex260, depth260 := position, tokenIndex, depth
+											if buffer[position] != rune('t') {
+												goto l261
+											}
+											position++
+											goto l260
+										l261:
+											position, tokenIndex, depth = position260, tokenIndex260, depth260
+											if buffer[position] != rune('T') {
+												goto l224
+											}
+											position++
+										}
+									l260:
+										{
+											position262, tokenIndex262, depth262 := position, tokenIndex, depth
+											if buffer[position] != rune('i') {
+												goto l263
+											}
+											position++
+											goto l262
+										l263:
+											position, tokenIndex, depth = position262, tokenIndex262, depth262
+											if buffer[position] != rune('I') {
+												goto l224
+											}
+											position++
+										}
+									l262:
+										{
+											position264, tokenIndex264, depth264 := position, tokenIndex, depth
+											if buffer[position] != rune('o') {
+												goto l265
+											}
+											position++
+											goto l264
+										l265:
+											position, tokenIndex, depth = position264, tokenIndex264, depth264
+											if buffer[position] != rune('O') {
+												goto l224
+											}
+											position++
+										}
+									l264:
+										{
+											position266, tokenIndex266, depth266 := position, tokenIndex, depth
+											if buffer[position] != rune('n') {
+												goto l267
+											}
+											position++
+											goto l266
+										l267:
+											position, tokenIndex, depth = position266, tokenIndex266, depth266
+											if buffer[position] != rune('N') {
+												goto l224
+											}
+											position++
+										}
+									l266:
+										{
+											position268, tokenIndex268, depth268 := position, tokenIndex, depth
+											if buffer[position] != rune('a') {
+												goto l269
+											}
+											position++
+											goto l268
+										l269:
+											position, tokenIndex, depth = position268, tokenIndex268, depth268
+											if buffer[position] != rune('A') {
+												goto l224
+											}
+											position++
+										}
+									l268:
+										{
+											position270, tokenIndex270, depth270 := position, tokenIndex, depth
+											if buffer[position] != rune('l') {
+												goto l271
+											}
+											position++
+											goto l270
+										l271:
+											position, tokenIndex, depth = position270, tokenIndex270, depth270
+											if buffer[position] != rune('L') {
+												goto l224
+											}
+											position++
+										}
+									l270:
+										if !rules[ruleskip]() {
+											goto l224
+										}
+										depth--
+										add(ruleOPTIONAL, position255)
+									}
+									if !rules[ruleLBRACE]() {
+										goto l224
+									}
+									{
+										position272, tokenIndex272, depth272 := position, tokenIndex, depth
+										if !rules[rulesubSelect]() {
+											goto l273
+										}
+										goto l272
+									l273:
+										position, tokenIndex, depth = position272, tokenIndex272, depth272
+										if !rules[rulegraphPattern]() {
+											goto l224
+										}
+									}
+								l272:
+									if !rules[ruleRBRACE]() {
+										goto l224
+									}
+									depth--
+									add(ruleoptionalGraphPattern, position254)
+								}
+								break
 							}
 						}
-					l232:
+
 						depth--
-						add(rulegraphPatternNotTriples, position231)
+						add(rulegraphPatternNotTriples, position226)
 					}
 					{
-						position254, tokenIndex254, depth254 := position, tokenIndex, depth
+						position274, tokenIndex274, depth274 := position, tokenIndex, depth
 						if !rules[ruleDOT]() {
-							goto l254
+							goto l274
 						}
-						goto l255
-					l254:
-						position, tokenIndex, depth = position254, tokenIndex254, depth254
+						goto l275
+					l274:
+						position, tokenIndex, depth = position274, tokenIndex274, depth274
 					}
-				l255:
+				l275:
 					if !rules[rulegraphPattern]() {
-						goto l229
+						goto l224
 					}
-					goto l230
-				l229:
-					position, tokenIndex, depth = position229, tokenIndex229, depth229
+					goto l225
+				l224:
+					position, tokenIndex, depth = position224, tokenIndex224, depth224
 				}
-			l230:
+			l225:
 				depth--
-				add(rulegraphPattern, position207)
+				add(rulegraphPattern, position202)
 			}
 			return true
 		},
-		/* 18 graphPatternNotTriples <- <(optionalGraphPattern / groupOrUnionGraphPattern)> */
+		/* 18 graphPatternNotTriples <- <((&('M' | 'm') minusGraphPattern) | (&('G' | 'g') graphGraphPattern) | (&('{') groupOrUnionGraphPattern) | (&('O' | 'o') optionalGraphPattern))> */
 		nil,
 		/* 19 optionalGraphPattern <- <(OPTIONAL LBRACE (subSelect / graphPattern) RBRACE)> */
 		nil,
 		/* 20 groupOrUnionGraphPattern <- <(groupGraphPattern (UNION groupOrUnionGraphPattern)?)> */
 		func() bool {
-			position258, tokenIndex258, depth258 := position, tokenIndex, depth
+			position278, tokenIndex278, depth278 := position, tokenIndex, depth
 			{
-				position259 := position
+				position279 := position
 				depth++
 				if !rules[rulegroupGraphPattern]() {
-					goto l258
+					goto l278
 				}
 				{
-					position260, tokenIndex260, depth260 := position, tokenIndex, depth
+					position280, tokenIndex280, depth280 := position, tokenIndex, depth
 					{
-						position262 := position
+						position282 := position
 						depth++
-						{
-							position263, tokenIndex263, depth263 := position, tokenIndex, depth
-							if buffer[position] != rune('u') {
-								goto l264
-							}
-							position++
-							goto l263
-						l264:
-							position, tokenIndex, depth = position263, tokenIndex263, depth263
-							if buffer[position] != rune('U') {
-								goto l260
-							}
-							position++
-						}
-					l263:
-						{
-							position265, tokenIndex265, depth265 := position, tokenIndex, depth
-							if buffer[position] != rune('n') {
-								goto l266
-							}
-							position++
-							goto l265
-						l266:
-							position, tokenIndex, depth = position265, tokenIndex265, depth265
-							if buffer[position] != rune('N') {
-								goto l260
-							}
-							position++
-						}
-					l265:
-						{
-							position267, tokenIndex267, depth267 := position, tokenIndex, depth
-							if buffer[position] != rune('i') {
-								goto l268
-							}
-							position++
-							goto l267
-						l268:
-							position, tokenIndex, depth = position267, tokenIndex267, depth267
-							if buffer[position] != rune('I') {
-								goto l260
-							}
-							position++
-						}
-					l267:
-						{
-							position269, tokenIndex269, depth269 := position, tokenIndex, depth
-							if buffer[position] != rune('o') {
-								goto l270
-							}
-							position++
-							goto l269
-						l270:
-							position, tokenIndex, depth = position269, tokenIndex269, depth269
-							if buffer[position] != rune('O') {
-								goto l260
-							}
-							position++
-						}
-					l269:
-						{
-							position271, tokenIndex271, depth271 := position, tokenIndex, depth
-							if buffer[position] != rune('n') {
-								goto l272
-							}
-							position++
-							goto l271
-						l272:
-							position, tokenIndex, depth = position271, tokenIndex271, depth271
-							if buffer[position] != rune('N') {
-								goto l260
-							}
-							position++
-						}
-					l271:
-						if !rules[ruleskip]() {
-							goto l260
-						}
-						depth--
-						add(ruleUNION, position262)
-					}
-					if !rules[rulegroupOrUnionGraphPattern]() {
-						goto l260
-					}
-					goto l261
-				l260:
-					position, tokenIndex, depth = position260, tokenIndex260, depth260
-				}
-			l261:
-				depth--
-				add(rulegroupOrUnionGraphPattern, position259)
-			}
-			return true
-		l258:
-			position, tokenIndex, depth = position258, tokenIndex258, depth258
-			return false
-		},
-		/* 21 basicGraphPattern <- <((triplesBlock (filterOrBind DOT? triplesBlock?)*) / (filterOrBind DOT? triplesBlock?)+)> */
-		nil,
-		/* 22 filterOrBind <- <((FILTER constraint) / (BIND LPAREN expression AS var RPAREN))> */
-		func() bool {
-			position274, tokenIndex274, depth274 := position, tokenIndex, depth
-			{
-				position275 := position
-				depth++
-				{
-					position276, tokenIndex276, depth276 := position, tokenIndex, depth
-					{
-						position278 := position
-						depth++
-						{
-							position279, tokenIndex279, depth279 := position, tokenIndex, depth
-							if buffer[position] != rune('f') {
-								goto l280
-							}
-							position++
-							goto l279
-						l280:
-							position, tokenIndex, depth = position279, tokenIndex279, depth279
-							if buffer[position] != rune('F') {
-								goto l277
-							}
-							position++
-						}
-					l279:
-						{
-							position281, tokenIndex281, depth281 := position, tokenIndex, depth
-							if buffer[position] != rune('i') {
-								goto l282
-							}
-							position++
-							goto l281
-						l282:
-							position, tokenIndex, depth = position281, tokenIndex281, depth281
-							if buffer[position] != rune('I') {
-								goto l277
-							}
-							position++
-						}
-					l281:
 						{
 							position283, tokenIndex283, depth283 := position, tokenIndex, depth
-							if buffer[position] != rune('l') {
+							if buffer[position] != rune('u') {
 								goto l284
 							}
 							position++
 							goto l283
 						l284:
 							position, tokenIndex, depth = position283, tokenIndex283, depth283
-							if buffer[position] != rune('L') {
-								goto l277
+							if buffer[position] != rune('U') {
+								goto l280
 							}
 							position++
 						}
 					l283:
 						{
 							position285, tokenIndex285, depth285 := position, tokenIndex, depth
-							if buffer[position] != rune('t') {
+							if buffer[position] != rune('n') {
 								goto l286
 							}
 							position++
 							goto l285
 						l286:
 							position, tokenIndex, depth = position285, tokenIndex285, depth285
-							if buffer[position] != rune('T') {
-								goto l277
+							if buffer[position] != rune('N') {
+								goto l280
 							}
 							position++
 						}
 					l285:
 						{
 							position287, tokenIndex287, depth287 := position, tokenIndex, depth
-							if buffer[position] != rune('e') {
+							if buffer[position] != rune('i') {
 								goto l288
 							}
 							position++
 							goto l287
 						l288:
 							position, tokenIndex, depth = position287, tokenIndex287, depth287
-							if buffer[position] != rune('E') {
-								goto l277
+							if buffer[position] != rune('I') {
+								goto l280
 							}
 							position++
 						}
 					l287:
 						{
 							position289, tokenIndex289, depth289 := position, tokenIndex, depth
-							if buffer[position] != rune('r') {
+							if buffer[position] != rune('o') {
 								goto l290
 							}
 							position++
 							goto l289
 						l290:
 							position, tokenIndex, depth = position289, tokenIndex289, depth289
-							if buffer[position] != rune('R') {
-								goto l277
+							if buffer[position] != rune('O') {
+								goto l280
 							}
 							position++
 						}
 					l289:
+						{
+							position291, tokenIndex291, depth291 := position, tokenIndex, depth
+							if buffer[position] != rune('n') {
+								goto l292
+							}
+							position++
+							goto l291
+						l292:
+							position, tokenIndex, depth = position291, tokenIndex291, depth291
+							if buffer[position] != rune('N') {
+								goto l280
+							}
+							position++
+						}
+					l291:
 						if !rules[ruleskip]() {
-							goto l277
+							goto l280
 						}
 						depth--
-						add(ruleFILTER, position278)
+						add(ruleUNION, position282)
 					}
-					if !rules[ruleconstraint]() {
-						goto l277
+					if !rules[rulegroupOrUnionGraphPattern]() {
+						goto l280
 					}
-					goto l276
-				l277:
-					position, tokenIndex, depth = position276, tokenIndex276, depth276
+					goto l281
+				l280:
+					position, tokenIndex, depth = position280, tokenIndex280, depth280
+				}
+			l281:
+				depth--
+				add(rulegroupOrUnionGraphPattern, position279)
+			}
+			return true
+		l278:
+			position, tokenIndex, depth = position278, tokenIndex278, depth278
+			return false
+		},
+		/* 21 graphGraphPattern <- <(GRAPH (var / iriref) groupGraphPattern)> */
+		nil,
+		/* 22 minusGraphPattern <- <(MINUSSETOPER groupGraphPattern)> */
+		nil,
+		/* 23 basicGraphPattern <- <((triplesBlock (filterOrBind DOT? triplesBlock?)*) / (filterOrBind DOT? triplesBlock?)+)> */
+		nil,
+		/* 24 filterOrBind <- <((FILTER constraint) / (BIND LPAREN expression AS var RPAREN))> */
+		func() bool {
+			position296, tokenIndex296, depth296 := position, tokenIndex, depth
+			{
+				position297 := position
+				depth++
+				{
+					position298, tokenIndex298, depth298 := position, tokenIndex, depth
 					{
-						position291 := position
+						position300 := position
 						depth++
 						{
-							position292, tokenIndex292, depth292 := position, tokenIndex, depth
-							if buffer[position] != rune('b') {
-								goto l293
+							position301, tokenIndex301, depth301 := position, tokenIndex, depth
+							if buffer[position] != rune('f') {
+								goto l302
 							}
 							position++
-							goto l292
-						l293:
-							position, tokenIndex, depth = position292, tokenIndex292, depth292
-							if buffer[position] != rune('B') {
-								goto l274
-							}
-							position++
-						}
-					l292:
-						{
-							position294, tokenIndex294, depth294 := position, tokenIndex, depth
-							if buffer[position] != rune('i') {
-								goto l295
-							}
-							position++
-							goto l294
-						l295:
-							position, tokenIndex, depth = position294, tokenIndex294, depth294
-							if buffer[position] != rune('I') {
-								goto l274
-							}
-							position++
-						}
-					l294:
-						{
-							position296, tokenIndex296, depth296 := position, tokenIndex, depth
-							if buffer[position] != rune('n') {
-								goto l297
-							}
-							position++
-							goto l296
-						l297:
-							position, tokenIndex, depth = position296, tokenIndex296, depth296
-							if buffer[position] != rune('N') {
-								goto l274
-							}
-							position++
-						}
-					l296:
-						{
-							position298, tokenIndex298, depth298 := position, tokenIndex, depth
-							if buffer[position] != rune('d') {
+							goto l301
+						l302:
+							position, tokenIndex, depth = position301, tokenIndex301, depth301
+							if buffer[position] != rune('F') {
 								goto l299
 							}
 							position++
-							goto l298
-						l299:
-							position, tokenIndex, depth = position298, tokenIndex298, depth298
-							if buffer[position] != rune('D') {
-								goto l274
+						}
+					l301:
+						{
+							position303, tokenIndex303, depth303 := position, tokenIndex, depth
+							if buffer[position] != rune('i') {
+								goto l304
+							}
+							position++
+							goto l303
+						l304:
+							position, tokenIndex, depth = position303, tokenIndex303, depth303
+							if buffer[position] != rune('I') {
+								goto l299
 							}
 							position++
 						}
-					l298:
+					l303:
+						{
+							position305, tokenIndex305, depth305 := position, tokenIndex, depth
+							if buffer[position] != rune('l') {
+								goto l306
+							}
+							position++
+							goto l305
+						l306:
+							position, tokenIndex, depth = position305, tokenIndex305, depth305
+							if buffer[position] != rune('L') {
+								goto l299
+							}
+							position++
+						}
+					l305:
+						{
+							position307, tokenIndex307, depth307 := position, tokenIndex, depth
+							if buffer[position] != rune('t') {
+								goto l308
+							}
+							position++
+							goto l307
+						l308:
+							position, tokenIndex, depth = position307, tokenIndex307, depth307
+							if buffer[position] != rune('T') {
+								goto l299
+							}
+							position++
+						}
+					l307:
+						{
+							position309, tokenIndex309, depth309 := position, tokenIndex, depth
+							if buffer[position] != rune('e') {
+								goto l310
+							}
+							position++
+							goto l309
+						l310:
+							position, tokenIndex, depth = position309, tokenIndex309, depth309
+							if buffer[position] != rune('E') {
+								goto l299
+							}
+							position++
+						}
+					l309:
+						{
+							position311, tokenIndex311, depth311 := position, tokenIndex, depth
+							if buffer[position] != rune('r') {
+								goto l312
+							}
+							position++
+							goto l311
+						l312:
+							position, tokenIndex, depth = position311, tokenIndex311, depth311
+							if buffer[position] != rune('R') {
+								goto l299
+							}
+							position++
+						}
+					l311:
 						if !rules[ruleskip]() {
-							goto l274
+							goto l299
 						}
 						depth--
-						add(ruleBIND, position291)
+						add(ruleFILTER, position300)
 					}
-					if !rules[ruleLPAREN]() {
-						goto l274
+					if !rules[ruleconstraint]() {
+						goto l299
 					}
-					if !rules[ruleexpression]() {
-						goto l274
-					}
-					if !rules[ruleAS]() {
-						goto l274
-					}
-					if !rules[rulevar]() {
-						goto l274
-					}
-					if !rules[ruleRPAREN]() {
-						goto l274
-					}
-				}
-			l276:
-				depth--
-				add(rulefilterOrBind, position275)
-			}
-			return true
-		l274:
-			position, tokenIndex, depth = position274, tokenIndex274, depth274
-			return false
-		},
-		/* 23 constraint <- <(brackettedExpression / builtinCall / functionCall)> */
-		func() bool {
-			position300, tokenIndex300, depth300 := position, tokenIndex, depth
-			{
-				position301 := position
-				depth++
-				{
-					position302, tokenIndex302, depth302 := position, tokenIndex, depth
-					if !rules[rulebrackettedExpression]() {
-						goto l303
-					}
-					goto l302
-				l303:
-					position, tokenIndex, depth = position302, tokenIndex302, depth302
-					if !rules[rulebuiltinCall]() {
-						goto l304
-					}
-					goto l302
-				l304:
-					position, tokenIndex, depth = position302, tokenIndex302, depth302
-					if !rules[rulefunctionCall]() {
-						goto l300
-					}
-				}
-			l302:
-				depth--
-				add(ruleconstraint, position301)
-			}
-			return true
-		l300:
-			position, tokenIndex, depth = position300, tokenIndex300, depth300
-			return false
-		},
-		/* 24 triplesBlock <- <(triplesSameSubjectPath (DOT triplesSameSubjectPath)* DOT?)> */
-		func() bool {
-			position305, tokenIndex305, depth305 := position, tokenIndex, depth
-			{
-				position306 := position
-				depth++
-				if !rules[ruletriplesSameSubjectPath]() {
-					goto l305
-				}
-			l307:
-				{
-					position308, tokenIndex308, depth308 := position, tokenIndex, depth
-					if !rules[ruleDOT]() {
-						goto l308
-					}
-					if !rules[ruletriplesSameSubjectPath]() {
-						goto l308
-					}
-					goto l307
-				l308:
-					position, tokenIndex, depth = position308, tokenIndex308, depth308
-				}
-				{
-					position309, tokenIndex309, depth309 := position, tokenIndex, depth
-					if !rules[ruleDOT]() {
-						goto l309
-					}
-					goto l310
-				l309:
-					position, tokenIndex, depth = position309, tokenIndex309, depth309
-				}
-			l310:
-				depth--
-				add(ruletriplesBlock, position306)
-			}
-			return true
-		l305:
-			position, tokenIndex, depth = position305, tokenIndex305, depth305
-			return false
-		},
-		/* 25 triplesSameSubjectPath <- <((varOrTerm propertyListPath) / (triplesNodePath propertyListPath))> */
-		func() bool {
-			position311, tokenIndex311, depth311 := position, tokenIndex, depth
-			{
-				position312 := position
-				depth++
-				{
-					position313, tokenIndex313, depth313 := position, tokenIndex, depth
+					goto l298
+				l299:
+					position, tokenIndex, depth = position298, tokenIndex298, depth298
 					{
-						position315 := position
+						position313 := position
 						depth++
 						{
+							position314, tokenIndex314, depth314 := position, tokenIndex, depth
+							if buffer[position] != rune('b') {
+								goto l315
+							}
+							position++
+							goto l314
+						l315:
+							position, tokenIndex, depth = position314, tokenIndex314, depth314
+							if buffer[position] != rune('B') {
+								goto l296
+							}
+							position++
+						}
+					l314:
+						{
 							position316, tokenIndex316, depth316 := position, tokenIndex, depth
+							if buffer[position] != rune('i') {
+								goto l317
+							}
+							position++
+							goto l316
+						l317:
+							position, tokenIndex, depth = position316, tokenIndex316, depth316
+							if buffer[position] != rune('I') {
+								goto l296
+							}
+							position++
+						}
+					l316:
+						{
+							position318, tokenIndex318, depth318 := position, tokenIndex, depth
+							if buffer[position] != rune('n') {
+								goto l319
+							}
+							position++
+							goto l318
+						l319:
+							position, tokenIndex, depth = position318, tokenIndex318, depth318
+							if buffer[position] != rune('N') {
+								goto l296
+							}
+							position++
+						}
+					l318:
+						{
+							position320, tokenIndex320, depth320 := position, tokenIndex, depth
+							if buffer[position] != rune('d') {
+								goto l321
+							}
+							position++
+							goto l320
+						l321:
+							position, tokenIndex, depth = position320, tokenIndex320, depth320
+							if buffer[position] != rune('D') {
+								goto l296
+							}
+							position++
+						}
+					l320:
+						if !rules[ruleskip]() {
+							goto l296
+						}
+						depth--
+						add(ruleBIND, position313)
+					}
+					if !rules[ruleLPAREN]() {
+						goto l296
+					}
+					if !rules[ruleexpression]() {
+						goto l296
+					}
+					if !rules[ruleAS]() {
+						goto l296
+					}
+					if !rules[rulevar]() {
+						goto l296
+					}
+					if !rules[ruleRPAREN]() {
+						goto l296
+					}
+				}
+			l298:
+				depth--
+				add(rulefilterOrBind, position297)
+			}
+			return true
+		l296:
+			position, tokenIndex, depth = position296, tokenIndex296, depth296
+			return false
+		},
+		/* 25 constraint <- <(brackettedExpression / builtinCall / functionCall)> */
+		func() bool {
+			position322, tokenIndex322, depth322 := position, tokenIndex, depth
+			{
+				position323 := position
+				depth++
+				{
+					position324, tokenIndex324, depth324 := position, tokenIndex, depth
+					if !rules[rulebrackettedExpression]() {
+						goto l325
+					}
+					goto l324
+				l325:
+					position, tokenIndex, depth = position324, tokenIndex324, depth324
+					if !rules[rulebuiltinCall]() {
+						goto l326
+					}
+					goto l324
+				l326:
+					position, tokenIndex, depth = position324, tokenIndex324, depth324
+					if !rules[rulefunctionCall]() {
+						goto l322
+					}
+				}
+			l324:
+				depth--
+				add(ruleconstraint, position323)
+			}
+			return true
+		l322:
+			position, tokenIndex, depth = position322, tokenIndex322, depth322
+			return false
+		},
+		/* 26 triplesBlock <- <(triplesSameSubjectPath (DOT triplesSameSubjectPath)* DOT?)> */
+		func() bool {
+			position327, tokenIndex327, depth327 := position, tokenIndex, depth
+			{
+				position328 := position
+				depth++
+				if !rules[ruletriplesSameSubjectPath]() {
+					goto l327
+				}
+			l329:
+				{
+					position330, tokenIndex330, depth330 := position, tokenIndex, depth
+					if !rules[ruleDOT]() {
+						goto l330
+					}
+					if !rules[ruletriplesSameSubjectPath]() {
+						goto l330
+					}
+					goto l329
+				l330:
+					position, tokenIndex, depth = position330, tokenIndex330, depth330
+				}
+				{
+					position331, tokenIndex331, depth331 := position, tokenIndex, depth
+					if !rules[ruleDOT]() {
+						goto l331
+					}
+					goto l332
+				l331:
+					position, tokenIndex, depth = position331, tokenIndex331, depth331
+				}
+			l332:
+				depth--
+				add(ruletriplesBlock, position328)
+			}
+			return true
+		l327:
+			position, tokenIndex, depth = position327, tokenIndex327, depth327
+			return false
+		},
+		/* 27 triplesSameSubjectPath <- <((varOrTerm propertyListPath) / (triplesNodePath propertyListPath?))> */
+		func() bool {
+			position333, tokenIndex333, depth333 := position, tokenIndex, depth
+			{
+				position334 := position
+				depth++
+				{
+					position335, tokenIndex335, depth335 := position, tokenIndex, depth
+					{
+						position337 := position
+						depth++
+						{
+							position338, tokenIndex338, depth338 := position, tokenIndex, depth
 							{
-								position318 := position
+								position340 := position
 								depth++
 								if !rules[rulevar]() {
-									goto l317
+									goto l339
 								}
 								depth--
-								add(rulePegText, position318)
+								add(rulePegText, position340)
 							}
 							{
 								add(ruleAction1, position)
 							}
-							goto l316
-						l317:
-							position, tokenIndex, depth = position316, tokenIndex316, depth316
+							goto l338
+						l339:
+							position, tokenIndex, depth = position338, tokenIndex338, depth338
 							{
-								position321 := position
+								position343 := position
 								depth++
 								if !rules[rulegraphTerm]() {
-									goto l320
+									goto l342
 								}
 								depth--
-								add(rulePegText, position321)
+								add(rulePegText, position343)
 							}
 							{
 								add(ruleAction2, position)
 							}
-							goto l316
-						l320:
-							position, tokenIndex, depth = position316, tokenIndex316, depth316
+							goto l338
+						l342:
+							position, tokenIndex, depth = position338, tokenIndex338, depth338
 							if !rules[rulepof]() {
-								goto l314
+								goto l336
 							}
 							{
 								add(ruleAction3, position)
 							}
 						}
-					l316:
+					l338:
 						depth--
-						add(rulevarOrTerm, position315)
+						add(rulevarOrTerm, position337)
 					}
 					if !rules[rulepropertyListPath]() {
-						goto l314
+						goto l336
 					}
-					goto l313
-				l314:
-					position, tokenIndex, depth = position313, tokenIndex313, depth313
+					goto l335
+				l336:
+					position, tokenIndex, depth = position335, tokenIndex335, depth335
+					if !rules[ruletriplesNodePath]() {
+						goto l333
+					}
 					{
-						position324 := position
-						depth++
-						{
-							position325, tokenIndex325, depth325 := position, tokenIndex, depth
-							{
-								position327 := position
-								depth++
-								if !rules[ruleLPAREN]() {
-									goto l326
-								}
-								if !rules[rulegraphNodePath]() {
-									goto l326
-								}
-							l328:
-								{
-									position329, tokenIndex329, depth329 := position, tokenIndex, depth
-									if !rules[rulegraphNodePath]() {
-										goto l329
-									}
-									goto l328
-								l329:
-									position, tokenIndex, depth = position329, tokenIndex329, depth329
-								}
-								if !rules[ruleRPAREN]() {
-									goto l326
-								}
-								depth--
-								add(rulecollectionPath, position327)
-							}
-							goto l325
-						l326:
-							position, tokenIndex, depth = position325, tokenIndex325, depth325
-							{
-								position330 := position
-								depth++
-								{
-									position331 := position
-									depth++
-									if buffer[position] != rune('[') {
-										goto l311
-									}
-									position++
-									if !rules[ruleskip]() {
-										goto l311
-									}
-									depth--
-									add(ruleLBRACK, position331)
-								}
-								if !rules[rulepropertyListPath]() {
-									goto l311
-								}
-								{
-									position332 := position
-									depth++
-									if buffer[position] != rune(']') {
-										goto l311
-									}
-									position++
-									if !rules[ruleskip]() {
-										goto l311
-									}
-									depth--
-									add(ruleRBRACK, position332)
-								}
-								depth--
-								add(ruleblankNodePropertyListPath, position330)
-							}
+						position346, tokenIndex346, depth346 := position, tokenIndex, depth
+						if !rules[rulepropertyListPath]() {
+							goto l346
 						}
-					l325:
-						depth--
-						add(ruletriplesNodePath, position324)
+						goto l347
+					l346:
+						position, tokenIndex, depth = position346, tokenIndex346, depth346
 					}
-					if !rules[rulepropertyListPath]() {
-						goto l311
-					}
+				l347:
 				}
-			l313:
+			l335:
 				depth--
-				add(ruletriplesSameSubjectPath, position312)
+				add(ruletriplesSameSubjectPath, position334)
 			}
 			return true
-		l311:
-			position, tokenIndex, depth = position311, tokenIndex311, depth311
+		l333:
+			position, tokenIndex, depth = position333, tokenIndex333, depth333
 			return false
 		},
-		/* 26 varOrTerm <- <((<var> Action1) / (<graphTerm> Action2) / (pof Action3))> */
+		/* 28 varOrTerm <- <((<var> Action1) / (<graphTerm> Action2) / (pof Action3))> */
 		nil,
-		/* 27 graphTerm <- <(iriref / ((&('(') nil) | (&('[' | '_') blankNode) | (&('F' | 'T' | 'f' | 't') booleanLiteral) | (&('"') literal) | (&('+' | '-' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') numericLiteral)))> */
+		/* 29 graphTerm <- <(iriref / ((&('(') nil) | (&('[' | '_') blankNode) | (&('F' | 'T' | 'f' | 't') booleanLiteral) | (&('"' | '\'') literal) | (&('+' | '-' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') numericLiteral)))> */
 		func() bool {
-			position334, tokenIndex334, depth334 := position, tokenIndex, depth
+			position349, tokenIndex349, depth349 := position, tokenIndex, depth
 			{
-				position335 := position
+				position350 := position
 				depth++
 				{
-					position336, tokenIndex336, depth336 := position, tokenIndex, depth
+					position351, tokenIndex351, depth351 := position, tokenIndex, depth
 					if !rules[ruleiriref]() {
-						goto l337
+						goto l352
 					}
-					goto l336
-				l337:
-					position, tokenIndex, depth = position336, tokenIndex336, depth336
+					goto l351
+				l352:
+					position, tokenIndex, depth = position351, tokenIndex351, depth351
 					{
 						switch buffer[position] {
 						case '(':
 							if !rules[rulenil]() {
-								goto l334
+								goto l349
 							}
 							break
 						case '[', '_':
 							{
-								position339 := position
+								position354 := position
 								depth++
 								{
-									position340, tokenIndex340, depth340 := position, tokenIndex, depth
+									position355, tokenIndex355, depth355 := position, tokenIndex, depth
 									{
-										position342 := position
+										position357 := position
 										depth++
 										if buffer[position] != rune('_') {
-											goto l341
+											goto l356
 										}
 										position++
 										if buffer[position] != rune(':') {
-											goto l341
+											goto l356
 										}
 										position++
 										{
-											switch buffer[position] {
-											case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-												if c := buffer[position]; c < rune('0') || c > rune('9') {
-													goto l341
-												}
-												position++
-												break
-											case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
-												if c := buffer[position]; c < rune('A') || c > rune('Z') {
-													goto l341
-												}
-												position++
-												break
-											default:
-												if c := buffer[position]; c < rune('a') || c > rune('z') {
-													goto l341
-												}
-												position++
-												break
+											position358, tokenIndex358, depth358 := position, tokenIndex, depth
+											if !rules[rulepnCharsU]() {
+												goto l359
 											}
+											goto l358
+										l359:
+											position, tokenIndex, depth = position358, tokenIndex358, depth358
+											if c := buffer[position]; c < rune('0') || c > rune('9') {
+												goto l356
+											}
+											position++
 										}
-
+									l358:
 										{
-											position344, tokenIndex344, depth344 := position, tokenIndex, depth
+											position360, tokenIndex360, depth360 := position, tokenIndex, depth
 											{
-												position346, tokenIndex346, depth346 := position, tokenIndex, depth
-												if c := buffer[position]; c < rune('a') || c > rune('z') {
-													goto l347
+												position362, tokenIndex362, depth362 := position, tokenIndex, depth
+											l364:
+												{
+													position365, tokenIndex365, depth365 := position, tokenIndex, depth
+													{
+														position366, tokenIndex366, depth366 := position, tokenIndex, depth
+														if !rules[rulepnCharsU]() {
+															goto l367
+														}
+														goto l366
+													l367:
+														position, tokenIndex, depth = position366, tokenIndex366, depth366
+														{
+															switch buffer[position] {
+															case '.':
+																if buffer[position] != rune('.') {
+																	goto l365
+																}
+																position++
+																break
+															case '-':
+																if buffer[position] != rune('-') {
+																	goto l365
+																}
+																position++
+																break
+															default:
+																if c := buffer[position]; c < rune('0') || c > rune('9') {
+																	goto l365
+																}
+																position++
+																break
+															}
+														}
+
+													}
+												l366:
+													goto l364
+												l365:
+													position, tokenIndex, depth = position365, tokenIndex365, depth365
 												}
-												position++
-												goto l346
-											l347:
-												position, tokenIndex, depth = position346, tokenIndex346, depth346
-												if c := buffer[position]; c < rune('A') || c > rune('Z') {
-													goto l348
+												if !rules[rulepnCharsU]() {
+													goto l363
 												}
-												position++
-												goto l346
-											l348:
-												position, tokenIndex, depth = position346, tokenIndex346, depth346
-												if c := buffer[position]; c < rune('0') || c > rune('9') {
-													goto l349
+												goto l362
+											l363:
+												position, tokenIndex, depth = position362, tokenIndex362, depth362
+												{
+													position369, tokenIndex369, depth369 := position, tokenIndex, depth
+													if c := buffer[position]; c < rune('0') || c > rune('9') {
+														goto l370
+													}
+													position++
+													goto l369
+												l370:
+													position, tokenIndex, depth = position369, tokenIndex369, depth369
+													if buffer[position] != rune('-') {
+														goto l360
+													}
+													position++
 												}
-												position++
-												goto l346
-											l349:
-												position, tokenIndex, depth = position346, tokenIndex346, depth346
-												if c := buffer[position]; c < rune('.') || c > rune('_') {
-													goto l344
-												}
-												position++
+											l369:
 											}
-										l346:
-											goto l345
-										l344:
-											position, tokenIndex, depth = position344, tokenIndex344, depth344
+										l362:
+											goto l361
+										l360:
+											position, tokenIndex, depth = position360, tokenIndex360, depth360
 										}
-									l345:
+									l361:
 										if !rules[ruleskip]() {
-											goto l341
+											goto l356
 										}
 										depth--
-										add(ruleblankNodeLabel, position342)
+										add(ruleblankNodeLabel, position357)
 									}
-									goto l340
-								l341:
-									position, tokenIndex, depth = position340, tokenIndex340, depth340
+									goto l355
+								l356:
+									position, tokenIndex, depth = position355, tokenIndex355, depth355
 									{
-										position350 := position
+										position371 := position
 										depth++
 										if buffer[position] != rune('[') {
-											goto l334
+											goto l349
 										}
 										position++
-									l351:
+									l372:
 										{
-											position352, tokenIndex352, depth352 := position, tokenIndex, depth
+											position373, tokenIndex373, depth373 := position, tokenIndex, depth
 											if !rules[rulews]() {
-												goto l352
+												goto l373
 											}
-											goto l351
-										l352:
-											position, tokenIndex, depth = position352, tokenIndex352, depth352
+											goto l372
+										l373:
+											position, tokenIndex, depth = position373, tokenIndex373, depth373
 										}
 										if buffer[position] != rune(']') {
-											goto l334
+											goto l349
 										}
 										position++
 										if !rules[ruleskip]() {
-											goto l334
+											goto l349
 										}
 										depth--
-										add(ruleanon, position350)
+										add(ruleanon, position371)
 									}
 								}
-							l340:
+							l355:
 								depth--
-								add(ruleblankNode, position339)
+								add(ruleblankNode, position354)
 							}
 							break
 						case 'F', 'T', 'f', 't':
 							if !rules[rulebooleanLiteral]() {
-								goto l334
+								goto l349
 							}
 							break
-						case '"':
+						case '"', '\'':
 							if !rules[ruleliteral]() {
-								goto l334
+								goto l349
 							}
 							break
 						default:
 							if !rules[rulenumericLiteral]() {
-								goto l334
+								goto l349
 							}
 							break
 						}
 					}
 
 				}
-			l336:
+			l351:
 				depth--
-				add(rulegraphTerm, position335)
+				add(rulegraphTerm, position350)
 			}
 			return true
-		l334:
-			position, tokenIndex, depth = position334, tokenIndex334, depth334
+		l349:
+			position, tokenIndex, depth = position349, tokenIndex349, depth349
 			return false
 		},
-		/* 28 triplesNodePath <- <(collectionPath / blankNodePropertyListPath)> */
-		nil,
-		/* 29 collectionPath <- <(LPAREN graphNodePath+ RPAREN)> */
-		nil,
-		/* 30 blankNodePropertyListPath <- <(LBRACK propertyListPath RBRACK)> */
-		nil,
-		/* 31 propertyListPath <- <(((pof Action4) / (<var> Action5) / verbPath) objectListPath (SEMICOLON propertyListPath)?)> */
-		func() bool {
-			position356, tokenIndex356, depth356 := position, tokenIndex, depth
-			{
-				position357 := position
-				depth++
-				{
-					position358, tokenIndex358, depth358 := position, tokenIndex, depth
-					if !rules[rulepof]() {
-						goto l359
-					}
-					{
-						add(ruleAction4, position)
-					}
-					goto l358
-				l359:
-					position, tokenIndex, depth = position358, tokenIndex358, depth358
-					{
-						position362 := position
-						depth++
-						if !rules[rulevar]() {
-							goto l361
-						}
-						depth--
-						add(rulePegText, position362)
-					}
-					{
-						add(ruleAction5, position)
-					}
-					goto l358
-				l361:
-					position, tokenIndex, depth = position358, tokenIndex358, depth358
-					{
-						position364 := position
-						depth++
-						if !rules[rulepath]() {
-							goto l356
-						}
-						depth--
-						add(ruleverbPath, position364)
-					}
-				}
-			l358:
-				if !rules[ruleobjectListPath]() {
-					goto l356
-				}
-				{
-					position365, tokenIndex365, depth365 := position, tokenIndex, depth
-					if !rules[ruleSEMICOLON]() {
-						goto l365
-					}
-					if !rules[rulepropertyListPath]() {
-						goto l365
-					}
-					goto l366
-				l365:
-					position, tokenIndex, depth = position365, tokenIndex365, depth365
-				}
-			l366:
-				depth--
-				add(rulepropertyListPath, position357)
-			}
-			return true
-		l356:
-			position, tokenIndex, depth = position356, tokenIndex356, depth356
-			return false
-		},
-		/* 32 verbPath <- <path> */
-		nil,
-		/* 33 path <- <pathAlternative> */
-		func() bool {
-			position368, tokenIndex368, depth368 := position, tokenIndex, depth
-			{
-				position369 := position
-				depth++
-				if !rules[rulepathAlternative]() {
-					goto l368
-				}
-				depth--
-				add(rulepath, position369)
-			}
-			return true
-		l368:
-			position, tokenIndex, depth = position368, tokenIndex368, depth368
-			return false
-		},
-		/* 34 pathAlternative <- <(pathSequence (PIPE pathAlternative)*)> */
-		func() bool {
-			position370, tokenIndex370, depth370 := position, tokenIndex, depth
-			{
-				position371 := position
-				depth++
-				if !rules[rulepathSequence]() {
-					goto l370
-				}
-			l372:
-				{
-					position373, tokenIndex373, depth373 := position, tokenIndex, depth
-					if !rules[rulePIPE]() {
-						goto l373
-					}
-					if !rules[rulepathAlternative]() {
-						goto l373
-					}
-					goto l372
-				l373:
-					position, tokenIndex, depth = position373, tokenIndex373, depth373
-				}
-				depth--
-				add(rulepathAlternative, position371)
-			}
-			return true
-		l370:
-			position, tokenIndex, depth = position370, tokenIndex370, depth370
-			return false
-		},
-		/* 35 pathSequence <- <(<pathElt> Action6 (SLASH pathSequence)*)> */
+		/* 30 triplesNodePath <- <(collectionPath / blankNodePropertyListPath)> */
 		func() bool {
 			position374, tokenIndex374, depth374 := position, tokenIndex, depth
 			{
 				position375 := position
 				depth++
 				{
-					position376 := position
-					depth++
+					position376, tokenIndex376, depth376 := position, tokenIndex, depth
 					{
-						position377 := position
+						position378 := position
 						depth++
-						{
-							position378, tokenIndex378, depth378 := position, tokenIndex, depth
-							if !rules[ruleINVERSE]() {
-								goto l378
-							}
-							goto l379
-						l378:
-							position, tokenIndex, depth = position378, tokenIndex378, depth378
+						if !rules[ruleLPAREN]() {
+							goto l377
+						}
+						if !rules[rulegraphNodePath]() {
+							goto l377
 						}
 					l379:
 						{
-							position380 := position
-							depth++
-							{
-								position381, tokenIndex381, depth381 := position, tokenIndex, depth
-								if !rules[ruleiriref]() {
-									goto l382
-								}
-								goto l381
-							l382:
-								position, tokenIndex, depth = position381, tokenIndex381, depth381
-								{
-									switch buffer[position] {
-									case '(':
-										if !rules[ruleLPAREN]() {
-											goto l374
-										}
-										if !rules[rulepath]() {
-											goto l374
-										}
-										if !rules[ruleRPAREN]() {
-											goto l374
-										}
-										break
-									case '!':
-										if !rules[ruleNOT]() {
-											goto l374
-										}
-										{
-											position384 := position
-											depth++
-											{
-												position385, tokenIndex385, depth385 := position, tokenIndex, depth
-												if !rules[rulepathOneInPropertySet]() {
-													goto l386
-												}
-												goto l385
-											l386:
-												position, tokenIndex, depth = position385, tokenIndex385, depth385
-												if !rules[ruleLPAREN]() {
-													goto l374
-												}
-												{
-													position387, tokenIndex387, depth387 := position, tokenIndex, depth
-													if !rules[rulepathOneInPropertySet]() {
-														goto l387
-													}
-												l389:
-													{
-														position390, tokenIndex390, depth390 := position, tokenIndex, depth
-														if !rules[rulePIPE]() {
-															goto l390
-														}
-														if !rules[rulepathOneInPropertySet]() {
-															goto l390
-														}
-														goto l389
-													l390:
-														position, tokenIndex, depth = position390, tokenIndex390, depth390
-													}
-													goto l388
-												l387:
-													position, tokenIndex, depth = position387, tokenIndex387, depth387
-												}
-											l388:
-												if !rules[ruleRPAREN]() {
-													goto l374
-												}
-											}
-										l385:
-											depth--
-											add(rulepathNegatedPropertySet, position384)
-										}
-										break
-									default:
-										if !rules[ruleISA]() {
-											goto l374
-										}
-										break
-									}
-								}
-
+							position380, tokenIndex380, depth380 := position, tokenIndex, depth
+							if !rules[rulegraphNodePath]() {
+								goto l380
 							}
-						l381:
-							depth--
-							add(rulepathPrimary, position380)
+							goto l379
+						l380:
+							position, tokenIndex, depth = position380, tokenIndex380, depth380
+						}
+						if !rules[ruleRPAREN]() {
+							goto l377
 						}
 						depth--
-						add(rulepathElt, position377)
+						add(rulecollectionPath, position378)
 					}
-					depth--
-					add(rulePegText, position376)
-				}
-				{
-					add(ruleAction6, position)
-				}
-			l392:
-				{
-					position393, tokenIndex393, depth393 := position, tokenIndex, depth
-					if !rules[ruleSLASH]() {
-						goto l393
+					goto l376
+				l377:
+					position, tokenIndex, depth = position376, tokenIndex376, depth376
+					{
+						position381 := position
+						depth++
+						{
+							position382 := position
+							depth++
+							if buffer[position] != rune('[') {
+								goto l374
+							}
+							position++
+							if !rules[ruleskip]() {
+								goto l374
+							}
+							depth--
+							add(ruleLBRACK, position382)
+						}
+						if !rules[rulepropertyListPath]() {
+							goto l374
+						}
+						{
+							position383 := position
+							depth++
+							if buffer[position] != rune(']') {
+								goto l374
+							}
+							position++
+							if !rules[ruleskip]() {
+								goto l374
+							}
+							depth--
+							add(ruleRBRACK, position383)
+						}
+						depth--
+						add(ruleblankNodePropertyListPath, position381)
 					}
-					if !rules[rulepathSequence]() {
-						goto l393
-					}
-					goto l392
-				l393:
-					position, tokenIndex, depth = position393, tokenIndex393, depth393
 				}
+			l376:
 				depth--
-				add(rulepathSequence, position375)
+				add(ruletriplesNodePath, position375)
 			}
 			return true
 		l374:
 			position, tokenIndex, depth = position374, tokenIndex374, depth374
 			return false
 		},
-		/* 36 pathElt <- <(INVERSE? pathPrimary)> */
+		/* 31 collectionPath <- <(LPAREN graphNodePath+ RPAREN)> */
 		nil,
-		/* 37 pathPrimary <- <(iriref / ((&('(') (LPAREN path RPAREN)) | (&('!') (NOT pathNegatedPropertySet)) | (&('a') ISA)))> */
+		/* 32 blankNodePropertyListPath <- <(LBRACK propertyListPath RBRACK)> */
 		nil,
-		/* 38 pathNegatedPropertySet <- <(pathOneInPropertySet / (LPAREN (pathOneInPropertySet (PIPE pathOneInPropertySet)*)? RPAREN))> */
-		nil,
-		/* 39 pathOneInPropertySet <- <(iriref / ISA / (INVERSE (iriref / ISA)))> */
+		/* 33 propertyListPath <- <(((pof Action4) / (<var> Action5) / verbPath) objectListPath (SEMICOLON propertyListPath?)?)> */
 		func() bool {
-			position397, tokenIndex397, depth397 := position, tokenIndex, depth
+			position386, tokenIndex386, depth386 := position, tokenIndex, depth
 			{
-				position398 := position
+				position387 := position
 				depth++
 				{
-					position399, tokenIndex399, depth399 := position, tokenIndex, depth
-					if !rules[ruleiriref]() {
-						goto l400
-					}
-					goto l399
-				l400:
-					position, tokenIndex, depth = position399, tokenIndex399, depth399
-					if !rules[ruleISA]() {
-						goto l401
-					}
-					goto l399
-				l401:
-					position, tokenIndex, depth = position399, tokenIndex399, depth399
-					if !rules[ruleINVERSE]() {
-						goto l397
+					position388, tokenIndex388, depth388 := position, tokenIndex, depth
+					if !rules[rulepof]() {
+						goto l389
 					}
 					{
-						position402, tokenIndex402, depth402 := position, tokenIndex, depth
-						if !rules[ruleiriref]() {
-							goto l403
+						add(ruleAction4, position)
+					}
+					goto l388
+				l389:
+					position, tokenIndex, depth = position388, tokenIndex388, depth388
+					{
+						position392 := position
+						depth++
+						if !rules[rulevar]() {
+							goto l391
 						}
-						goto l402
-					l403:
-						position, tokenIndex, depth = position402, tokenIndex402, depth402
-						if !rules[ruleISA]() {
+						depth--
+						add(rulePegText, position392)
+					}
+					{
+						add(ruleAction5, position)
+					}
+					goto l388
+				l391:
+					position, tokenIndex, depth = position388, tokenIndex388, depth388
+					{
+						position394 := position
+						depth++
+						if !rules[rulepath]() {
+							goto l386
+						}
+						depth--
+						add(ruleverbPath, position394)
+					}
+				}
+			l388:
+				{
+					position395 := position
+					depth++
+					if !rules[ruleobjectPath]() {
+						goto l386
+					}
+				l396:
+					{
+						position397, tokenIndex397, depth397 := position, tokenIndex, depth
+						if !rules[ruleCOMMA]() {
 							goto l397
 						}
+						if !rules[ruleobjectPath]() {
+							goto l397
+						}
+						goto l396
+					l397:
+						position, tokenIndex, depth = position397, tokenIndex397, depth397
 					}
-				l402:
+					depth--
+					add(ruleobjectListPath, position395)
+				}
+				{
+					position398, tokenIndex398, depth398 := position, tokenIndex, depth
+					if !rules[ruleSEMICOLON]() {
+						goto l398
+					}
+					{
+						position400, tokenIndex400, depth400 := position, tokenIndex, depth
+						if !rules[rulepropertyListPath]() {
+							goto l400
+						}
+						goto l401
+					l400:
+						position, tokenIndex, depth = position400, tokenIndex400, depth400
+					}
+				l401:
+					goto l399
+				l398:
+					position, tokenIndex, depth = position398, tokenIndex398, depth398
 				}
 			l399:
 				depth--
-				add(rulepathOneInPropertySet, position398)
+				add(rulepropertyListPath, position387)
 			}
 			return true
-		l397:
-			position, tokenIndex, depth = position397, tokenIndex397, depth397
+		l386:
+			position, tokenIndex, depth = position386, tokenIndex386, depth386
 			return false
 		},
-		/* 40 objectListPath <- <(objectPath (COMMA objectListPath)*)> */
+		/* 34 verbPath <- <path> */
+		nil,
+		/* 35 path <- <pathAlternative> */
 		func() bool {
+			position403, tokenIndex403, depth403 := position, tokenIndex, depth
 			{
-				position405 := position
+				position404 := position
 				depth++
 				{
-					position406 := position
+					position405 := position
 					depth++
+					if !rules[rulepathSequence]() {
+						goto l403
+					}
+				l406:
 					{
 						position407, tokenIndex407, depth407 := position, tokenIndex, depth
-						if !rules[rulepof]() {
-							goto l408
+						if !rules[rulePIPE]() {
+							goto l407
 						}
-						{
-							add(ruleAction7, position)
+						if !rules[rulepathSequence]() {
+							goto l407
 						}
-						goto l407
-					l408:
+						goto l406
+					l407:
 						position, tokenIndex, depth = position407, tokenIndex407, depth407
-						{
-							position411 := position
-							depth++
-							if !rules[rulegraphNodePath]() {
-								goto l410
-							}
-							depth--
-							add(rulePegText, position411)
-						}
-						{
-							add(ruleAction8, position)
-						}
-						goto l407
-					l410:
-						position, tokenIndex, depth = position407, tokenIndex407, depth407
-						{
-							add(ruleAction9, position)
-						}
 					}
-				l407:
 					depth--
-					add(ruleobjectPath, position406)
-				}
-			l414:
-				{
-					position415, tokenIndex415, depth415 := position, tokenIndex, depth
-					if !rules[ruleCOMMA]() {
-						goto l415
-					}
-					if !rules[ruleobjectListPath]() {
-						goto l415
-					}
-					goto l414
-				l415:
-					position, tokenIndex, depth = position415, tokenIndex415, depth415
+					add(rulepathAlternative, position405)
 				}
 				depth--
-				add(ruleobjectListPath, position405)
+				add(rulepath, position404)
 			}
 			return true
-		},
-		/* 41 objectPath <- <((pof Action7) / (<graphNodePath> Action8) / Action9)> */
-		nil,
-		/* 42 graphNodePath <- <(var / graphTerm)> */
-		func() bool {
-			position417, tokenIndex417, depth417 := position, tokenIndex, depth
-			{
-				position418 := position
-				depth++
-				{
-					position419, tokenIndex419, depth419 := position, tokenIndex, depth
-					if !rules[rulevar]() {
-						goto l420
-					}
-					goto l419
-				l420:
-					position, tokenIndex, depth = position419, tokenIndex419, depth419
-					if !rules[rulegraphTerm]() {
-						goto l417
-					}
-				}
-			l419:
-				depth--
-				add(rulegraphNodePath, position418)
-			}
-			return true
-		l417:
-			position, tokenIndex, depth = position417, tokenIndex417, depth417
+		l403:
+			position, tokenIndex, depth = position403, tokenIndex403, depth403
 			return false
 		},
-		/* 43 solutionModifier <- <((ORDER BY orderCondition+) / ((&('H' | 'h') (HAVING constraint)) | (&('G' | 'g') (GROUP BY groupCondition+)) | (&('L' | 'O' | 'l' | 'o') limitOffsetClauses)))?> */
+		/* 36 pathAlternative <- <(pathSequence (PIPE pathSequence)*)> */
+		nil,
+		/* 37 pathSequence <- <(<pathElt> Action6 (SLASH pathSequence)*)> */
 		func() bool {
+			position409, tokenIndex409, depth409 := position, tokenIndex, depth
 			{
-				position422 := position
+				position410 := position
 				depth++
 				{
-					position423, tokenIndex423, depth423 := position, tokenIndex, depth
+					position411 := position
+					depth++
 					{
-						position425, tokenIndex425, depth425 := position, tokenIndex, depth
+						position412 := position
+						depth++
 						{
-							position427 := position
+							position413, tokenIndex413, depth413 := position, tokenIndex, depth
+							if !rules[ruleINVERSE]() {
+								goto l413
+							}
+							goto l414
+						l413:
+							position, tokenIndex, depth = position413, tokenIndex413, depth413
+						}
+					l414:
+						{
+							position415 := position
 							depth++
 							{
-								position428, tokenIndex428, depth428 := position, tokenIndex, depth
-								if buffer[position] != rune('o') {
-									goto l429
+								position416, tokenIndex416, depth416 := position, tokenIndex, depth
+								if !rules[ruleiriref]() {
+									goto l417
 								}
-								position++
-								goto l428
-							l429:
-								position, tokenIndex, depth = position428, tokenIndex428, depth428
-								if buffer[position] != rune('O') {
-									goto l426
-								}
-								position++
-							}
-						l428:
-							{
-								position430, tokenIndex430, depth430 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l431
-								}
-								position++
-								goto l430
-							l431:
-								position, tokenIndex, depth = position430, tokenIndex430, depth430
-								if buffer[position] != rune('R') {
-									goto l426
-								}
-								position++
-							}
-						l430:
-							{
-								position432, tokenIndex432, depth432 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l433
-								}
-								position++
-								goto l432
-							l433:
-								position, tokenIndex, depth = position432, tokenIndex432, depth432
-								if buffer[position] != rune('D') {
-									goto l426
-								}
-								position++
-							}
-						l432:
-							{
-								position434, tokenIndex434, depth434 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l435
-								}
-								position++
-								goto l434
-							l435:
-								position, tokenIndex, depth = position434, tokenIndex434, depth434
-								if buffer[position] != rune('E') {
-									goto l426
-								}
-								position++
-							}
-						l434:
-							{
-								position436, tokenIndex436, depth436 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l437
-								}
-								position++
-								goto l436
-							l437:
-								position, tokenIndex, depth = position436, tokenIndex436, depth436
-								if buffer[position] != rune('R') {
-									goto l426
-								}
-								position++
-							}
-						l436:
-							if !rules[ruleskip]() {
-								goto l426
-							}
-							depth--
-							add(ruleORDER, position427)
-						}
-						if !rules[ruleBY]() {
-							goto l426
-						}
-						{
-							position440 := position
-							depth++
-							{
-								position441, tokenIndex441, depth441 := position, tokenIndex, depth
+								goto l416
+							l417:
+								position, tokenIndex, depth = position416, tokenIndex416, depth416
 								{
-									position443, tokenIndex443, depth443 := position, tokenIndex, depth
-									{
-										position445, tokenIndex445, depth445 := position, tokenIndex, depth
+									switch buffer[position] {
+									case '(':
+										if !rules[ruleLPAREN]() {
+											goto l409
+										}
+										if !rules[rulepath]() {
+											goto l409
+										}
+										if !rules[ruleRPAREN]() {
+											goto l409
+										}
+										break
+									case '!':
+										if !rules[ruleNOT]() {
+											goto l409
+										}
 										{
-											position447 := position
+											position419 := position
 											depth++
 											{
-												position448, tokenIndex448, depth448 := position, tokenIndex, depth
-												if buffer[position] != rune('a') {
-													goto l449
+												position420, tokenIndex420, depth420 := position, tokenIndex, depth
+												if !rules[rulepathOneInPropertySet]() {
+													goto l421
 												}
-												position++
-												goto l448
-											l449:
-												position, tokenIndex, depth = position448, tokenIndex448, depth448
-												if buffer[position] != rune('A') {
-													goto l446
+												goto l420
+											l421:
+												position, tokenIndex, depth = position420, tokenIndex420, depth420
+												if !rules[ruleLPAREN]() {
+													goto l409
 												}
-												position++
+												{
+													position422, tokenIndex422, depth422 := position, tokenIndex, depth
+													if !rules[rulepathOneInPropertySet]() {
+														goto l422
+													}
+												l424:
+													{
+														position425, tokenIndex425, depth425 := position, tokenIndex, depth
+														if !rules[rulePIPE]() {
+															goto l425
+														}
+														if !rules[rulepathOneInPropertySet]() {
+															goto l425
+														}
+														goto l424
+													l425:
+														position, tokenIndex, depth = position425, tokenIndex425, depth425
+													}
+													goto l423
+												l422:
+													position, tokenIndex, depth = position422, tokenIndex422, depth422
+												}
+											l423:
+												if !rules[ruleRPAREN]() {
+													goto l409
+												}
 											}
-										l448:
-											{
-												position450, tokenIndex450, depth450 := position, tokenIndex, depth
-												if buffer[position] != rune('s') {
-													goto l451
-												}
-												position++
-												goto l450
-											l451:
-												position, tokenIndex, depth = position450, tokenIndex450, depth450
-												if buffer[position] != rune('S') {
-													goto l446
-												}
-												position++
-											}
-										l450:
-											{
-												position452, tokenIndex452, depth452 := position, tokenIndex, depth
-												if buffer[position] != rune('c') {
-													goto l453
-												}
-												position++
-												goto l452
-											l453:
-												position, tokenIndex, depth = position452, tokenIndex452, depth452
-												if buffer[position] != rune('C') {
-													goto l446
-												}
-												position++
-											}
-										l452:
-											if !rules[ruleskip]() {
-												goto l446
-											}
+										l420:
 											depth--
-											add(ruleASC, position447)
+											add(rulepathNegatedPropertySet, position419)
 										}
-										goto l445
-									l446:
-										position, tokenIndex, depth = position445, tokenIndex445, depth445
-										{
-											position454 := position
-											depth++
-											{
-												position455, tokenIndex455, depth455 := position, tokenIndex, depth
-												if buffer[position] != rune('d') {
-													goto l456
-												}
-												position++
-												goto l455
-											l456:
-												position, tokenIndex, depth = position455, tokenIndex455, depth455
-												if buffer[position] != rune('D') {
-													goto l443
-												}
-												position++
-											}
-										l455:
-											{
-												position457, tokenIndex457, depth457 := position, tokenIndex, depth
-												if buffer[position] != rune('e') {
-													goto l458
-												}
-												position++
-												goto l457
-											l458:
-												position, tokenIndex, depth = position457, tokenIndex457, depth457
-												if buffer[position] != rune('E') {
-													goto l443
-												}
-												position++
-											}
-										l457:
-											{
-												position459, tokenIndex459, depth459 := position, tokenIndex, depth
-												if buffer[position] != rune('s') {
-													goto l460
-												}
-												position++
-												goto l459
-											l460:
-												position, tokenIndex, depth = position459, tokenIndex459, depth459
-												if buffer[position] != rune('S') {
-													goto l443
-												}
-												position++
-											}
-										l459:
-											{
-												position461, tokenIndex461, depth461 := position, tokenIndex, depth
-												if buffer[position] != rune('c') {
-													goto l462
-												}
-												position++
-												goto l461
-											l462:
-												position, tokenIndex, depth = position461, tokenIndex461, depth461
-												if buffer[position] != rune('C') {
-													goto l443
-												}
-												position++
-											}
-										l461:
-											if !rules[ruleskip]() {
-												goto l443
-											}
-											depth--
-											add(ruleDESC, position454)
+										break
+									default:
+										if !rules[ruleISA]() {
+											goto l409
 										}
+										break
 									}
-								l445:
-									goto l444
-								l443:
-									position, tokenIndex, depth = position443, tokenIndex443, depth443
 								}
-							l444:
-								if !rules[rulebrackettedExpression]() {
-									goto l442
-								}
-								goto l441
-							l442:
-								position, tokenIndex, depth = position441, tokenIndex441, depth441
-								if !rules[rulefunctionCall]() {
-									goto l463
-								}
-								goto l441
-							l463:
-								position, tokenIndex, depth = position441, tokenIndex441, depth441
-								if !rules[rulebuiltinCall]() {
-									goto l464
-								}
-								goto l441
-							l464:
-								position, tokenIndex, depth = position441, tokenIndex441, depth441
-								if !rules[rulevar]() {
-									goto l426
-								}
+
 							}
-						l441:
+						l416:
 							depth--
-							add(ruleorderCondition, position440)
+							add(rulepathPrimary, position415)
 						}
-					l438:
 						{
-							position439, tokenIndex439, depth439 := position, tokenIndex, depth
+							position426, tokenIndex426, depth426 := position, tokenIndex, depth
 							{
-								position465 := position
+								position428 := position
 								depth++
 								{
-									position466, tokenIndex466, depth466 := position, tokenIndex, depth
-									{
-										position468, tokenIndex468, depth468 := position, tokenIndex, depth
-										{
-											position470, tokenIndex470, depth470 := position, tokenIndex, depth
-											{
-												position472 := position
-												depth++
-												{
-													position473, tokenIndex473, depth473 := position, tokenIndex, depth
-													if buffer[position] != rune('a') {
-														goto l474
-													}
-													position++
-													goto l473
-												l474:
-													position, tokenIndex, depth = position473, tokenIndex473, depth473
-													if buffer[position] != rune('A') {
-														goto l471
-													}
-													position++
-												}
-											l473:
-												{
-													position475, tokenIndex475, depth475 := position, tokenIndex, depth
-													if buffer[position] != rune('s') {
-														goto l476
-													}
-													position++
-													goto l475
-												l476:
-													position, tokenIndex, depth = position475, tokenIndex475, depth475
-													if buffer[position] != rune('S') {
-														goto l471
-													}
-													position++
-												}
-											l475:
-												{
-													position477, tokenIndex477, depth477 := position, tokenIndex, depth
-													if buffer[position] != rune('c') {
-														goto l478
-													}
-													position++
-													goto l477
-												l478:
-													position, tokenIndex, depth = position477, tokenIndex477, depth477
-													if buffer[position] != rune('C') {
-														goto l471
-													}
-													position++
-												}
-											l477:
-												if !rules[ruleskip]() {
-													goto l471
-												}
-												depth--
-												add(ruleASC, position472)
-											}
-											goto l470
-										l471:
-											position, tokenIndex, depth = position470, tokenIndex470, depth470
-											{
-												position479 := position
-												depth++
-												{
-													position480, tokenIndex480, depth480 := position, tokenIndex, depth
-													if buffer[position] != rune('d') {
-														goto l481
-													}
-													position++
-													goto l480
-												l481:
-													position, tokenIndex, depth = position480, tokenIndex480, depth480
-													if buffer[position] != rune('D') {
-														goto l468
-													}
-													position++
-												}
-											l480:
-												{
-													position482, tokenIndex482, depth482 := position, tokenIndex, depth
-													if buffer[position] != rune('e') {
-														goto l483
-													}
-													position++
-													goto l482
-												l483:
-													position, tokenIndex, depth = position482, tokenIndex482, depth482
-													if buffer[position] != rune('E') {
-														goto l468
-													}
-													position++
-												}
-											l482:
-												{
-													position484, tokenIndex484, depth484 := position, tokenIndex, depth
-													if buffer[position] != rune('s') {
-														goto l485
-													}
-													position++
-													goto l484
-												l485:
-													position, tokenIndex, depth = position484, tokenIndex484, depth484
-													if buffer[position] != rune('S') {
-														goto l468
-													}
-													position++
-												}
-											l484:
-												{
-													position486, tokenIndex486, depth486 := position, tokenIndex, depth
-													if buffer[position] != rune('c') {
-														goto l487
-													}
-													position++
-													goto l486
-												l487:
-													position, tokenIndex, depth = position486, tokenIndex486, depth486
-													if buffer[position] != rune('C') {
-														goto l468
-													}
-													position++
-												}
-											l486:
-												if !rules[ruleskip]() {
-													goto l468
-												}
-												depth--
-												add(ruleDESC, position479)
-											}
+									switch buffer[position] {
+									case '+':
+										if !rules[rulePLUS]() {
+											goto l426
 										}
-									l470:
-										goto l469
-									l468:
-										position, tokenIndex, depth = position468, tokenIndex468, depth468
-									}
-								l469:
-									if !rules[rulebrackettedExpression]() {
-										goto l467
-									}
-									goto l466
-								l467:
-									position, tokenIndex, depth = position466, tokenIndex466, depth466
-									if !rules[rulefunctionCall]() {
-										goto l488
-									}
-									goto l466
-								l488:
-									position, tokenIndex, depth = position466, tokenIndex466, depth466
-									if !rules[rulebuiltinCall]() {
-										goto l489
-									}
-									goto l466
-								l489:
-									position, tokenIndex, depth = position466, tokenIndex466, depth466
-									if !rules[rulevar]() {
-										goto l439
+										break
+									case '?':
+										{
+											position430 := position
+											depth++
+											if buffer[position] != rune('?') {
+												goto l426
+											}
+											position++
+											if !rules[ruleskip]() {
+												goto l426
+											}
+											depth--
+											add(ruleQUESTION, position430)
+										}
+										break
+									default:
+										if !rules[ruleSTAR]() {
+											goto l426
+										}
+										break
 									}
 								}
-							l466:
+
+								{
+									position431, tokenIndex431, depth431 := position, tokenIndex, depth
+									if !matchDot() {
+										goto l431
+									}
+									goto l426
+								l431:
+									position, tokenIndex, depth = position431, tokenIndex431, depth431
+								}
 								depth--
-								add(ruleorderCondition, position465)
+								add(rulepathMod, position428)
 							}
-							goto l438
-						l439:
-							position, tokenIndex, depth = position439, tokenIndex439, depth439
+							goto l427
+						l426:
+							position, tokenIndex, depth = position426, tokenIndex426, depth426
 						}
-						goto l425
-					l426:
-						position, tokenIndex, depth = position425, tokenIndex425, depth425
+					l427:
+						depth--
+						add(rulepathElt, position412)
+					}
+					depth--
+					add(rulePegText, position411)
+				}
+				{
+					add(ruleAction6, position)
+				}
+			l433:
+				{
+					position434, tokenIndex434, depth434 := position, tokenIndex, depth
+					if !rules[ruleSLASH]() {
+						goto l434
+					}
+					if !rules[rulepathSequence]() {
+						goto l434
+					}
+					goto l433
+				l434:
+					position, tokenIndex, depth = position434, tokenIndex434, depth434
+				}
+				depth--
+				add(rulepathSequence, position410)
+			}
+			return true
+		l409:
+			position, tokenIndex, depth = position409, tokenIndex409, depth409
+			return false
+		},
+		/* 38 pathElt <- <(INVERSE? pathPrimary pathMod?)> */
+		nil,
+		/* 39 pathPrimary <- <(iriref / ((&('(') (LPAREN path RPAREN)) | (&('!') (NOT pathNegatedPropertySet)) | (&('a') ISA)))> */
+		nil,
+		/* 40 pathNegatedPropertySet <- <(pathOneInPropertySet / (LPAREN (pathOneInPropertySet (PIPE pathOneInPropertySet)*)? RPAREN))> */
+		nil,
+		/* 41 pathOneInPropertySet <- <(iriref / ISA / (INVERSE (iriref / ISA)))> */
+		func() bool {
+			position438, tokenIndex438, depth438 := position, tokenIndex, depth
+			{
+				position439 := position
+				depth++
+				{
+					position440, tokenIndex440, depth440 := position, tokenIndex, depth
+					if !rules[ruleiriref]() {
+						goto l441
+					}
+					goto l440
+				l441:
+					position, tokenIndex, depth = position440, tokenIndex440, depth440
+					if !rules[ruleISA]() {
+						goto l442
+					}
+					goto l440
+				l442:
+					position, tokenIndex, depth = position440, tokenIndex440, depth440
+					if !rules[ruleINVERSE]() {
+						goto l438
+					}
+					{
+						position443, tokenIndex443, depth443 := position, tokenIndex, depth
+						if !rules[ruleiriref]() {
+							goto l444
+						}
+						goto l443
+					l444:
+						position, tokenIndex, depth = position443, tokenIndex443, depth443
+						if !rules[ruleISA]() {
+							goto l438
+						}
+					}
+				l443:
+				}
+			l440:
+				depth--
+				add(rulepathOneInPropertySet, position439)
+			}
+			return true
+		l438:
+			position, tokenIndex, depth = position438, tokenIndex438, depth438
+			return false
+		},
+		/* 42 pathMod <- <(((&('+') PLUS) | (&('?') QUESTION) | (&('*') STAR)) !.)> */
+		nil,
+		/* 43 objectListPath <- <(objectPath (COMMA objectPath)*)> */
+		nil,
+		/* 44 objectPath <- <((pof Action7) / (<graphNodePath> Action8) / Action9)> */
+		func() bool {
+			{
+				position448 := position
+				depth++
+				{
+					position449, tokenIndex449, depth449 := position, tokenIndex, depth
+					if !rules[rulepof]() {
+						goto l450
+					}
+					{
+						add(ruleAction7, position)
+					}
+					goto l449
+				l450:
+					position, tokenIndex, depth = position449, tokenIndex449, depth449
+					{
+						position453 := position
+						depth++
+						if !rules[rulegraphNodePath]() {
+							goto l452
+						}
+						depth--
+						add(rulePegText, position453)
+					}
+					{
+						add(ruleAction8, position)
+					}
+					goto l449
+				l452:
+					position, tokenIndex, depth = position449, tokenIndex449, depth449
+					{
+						add(ruleAction9, position)
+					}
+				}
+			l449:
+				depth--
+				add(ruleobjectPath, position448)
+			}
+			return true
+		},
+		/* 45 graphNodePath <- <(var / graphTerm / triplesNodePath)> */
+		func() bool {
+			position456, tokenIndex456, depth456 := position, tokenIndex, depth
+			{
+				position457 := position
+				depth++
+				{
+					position458, tokenIndex458, depth458 := position, tokenIndex, depth
+					if !rules[rulevar]() {
+						goto l459
+					}
+					goto l458
+				l459:
+					position, tokenIndex, depth = position458, tokenIndex458, depth458
+					if !rules[rulegraphTerm]() {
+						goto l460
+					}
+					goto l458
+				l460:
+					position, tokenIndex, depth = position458, tokenIndex458, depth458
+					if !rules[ruletriplesNodePath]() {
+						goto l456
+					}
+				}
+			l458:
+				depth--
+				add(rulegraphNodePath, position457)
+			}
+			return true
+		l456:
+			position, tokenIndex, depth = position456, tokenIndex456, depth456
+			return false
+		},
+		/* 46 solutionModifier <- <((ORDER BY orderCondition+) / ((&('H' | 'h') (HAVING constraint)) | (&('G' | 'g') (GROUP BY groupCondition+)) | (&('L' | 'O' | 'l' | 'o') limitOffsetClauses)))?> */
+		func() bool {
+			{
+				position462 := position
+				depth++
+				{
+					position463, tokenIndex463, depth463 := position, tokenIndex, depth
+					{
+						position465, tokenIndex465, depth465 := position, tokenIndex, depth
+						{
+							position467 := position
+							depth++
+							{
+								position468, tokenIndex468, depth468 := position, tokenIndex, depth
+								if buffer[position] != rune('o') {
+									goto l469
+								}
+								position++
+								goto l468
+							l469:
+								position, tokenIndex, depth = position468, tokenIndex468, depth468
+								if buffer[position] != rune('O') {
+									goto l466
+								}
+								position++
+							}
+						l468:
+							{
+								position470, tokenIndex470, depth470 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l471
+								}
+								position++
+								goto l470
+							l471:
+								position, tokenIndex, depth = position470, tokenIndex470, depth470
+								if buffer[position] != rune('R') {
+									goto l466
+								}
+								position++
+							}
+						l470:
+							{
+								position472, tokenIndex472, depth472 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l473
+								}
+								position++
+								goto l472
+							l473:
+								position, tokenIndex, depth = position472, tokenIndex472, depth472
+								if buffer[position] != rune('D') {
+									goto l466
+								}
+								position++
+							}
+						l472:
+							{
+								position474, tokenIndex474, depth474 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l475
+								}
+								position++
+								goto l474
+							l475:
+								position, tokenIndex, depth = position474, tokenIndex474, depth474
+								if buffer[position] != rune('E') {
+									goto l466
+								}
+								position++
+							}
+						l474:
+							{
+								position476, tokenIndex476, depth476 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l477
+								}
+								position++
+								goto l476
+							l477:
+								position, tokenIndex, depth = position476, tokenIndex476, depth476
+								if buffer[position] != rune('R') {
+									goto l466
+								}
+								position++
+							}
+						l476:
+							if !rules[ruleskip]() {
+								goto l466
+							}
+							depth--
+							add(ruleORDER, position467)
+						}
+						if !rules[ruleBY]() {
+							goto l466
+						}
+						{
+							position480 := position
+							depth++
+							{
+								position481, tokenIndex481, depth481 := position, tokenIndex, depth
+								{
+									position483, tokenIndex483, depth483 := position, tokenIndex, depth
+									{
+										position485, tokenIndex485, depth485 := position, tokenIndex, depth
+										{
+											position487 := position
+											depth++
+											{
+												position488, tokenIndex488, depth488 := position, tokenIndex, depth
+												if buffer[position] != rune('a') {
+													goto l489
+												}
+												position++
+												goto l488
+											l489:
+												position, tokenIndex, depth = position488, tokenIndex488, depth488
+												if buffer[position] != rune('A') {
+													goto l486
+												}
+												position++
+											}
+										l488:
+											{
+												position490, tokenIndex490, depth490 := position, tokenIndex, depth
+												if buffer[position] != rune('s') {
+													goto l491
+												}
+												position++
+												goto l490
+											l491:
+												position, tokenIndex, depth = position490, tokenIndex490, depth490
+												if buffer[position] != rune('S') {
+													goto l486
+												}
+												position++
+											}
+										l490:
+											{
+												position492, tokenIndex492, depth492 := position, tokenIndex, depth
+												if buffer[position] != rune('c') {
+													goto l493
+												}
+												position++
+												goto l492
+											l493:
+												position, tokenIndex, depth = position492, tokenIndex492, depth492
+												if buffer[position] != rune('C') {
+													goto l486
+												}
+												position++
+											}
+										l492:
+											if !rules[ruleskip]() {
+												goto l486
+											}
+											depth--
+											add(ruleASC, position487)
+										}
+										goto l485
+									l486:
+										position, tokenIndex, depth = position485, tokenIndex485, depth485
+										{
+											position494 := position
+											depth++
+											{
+												position495, tokenIndex495, depth495 := position, tokenIndex, depth
+												if buffer[position] != rune('d') {
+													goto l496
+												}
+												position++
+												goto l495
+											l496:
+												position, tokenIndex, depth = position495, tokenIndex495, depth495
+												if buffer[position] != rune('D') {
+													goto l483
+												}
+												position++
+											}
+										l495:
+											{
+												position497, tokenIndex497, depth497 := position, tokenIndex, depth
+												if buffer[position] != rune('e') {
+													goto l498
+												}
+												position++
+												goto l497
+											l498:
+												position, tokenIndex, depth = position497, tokenIndex497, depth497
+												if buffer[position] != rune('E') {
+													goto l483
+												}
+												position++
+											}
+										l497:
+											{
+												position499, tokenIndex499, depth499 := position, tokenIndex, depth
+												if buffer[position] != rune('s') {
+													goto l500
+												}
+												position++
+												goto l499
+											l500:
+												position, tokenIndex, depth = position499, tokenIndex499, depth499
+												if buffer[position] != rune('S') {
+													goto l483
+												}
+												position++
+											}
+										l499:
+											{
+												position501, tokenIndex501, depth501 := position, tokenIndex, depth
+												if buffer[position] != rune('c') {
+													goto l502
+												}
+												position++
+												goto l501
+											l502:
+												position, tokenIndex, depth = position501, tokenIndex501, depth501
+												if buffer[position] != rune('C') {
+													goto l483
+												}
+												position++
+											}
+										l501:
+											if !rules[ruleskip]() {
+												goto l483
+											}
+											depth--
+											add(ruleDESC, position494)
+										}
+									}
+								l485:
+									goto l484
+								l483:
+									position, tokenIndex, depth = position483, tokenIndex483, depth483
+								}
+							l484:
+								if !rules[rulebrackettedExpression]() {
+									goto l482
+								}
+								goto l481
+							l482:
+								position, tokenIndex, depth = position481, tokenIndex481, depth481
+								if !rules[rulefunctionCall]() {
+									goto l503
+								}
+								goto l481
+							l503:
+								position, tokenIndex, depth = position481, tokenIndex481, depth481
+								if !rules[rulebuiltinCall]() {
+									goto l504
+								}
+								goto l481
+							l504:
+								position, tokenIndex, depth = position481, tokenIndex481, depth481
+								if !rules[rulevar]() {
+									goto l466
+								}
+							}
+						l481:
+							depth--
+							add(ruleorderCondition, position480)
+						}
+					l478:
+						{
+							position479, tokenIndex479, depth479 := position, tokenIndex, depth
+							{
+								position505 := position
+								depth++
+								{
+									position506, tokenIndex506, depth506 := position, tokenIndex, depth
+									{
+										position508, tokenIndex508, depth508 := position, tokenIndex, depth
+										{
+											position510, tokenIndex510, depth510 := position, tokenIndex, depth
+											{
+												position512 := position
+												depth++
+												{
+													position513, tokenIndex513, depth513 := position, tokenIndex, depth
+													if buffer[position] != rune('a') {
+														goto l514
+													}
+													position++
+													goto l513
+												l514:
+													position, tokenIndex, depth = position513, tokenIndex513, depth513
+													if buffer[position] != rune('A') {
+														goto l511
+													}
+													position++
+												}
+											l513:
+												{
+													position515, tokenIndex515, depth515 := position, tokenIndex, depth
+													if buffer[position] != rune('s') {
+														goto l516
+													}
+													position++
+													goto l515
+												l516:
+													position, tokenIndex, depth = position515, tokenIndex515, depth515
+													if buffer[position] != rune('S') {
+														goto l511
+													}
+													position++
+												}
+											l515:
+												{
+													position517, tokenIndex517, depth517 := position, tokenIndex, depth
+													if buffer[position] != rune('c') {
+														goto l518
+													}
+													position++
+													goto l517
+												l518:
+													position, tokenIndex, depth = position517, tokenIndex517, depth517
+													if buffer[position] != rune('C') {
+														goto l511
+													}
+													position++
+												}
+											l517:
+												if !rules[ruleskip]() {
+													goto l511
+												}
+												depth--
+												add(ruleASC, position512)
+											}
+											goto l510
+										l511:
+											position, tokenIndex, depth = position510, tokenIndex510, depth510
+											{
+												position519 := position
+												depth++
+												{
+													position520, tokenIndex520, depth520 := position, tokenIndex, depth
+													if buffer[position] != rune('d') {
+														goto l521
+													}
+													position++
+													goto l520
+												l521:
+													position, tokenIndex, depth = position520, tokenIndex520, depth520
+													if buffer[position] != rune('D') {
+														goto l508
+													}
+													position++
+												}
+											l520:
+												{
+													position522, tokenIndex522, depth522 := position, tokenIndex, depth
+													if buffer[position] != rune('e') {
+														goto l523
+													}
+													position++
+													goto l522
+												l523:
+													position, tokenIndex, depth = position522, tokenIndex522, depth522
+													if buffer[position] != rune('E') {
+														goto l508
+													}
+													position++
+												}
+											l522:
+												{
+													position524, tokenIndex524, depth524 := position, tokenIndex, depth
+													if buffer[position] != rune('s') {
+														goto l525
+													}
+													position++
+													goto l524
+												l525:
+													position, tokenIndex, depth = position524, tokenIndex524, depth524
+													if buffer[position] != rune('S') {
+														goto l508
+													}
+													position++
+												}
+											l524:
+												{
+													position526, tokenIndex526, depth526 := position, tokenIndex, depth
+													if buffer[position] != rune('c') {
+														goto l527
+													}
+													position++
+													goto l526
+												l527:
+													position, tokenIndex, depth = position526, tokenIndex526, depth526
+													if buffer[position] != rune('C') {
+														goto l508
+													}
+													position++
+												}
+											l526:
+												if !rules[ruleskip]() {
+													goto l508
+												}
+												depth--
+												add(ruleDESC, position519)
+											}
+										}
+									l510:
+										goto l509
+									l508:
+										position, tokenIndex, depth = position508, tokenIndex508, depth508
+									}
+								l509:
+									if !rules[rulebrackettedExpression]() {
+										goto l507
+									}
+									goto l506
+								l507:
+									position, tokenIndex, depth = position506, tokenIndex506, depth506
+									if !rules[rulefunctionCall]() {
+										goto l528
+									}
+									goto l506
+								l528:
+									position, tokenIndex, depth = position506, tokenIndex506, depth506
+									if !rules[rulebuiltinCall]() {
+										goto l529
+									}
+									goto l506
+								l529:
+									position, tokenIndex, depth = position506, tokenIndex506, depth506
+									if !rules[rulevar]() {
+										goto l479
+									}
+								}
+							l506:
+								depth--
+								add(ruleorderCondition, position505)
+							}
+							goto l478
+						l479:
+							position, tokenIndex, depth = position479, tokenIndex479, depth479
+						}
+						goto l465
+					l466:
+						position, tokenIndex, depth = position465, tokenIndex465, depth465
 						{
 							switch buffer[position] {
 							case 'H', 'h':
 								{
-									position491 := position
+									position531 := position
 									depth++
 									{
-										position492, tokenIndex492, depth492 := position, tokenIndex, depth
+										position532, tokenIndex532, depth532 := position, tokenIndex, depth
 										if buffer[position] != rune('h') {
-											goto l493
+											goto l533
 										}
 										position++
-										goto l492
-									l493:
-										position, tokenIndex, depth = position492, tokenIndex492, depth492
+										goto l532
+									l533:
+										position, tokenIndex, depth = position532, tokenIndex532, depth532
 										if buffer[position] != rune('H') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l492:
+								l532:
 									{
-										position494, tokenIndex494, depth494 := position, tokenIndex, depth
+										position534, tokenIndex534, depth534 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											goto l495
+											goto l535
 										}
 										position++
-										goto l494
-									l495:
-										position, tokenIndex, depth = position494, tokenIndex494, depth494
+										goto l534
+									l535:
+										position, tokenIndex, depth = position534, tokenIndex534, depth534
 										if buffer[position] != rune('A') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l494:
+								l534:
 									{
-										position496, tokenIndex496, depth496 := position, tokenIndex, depth
+										position536, tokenIndex536, depth536 := position, tokenIndex, depth
 										if buffer[position] != rune('v') {
-											goto l497
+											goto l537
 										}
 										position++
-										goto l496
-									l497:
-										position, tokenIndex, depth = position496, tokenIndex496, depth496
+										goto l536
+									l537:
+										position, tokenIndex, depth = position536, tokenIndex536, depth536
 										if buffer[position] != rune('V') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l496:
+								l536:
 									{
-										position498, tokenIndex498, depth498 := position, tokenIndex, depth
+										position538, tokenIndex538, depth538 := position, tokenIndex, depth
 										if buffer[position] != rune('i') {
-											goto l499
+											goto l539
 										}
 										position++
-										goto l498
-									l499:
-										position, tokenIndex, depth = position498, tokenIndex498, depth498
+										goto l538
+									l539:
+										position, tokenIndex, depth = position538, tokenIndex538, depth538
 										if buffer[position] != rune('I') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l498:
+								l538:
 									{
-										position500, tokenIndex500, depth500 := position, tokenIndex, depth
+										position540, tokenIndex540, depth540 := position, tokenIndex, depth
 										if buffer[position] != rune('n') {
-											goto l501
+											goto l541
 										}
 										position++
-										goto l500
-									l501:
-										position, tokenIndex, depth = position500, tokenIndex500, depth500
+										goto l540
+									l541:
+										position, tokenIndex, depth = position540, tokenIndex540, depth540
 										if buffer[position] != rune('N') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l500:
+								l540:
 									{
-										position502, tokenIndex502, depth502 := position, tokenIndex, depth
+										position542, tokenIndex542, depth542 := position, tokenIndex, depth
 										if buffer[position] != rune('g') {
-											goto l503
+											goto l543
 										}
 										position++
-										goto l502
-									l503:
-										position, tokenIndex, depth = position502, tokenIndex502, depth502
+										goto l542
+									l543:
+										position, tokenIndex, depth = position542, tokenIndex542, depth542
 										if buffer[position] != rune('G') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l502:
+								l542:
 									if !rules[ruleskip]() {
-										goto l423
+										goto l463
 									}
 									depth--
-									add(ruleHAVING, position491)
+									add(ruleHAVING, position531)
 								}
 								if !rules[ruleconstraint]() {
-									goto l423
+									goto l463
 								}
 								break
 							case 'G', 'g':
 								{
-									position504 := position
+									position544 := position
 									depth++
 									{
-										position505, tokenIndex505, depth505 := position, tokenIndex, depth
+										position545, tokenIndex545, depth545 := position, tokenIndex, depth
 										if buffer[position] != rune('g') {
-											goto l506
+											goto l546
 										}
 										position++
-										goto l505
-									l506:
-										position, tokenIndex, depth = position505, tokenIndex505, depth505
+										goto l545
+									l546:
+										position, tokenIndex, depth = position545, tokenIndex545, depth545
 										if buffer[position] != rune('G') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l505:
+								l545:
 									{
-										position507, tokenIndex507, depth507 := position, tokenIndex, depth
+										position547, tokenIndex547, depth547 := position, tokenIndex, depth
 										if buffer[position] != rune('r') {
-											goto l508
+											goto l548
 										}
 										position++
-										goto l507
-									l508:
-										position, tokenIndex, depth = position507, tokenIndex507, depth507
+										goto l547
+									l548:
+										position, tokenIndex, depth = position547, tokenIndex547, depth547
 										if buffer[position] != rune('R') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l507:
+								l547:
 									{
-										position509, tokenIndex509, depth509 := position, tokenIndex, depth
+										position549, tokenIndex549, depth549 := position, tokenIndex, depth
 										if buffer[position] != rune('o') {
-											goto l510
+											goto l550
 										}
 										position++
-										goto l509
-									l510:
-										position, tokenIndex, depth = position509, tokenIndex509, depth509
+										goto l549
+									l550:
+										position, tokenIndex, depth = position549, tokenIndex549, depth549
 										if buffer[position] != rune('O') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l509:
+								l549:
 									{
-										position511, tokenIndex511, depth511 := position, tokenIndex, depth
+										position551, tokenIndex551, depth551 := position, tokenIndex, depth
 										if buffer[position] != rune('u') {
-											goto l512
+											goto l552
 										}
 										position++
-										goto l511
-									l512:
-										position, tokenIndex, depth = position511, tokenIndex511, depth511
+										goto l551
+									l552:
+										position, tokenIndex, depth = position551, tokenIndex551, depth551
 										if buffer[position] != rune('U') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l511:
+								l551:
 									{
-										position513, tokenIndex513, depth513 := position, tokenIndex, depth
+										position553, tokenIndex553, depth553 := position, tokenIndex, depth
 										if buffer[position] != rune('p') {
-											goto l514
+											goto l554
 										}
 										position++
-										goto l513
-									l514:
-										position, tokenIndex, depth = position513, tokenIndex513, depth513
+										goto l553
+									l554:
+										position, tokenIndex, depth = position553, tokenIndex553, depth553
 										if buffer[position] != rune('P') {
-											goto l423
+											goto l463
 										}
 										position++
 									}
-								l513:
+								l553:
 									if !rules[ruleskip]() {
-										goto l423
+										goto l463
 									}
 									depth--
-									add(ruleGROUP, position504)
+									add(ruleGROUP, position544)
 								}
 								if !rules[ruleBY]() {
-									goto l423
+									goto l463
 								}
 								{
-									position517 := position
+									position557 := position
 									depth++
 									{
-										position518, tokenIndex518, depth518 := position, tokenIndex, depth
+										position558, tokenIndex558, depth558 := position, tokenIndex, depth
 										if !rules[rulefunctionCall]() {
-											goto l519
+											goto l559
 										}
-										goto l518
-									l519:
-										position, tokenIndex, depth = position518, tokenIndex518, depth518
+										goto l558
+									l559:
+										position, tokenIndex, depth = position558, tokenIndex558, depth558
 										{
 											switch buffer[position] {
 											case '$', '?':
 												if !rules[rulevar]() {
-													goto l423
+													goto l463
 												}
 												break
 											case '(':
 												if !rules[ruleLPAREN]() {
-													goto l423
+													goto l463
 												}
 												if !rules[ruleexpression]() {
-													goto l423
+													goto l463
 												}
 												{
-													position521, tokenIndex521, depth521 := position, tokenIndex, depth
+													position561, tokenIndex561, depth561 := position, tokenIndex, depth
 													if !rules[ruleAS]() {
-														goto l521
+														goto l561
 													}
 													if !rules[rulevar]() {
-														goto l521
+														goto l561
 													}
-													goto l522
-												l521:
-													position, tokenIndex, depth = position521, tokenIndex521, depth521
+													goto l562
+												l561:
+													position, tokenIndex, depth = position561, tokenIndex561, depth561
 												}
-											l522:
+											l562:
 												if !rules[ruleRPAREN]() {
-													goto l423
+													goto l463
 												}
 												break
 											default:
 												if !rules[rulebuiltinCall]() {
-													goto l423
+													goto l463
 												}
 												break
 											}
 										}
 
 									}
-								l518:
+								l558:
 									depth--
-									add(rulegroupCondition, position517)
+									add(rulegroupCondition, position557)
 								}
-							l515:
+							l555:
 								{
-									position516, tokenIndex516, depth516 := position, tokenIndex, depth
+									position556, tokenIndex556, depth556 := position, tokenIndex, depth
 									{
-										position523 := position
+										position563 := position
 										depth++
 										{
-											position524, tokenIndex524, depth524 := position, tokenIndex, depth
+											position564, tokenIndex564, depth564 := position, tokenIndex, depth
 											if !rules[rulefunctionCall]() {
-												goto l525
+												goto l565
 											}
-											goto l524
-										l525:
-											position, tokenIndex, depth = position524, tokenIndex524, depth524
+											goto l564
+										l565:
+											position, tokenIndex, depth = position564, tokenIndex564, depth564
 											{
 												switch buffer[position] {
 												case '$', '?':
 													if !rules[rulevar]() {
-														goto l516
+														goto l556
 													}
 													break
 												case '(':
 													if !rules[ruleLPAREN]() {
-														goto l516
+														goto l556
 													}
 													if !rules[ruleexpression]() {
-														goto l516
+														goto l556
 													}
 													{
-														position527, tokenIndex527, depth527 := position, tokenIndex, depth
+														position567, tokenIndex567, depth567 := position, tokenIndex, depth
 														if !rules[ruleAS]() {
-															goto l527
+															goto l567
 														}
 														if !rules[rulevar]() {
-															goto l527
+															goto l567
 														}
-														goto l528
-													l527:
-														position, tokenIndex, depth = position527, tokenIndex527, depth527
+														goto l568
+													l567:
+														position, tokenIndex, depth = position567, tokenIndex567, depth567
 													}
-												l528:
+												l568:
 													if !rules[ruleRPAREN]() {
-														goto l516
+														goto l556
 													}
 													break
 												default:
 													if !rules[rulebuiltinCall]() {
-														goto l516
+														goto l556
 													}
 													break
 												}
 											}
 
 										}
-									l524:
+									l564:
 										depth--
-										add(rulegroupCondition, position523)
+										add(rulegroupCondition, position563)
 									}
-									goto l515
-								l516:
-									position, tokenIndex, depth = position516, tokenIndex516, depth516
+									goto l555
+								l556:
+									position, tokenIndex, depth = position556, tokenIndex556, depth556
 								}
 								break
 							default:
 								{
-									position529 := position
+									position569 := position
 									depth++
 									{
-										position530, tokenIndex530, depth530 := position, tokenIndex, depth
+										position570, tokenIndex570, depth570 := position, tokenIndex, depth
 										if !rules[rulelimit]() {
-											goto l531
+											goto l571
 										}
 										{
-											position532, tokenIndex532, depth532 := position, tokenIndex, depth
+											position572, tokenIndex572, depth572 := position, tokenIndex, depth
 											if !rules[ruleoffset]() {
-												goto l532
+												goto l572
 											}
-											goto l533
-										l532:
-											position, tokenIndex, depth = position532, tokenIndex532, depth532
+											goto l573
+										l572:
+											position, tokenIndex, depth = position572, tokenIndex572, depth572
 										}
-									l533:
-										goto l530
-									l531:
-										position, tokenIndex, depth = position530, tokenIndex530, depth530
+									l573:
+										goto l570
+									l571:
+										position, tokenIndex, depth = position570, tokenIndex570, depth570
 										if !rules[ruleoffset]() {
-											goto l423
+											goto l463
 										}
 										{
-											position534, tokenIndex534, depth534 := position, tokenIndex, depth
+											position574, tokenIndex574, depth574 := position, tokenIndex, depth
 											if !rules[rulelimit]() {
-												goto l534
+												goto l574
 											}
-											goto l535
-										l534:
-											position, tokenIndex, depth = position534, tokenIndex534, depth534
+											goto l575
+										l574:
+											position, tokenIndex, depth = position574, tokenIndex574, depth574
 										}
-									l535:
+									l575:
 									}
-								l530:
+								l570:
 									depth--
-									add(rulelimitOffsetClauses, position529)
+									add(rulelimitOffsetClauses, position569)
 								}
 								break
 							}
 						}
 
 					}
-				l425:
-					goto l424
-				l423:
-					position, tokenIndex, depth = position423, tokenIndex423, depth423
+				l465:
+					goto l464
+				l463:
+					position, tokenIndex, depth = position463, tokenIndex463, depth463
 				}
-			l424:
+			l464:
 				depth--
-				add(rulesolutionModifier, position422)
+				add(rulesolutionModifier, position462)
 			}
 			return true
 		},
-		/* 44 groupCondition <- <(functionCall / ((&('$' | '?') var) | (&('(') (LPAREN expression (AS var)? RPAREN)) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'H' | 'I' | 'L' | 'M' | 'N' | 'R' | 'S' | 'T' | 'U' | 'Y' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'h' | 'i' | 'l' | 'm' | 'n' | 'r' | 's' | 't' | 'u' | 'y') builtinCall)))> */
+		/* 47 groupCondition <- <(functionCall / ((&('$' | '?') var) | (&('(') (LPAREN expression (AS var)? RPAREN)) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'H' | 'I' | 'L' | 'M' | 'N' | 'R' | 'S' | 'T' | 'U' | 'Y' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'h' | 'i' | 'l' | 'm' | 'n' | 'r' | 's' | 't' | 'u' | 'y') builtinCall)))> */
 		nil,
-		/* 45 orderCondition <- <(((ASC / DESC)? brackettedExpression) / functionCall / builtinCall / var)> */
+		/* 48 orderCondition <- <(((ASC / DESC)? brackettedExpression) / functionCall / builtinCall / var)> */
 		nil,
-		/* 46 limitOffsetClauses <- <((limit offset?) / (offset limit?))> */
+		/* 49 limitOffsetClauses <- <((limit offset?) / (offset limit?))> */
 		nil,
-		/* 47 limit <- <(LIMIT INTEGER)> */
+		/* 50 limit <- <(LIMIT INTEGER)> */
 		func() bool {
-			position539, tokenIndex539, depth539 := position, tokenIndex, depth
+			position579, tokenIndex579, depth579 := position, tokenIndex, depth
 			{
-				position540 := position
+				position580 := position
 				depth++
 				{
-					position541 := position
+					position581 := position
 					depth++
 					{
-						position542, tokenIndex542, depth542 := position, tokenIndex, depth
+						position582, tokenIndex582, depth582 := position, tokenIndex, depth
 						if buffer[position] != rune('l') {
-							goto l543
+							goto l583
 						}
 						position++
-						goto l542
-					l543:
-						position, tokenIndex, depth = position542, tokenIndex542, depth542
+						goto l582
+					l583:
+						position, tokenIndex, depth = position582, tokenIndex582, depth582
 						if buffer[position] != rune('L') {
-							goto l539
+							goto l579
 						}
 						position++
 					}
-				l542:
+				l582:
 					{
-						position544, tokenIndex544, depth544 := position, tokenIndex, depth
+						position584, tokenIndex584, depth584 := position, tokenIndex, depth
 						if buffer[position] != rune('i') {
-							goto l545
+							goto l585
 						}
 						position++
-						goto l544
-					l545:
-						position, tokenIndex, depth = position544, tokenIndex544, depth544
+						goto l584
+					l585:
+						position, tokenIndex, depth = position584, tokenIndex584, depth584
 						if buffer[position] != rune('I') {
-							goto l539
+							goto l579
 						}
 						position++
 					}
-				l544:
+				l584:
 					{
-						position546, tokenIndex546, depth546 := position, tokenIndex, depth
+						position586, tokenIndex586, depth586 := position, tokenIndex, depth
 						if buffer[position] != rune('m') {
-							goto l547
+							goto l587
 						}
 						position++
-						goto l546
-					l547:
-						position, tokenIndex, depth = position546, tokenIndex546, depth546
+						goto l586
+					l587:
+						position, tokenIndex, depth = position586, tokenIndex586, depth586
 						if buffer[position] != rune('M') {
-							goto l539
+							goto l579
 						}
 						position++
 					}
-				l546:
+				l586:
 					{
-						position548, tokenIndex548, depth548 := position, tokenIndex, depth
+						position588, tokenIndex588, depth588 := position, tokenIndex, depth
 						if buffer[position] != rune('i') {
-							goto l549
+							goto l589
 						}
 						position++
-						goto l548
-					l549:
-						position, tokenIndex, depth = position548, tokenIndex548, depth548
+						goto l588
+					l589:
+						position, tokenIndex, depth = position588, tokenIndex588, depth588
 						if buffer[position] != rune('I') {
-							goto l539
+							goto l579
 						}
 						position++
 					}
-				l548:
+				l588:
 					{
-						position550, tokenIndex550, depth550 := position, tokenIndex, depth
+						position590, tokenIndex590, depth590 := position, tokenIndex, depth
 						if buffer[position] != rune('t') {
-							goto l551
+							goto l591
 						}
 						position++
-						goto l550
-					l551:
-						position, tokenIndex, depth = position550, tokenIndex550, depth550
+						goto l590
+					l591:
+						position, tokenIndex, depth = position590, tokenIndex590, depth590
 						if buffer[position] != rune('T') {
-							goto l539
+							goto l579
 						}
 						position++
 					}
-				l550:
+				l590:
 					if !rules[ruleskip]() {
-						goto l539
+						goto l579
 					}
 					depth--
-					add(ruleLIMIT, position541)
+					add(ruleLIMIT, position581)
 				}
 				if !rules[ruleINTEGER]() {
-					goto l539
+					goto l579
 				}
 				depth--
-				add(rulelimit, position540)
+				add(rulelimit, position580)
 			}
 			return true
-		l539:
-			position, tokenIndex, depth = position539, tokenIndex539, depth539
+		l579:
+			position, tokenIndex, depth = position579, tokenIndex579, depth579
 			return false
 		},
-		/* 48 offset <- <(OFFSET INTEGER)> */
+		/* 51 offset <- <(OFFSET INTEGER)> */
 		func() bool {
-			position552, tokenIndex552, depth552 := position, tokenIndex, depth
+			position592, tokenIndex592, depth592 := position, tokenIndex, depth
 			{
-				position553 := position
+				position593 := position
 				depth++
 				{
-					position554 := position
+					position594 := position
 					depth++
 					{
-						position555, tokenIndex555, depth555 := position, tokenIndex, depth
+						position595, tokenIndex595, depth595 := position, tokenIndex, depth
 						if buffer[position] != rune('o') {
-							goto l556
+							goto l596
 						}
 						position++
-						goto l555
-					l556:
-						position, tokenIndex, depth = position555, tokenIndex555, depth555
+						goto l595
+					l596:
+						position, tokenIndex, depth = position595, tokenIndex595, depth595
 						if buffer[position] != rune('O') {
-							goto l552
+							goto l592
 						}
 						position++
 					}
-				l555:
+				l595:
 					{
-						position557, tokenIndex557, depth557 := position, tokenIndex, depth
+						position597, tokenIndex597, depth597 := position, tokenIndex, depth
 						if buffer[position] != rune('f') {
-							goto l558
+							goto l598
 						}
 						position++
-						goto l557
-					l558:
-						position, tokenIndex, depth = position557, tokenIndex557, depth557
+						goto l597
+					l598:
+						position, tokenIndex, depth = position597, tokenIndex597, depth597
 						if buffer[position] != rune('F') {
-							goto l552
+							goto l592
 						}
 						position++
 					}
-				l557:
+				l597:
 					{
-						position559, tokenIndex559, depth559 := position, tokenIndex, depth
+						position599, tokenIndex599, depth599 := position, tokenIndex, depth
 						if buffer[position] != rune('f') {
-							goto l560
+							goto l600
 						}
 						position++
-						goto l559
-					l560:
-						position, tokenIndex, depth = position559, tokenIndex559, depth559
+						goto l599
+					l600:
+						position, tokenIndex, depth = position599, tokenIndex599, depth599
 						if buffer[position] != rune('F') {
-							goto l552
+							goto l592
 						}
 						position++
 					}
-				l559:
+				l599:
 					{
-						position561, tokenIndex561, depth561 := position, tokenIndex, depth
+						position601, tokenIndex601, depth601 := position, tokenIndex, depth
 						if buffer[position] != rune('s') {
-							goto l562
+							goto l602
 						}
 						position++
-						goto l561
-					l562:
-						position, tokenIndex, depth = position561, tokenIndex561, depth561
+						goto l601
+					l602:
+						position, tokenIndex, depth = position601, tokenIndex601, depth601
 						if buffer[position] != rune('S') {
-							goto l552
+							goto l592
 						}
 						position++
 					}
-				l561:
+				l601:
 					{
-						position563, tokenIndex563, depth563 := position, tokenIndex, depth
+						position603, tokenIndex603, depth603 := position, tokenIndex, depth
 						if buffer[position] != rune('e') {
-							goto l564
+							goto l604
 						}
 						position++
-						goto l563
-					l564:
-						position, tokenIndex, depth = position563, tokenIndex563, depth563
+						goto l603
+					l604:
+						position, tokenIndex, depth = position603, tokenIndex603, depth603
 						if buffer[position] != rune('E') {
-							goto l552
+							goto l592
 						}
 						position++
 					}
-				l563:
+				l603:
 					{
-						position565, tokenIndex565, depth565 := position, tokenIndex, depth
+						position605, tokenIndex605, depth605 := position, tokenIndex, depth
 						if buffer[position] != rune('t') {
-							goto l566
+							goto l606
 						}
 						position++
-						goto l565
-					l566:
-						position, tokenIndex, depth = position565, tokenIndex565, depth565
+						goto l605
+					l606:
+						position, tokenIndex, depth = position605, tokenIndex605, depth605
 						if buffer[position] != rune('T') {
-							goto l552
+							goto l592
 						}
 						position++
 					}
-				l565:
+				l605:
 					if !rules[ruleskip]() {
-						goto l552
+						goto l592
 					}
 					depth--
-					add(ruleOFFSET, position554)
+					add(ruleOFFSET, position594)
 				}
 				if !rules[ruleINTEGER]() {
-					goto l552
+					goto l592
 				}
 				depth--
-				add(ruleoffset, position553)
+				add(ruleoffset, position593)
 			}
 			return true
-		l552:
-			position, tokenIndex, depth = position552, tokenIndex552, depth552
+		l592:
+			position, tokenIndex, depth = position592, tokenIndex592, depth592
 			return false
 		},
-		/* 49 expression <- <conditionalOrExpression> */
+		/* 52 expression <- <conditionalOrExpression> */
 		func() bool {
-			position567, tokenIndex567, depth567 := position, tokenIndex, depth
+			position607, tokenIndex607, depth607 := position, tokenIndex, depth
 			{
-				position568 := position
+				position608 := position
 				depth++
 				if !rules[ruleconditionalOrExpression]() {
-					goto l567
+					goto l607
 				}
 				depth--
-				add(ruleexpression, position568)
+				add(ruleexpression, position608)
 			}
 			return true
-		l567:
-			position, tokenIndex, depth = position567, tokenIndex567, depth567
+		l607:
+			position, tokenIndex, depth = position607, tokenIndex607, depth607
 			return false
 		},
-		/* 50 conditionalOrExpression <- <(conditionalAndExpression (OR conditionalOrExpression)?)> */
+		/* 53 conditionalOrExpression <- <(conditionalAndExpression (OR conditionalOrExpression)?)> */
 		func() bool {
-			position569, tokenIndex569, depth569 := position, tokenIndex, depth
+			position609, tokenIndex609, depth609 := position, tokenIndex, depth
 			{
-				position570 := position
+				position610 := position
 				depth++
 				if !rules[ruleconditionalAndExpression]() {
-					goto l569
+					goto l609
 				}
 				{
-					position571, tokenIndex571, depth571 := position, tokenIndex, depth
+					position611, tokenIndex611, depth611 := position, tokenIndex, depth
 					{
-						position573 := position
+						position613 := position
 						depth++
 						if buffer[position] != rune('|') {
-							goto l571
+							goto l611
 						}
 						position++
 						if buffer[position] != rune('|') {
-							goto l571
+							goto l611
 						}
 						position++
 						if !rules[ruleskip]() {
-							goto l571
+							goto l611
 						}
 						depth--
-						add(ruleOR, position573)
+						add(ruleOR, position613)
 					}
 					if !rules[ruleconditionalOrExpression]() {
-						goto l571
+						goto l611
 					}
-					goto l572
-				l571:
-					position, tokenIndex, depth = position571, tokenIndex571, depth571
+					goto l612
+				l611:
+					position, tokenIndex, depth = position611, tokenIndex611, depth611
 				}
-			l572:
+			l612:
 				depth--
-				add(ruleconditionalOrExpression, position570)
+				add(ruleconditionalOrExpression, position610)
 			}
 			return true
-		l569:
-			position, tokenIndex, depth = position569, tokenIndex569, depth569
+		l609:
+			position, tokenIndex, depth = position609, tokenIndex609, depth609
 			return false
 		},
-		/* 51 conditionalAndExpression <- <(valueLogical (AND conditionalAndExpression)?)> */
+		/* 54 conditionalAndExpression <- <(valueLogical (AND conditionalAndExpression)?)> */
 		func() bool {
-			position574, tokenIndex574, depth574 := position, tokenIndex, depth
+			position614, tokenIndex614, depth614 := position, tokenIndex, depth
 			{
-				position575 := position
+				position615 := position
 				depth++
 				{
-					position576 := position
+					position616 := position
 					depth++
 					if !rules[rulenumericExpression]() {
-						goto l574
+						goto l614
 					}
 					{
-						position577, tokenIndex577, depth577 := position, tokenIndex, depth
+						position617, tokenIndex617, depth617 := position, tokenIndex, depth
 						{
 							switch buffer[position] {
 							case 'N', 'n':
 								{
-									position580 := position
+									position620 := position
 									depth++
 									{
-										position581 := position
+										position621 := position
 										depth++
 										{
-											position582, tokenIndex582, depth582 := position, tokenIndex, depth
+											position622, tokenIndex622, depth622 := position, tokenIndex, depth
 											if buffer[position] != rune('n') {
-												goto l583
+												goto l623
 											}
 											position++
-											goto l582
-										l583:
-											position, tokenIndex, depth = position582, tokenIndex582, depth582
+											goto l622
+										l623:
+											position, tokenIndex, depth = position622, tokenIndex622, depth622
 											if buffer[position] != rune('N') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l582:
+									l622:
 										{
-											position584, tokenIndex584, depth584 := position, tokenIndex, depth
+											position624, tokenIndex624, depth624 := position, tokenIndex, depth
 											if buffer[position] != rune('o') {
-												goto l585
+												goto l625
 											}
 											position++
-											goto l584
-										l585:
-											position, tokenIndex, depth = position584, tokenIndex584, depth584
+											goto l624
+										l625:
+											position, tokenIndex, depth = position624, tokenIndex624, depth624
 											if buffer[position] != rune('O') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l584:
+									l624:
 										{
-											position586, tokenIndex586, depth586 := position, tokenIndex, depth
+											position626, tokenIndex626, depth626 := position, tokenIndex, depth
 											if buffer[position] != rune('t') {
-												goto l587
+												goto l627
 											}
 											position++
-											goto l586
-										l587:
-											position, tokenIndex, depth = position586, tokenIndex586, depth586
+											goto l626
+										l627:
+											position, tokenIndex, depth = position626, tokenIndex626, depth626
 											if buffer[position] != rune('T') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l586:
+									l626:
 										if buffer[position] != rune(' ') {
-											goto l577
+											goto l617
 										}
 										position++
 										{
-											position588, tokenIndex588, depth588 := position, tokenIndex, depth
+											position628, tokenIndex628, depth628 := position, tokenIndex, depth
 											if buffer[position] != rune('i') {
-												goto l589
+												goto l629
 											}
 											position++
-											goto l588
-										l589:
-											position, tokenIndex, depth = position588, tokenIndex588, depth588
+											goto l628
+										l629:
+											position, tokenIndex, depth = position628, tokenIndex628, depth628
 											if buffer[position] != rune('I') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l588:
+									l628:
 										{
-											position590, tokenIndex590, depth590 := position, tokenIndex, depth
+											position630, tokenIndex630, depth630 := position, tokenIndex, depth
 											if buffer[position] != rune('n') {
-												goto l591
+												goto l631
 											}
 											position++
-											goto l590
-										l591:
-											position, tokenIndex, depth = position590, tokenIndex590, depth590
+											goto l630
+										l631:
+											position, tokenIndex, depth = position630, tokenIndex630, depth630
 											if buffer[position] != rune('N') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l590:
+									l630:
 										if !rules[ruleskip]() {
-											goto l577
+											goto l617
 										}
 										depth--
-										add(ruleNOTIN, position581)
+										add(ruleNOTIN, position621)
 									}
 									if !rules[ruleargList]() {
-										goto l577
+										goto l617
 									}
 									depth--
-									add(rulenotin, position580)
+									add(rulenotin, position620)
 								}
 								break
 							case 'I', 'i':
 								{
-									position592 := position
+									position632 := position
 									depth++
 									{
-										position593 := position
+										position633 := position
 										depth++
 										{
-											position594, tokenIndex594, depth594 := position, tokenIndex, depth
+											position634, tokenIndex634, depth634 := position, tokenIndex, depth
 											if buffer[position] != rune('i') {
-												goto l595
+												goto l635
 											}
 											position++
-											goto l594
-										l595:
-											position, tokenIndex, depth = position594, tokenIndex594, depth594
+											goto l634
+										l635:
+											position, tokenIndex, depth = position634, tokenIndex634, depth634
 											if buffer[position] != rune('I') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l594:
+									l634:
 										{
-											position596, tokenIndex596, depth596 := position, tokenIndex, depth
+											position636, tokenIndex636, depth636 := position, tokenIndex, depth
 											if buffer[position] != rune('n') {
-												goto l597
+												goto l637
 											}
 											position++
-											goto l596
-										l597:
-											position, tokenIndex, depth = position596, tokenIndex596, depth596
+											goto l636
+										l637:
+											position, tokenIndex, depth = position636, tokenIndex636, depth636
 											if buffer[position] != rune('N') {
-												goto l577
+												goto l617
 											}
 											position++
 										}
-									l596:
+									l636:
 										if !rules[ruleskip]() {
-											goto l577
+											goto l617
 										}
 										depth--
-										add(ruleIN, position593)
+										add(ruleIN, position633)
 									}
 									if !rules[ruleargList]() {
-										goto l577
+										goto l617
 									}
 									depth--
-									add(rulein, position592)
+									add(rulein, position632)
 								}
 								break
 							default:
 								{
-									position598, tokenIndex598, depth598 := position, tokenIndex, depth
+									position638, tokenIndex638, depth638 := position, tokenIndex, depth
 									{
-										position600 := position
+										position640 := position
 										depth++
 										if buffer[position] != rune('<') {
-											goto l599
+											goto l639
 										}
 										position++
 										if !rules[ruleskip]() {
-											goto l599
+											goto l639
 										}
 										depth--
-										add(ruleLT, position600)
+										add(ruleLT, position640)
 									}
-									goto l598
-								l599:
-									position, tokenIndex, depth = position598, tokenIndex598, depth598
+									goto l638
+								l639:
+									position, tokenIndex, depth = position638, tokenIndex638, depth638
 									{
-										position602 := position
+										position642 := position
 										depth++
 										if buffer[position] != rune('>') {
-											goto l601
+											goto l641
 										}
 										position++
 										if buffer[position] != rune('=') {
-											goto l601
+											goto l641
 										}
 										position++
 										if !rules[ruleskip]() {
-											goto l601
+											goto l641
 										}
 										depth--
-										add(ruleGE, position602)
+										add(ruleGE, position642)
 									}
-									goto l598
-								l601:
-									position, tokenIndex, depth = position598, tokenIndex598, depth598
+									goto l638
+								l641:
+									position, tokenIndex, depth = position638, tokenIndex638, depth638
 									{
 										switch buffer[position] {
 										case '>':
 											{
-												position604 := position
+												position644 := position
 												depth++
 												if buffer[position] != rune('>') {
-													goto l577
+													goto l617
 												}
 												position++
 												if !rules[ruleskip]() {
-													goto l577
+													goto l617
 												}
 												depth--
-												add(ruleGT, position604)
+												add(ruleGT, position644)
 											}
 											break
 										case '<':
 											{
-												position605 := position
+												position645 := position
 												depth++
 												if buffer[position] != rune('<') {
-													goto l577
+													goto l617
 												}
 												position++
 												if buffer[position] != rune('=') {
-													goto l577
+													goto l617
 												}
 												position++
 												if !rules[ruleskip]() {
-													goto l577
+													goto l617
 												}
 												depth--
-												add(ruleLE, position605)
+												add(ruleLE, position645)
 											}
 											break
 										case '!':
 											{
-												position606 := position
+												position646 := position
 												depth++
 												if buffer[position] != rune('!') {
-													goto l577
+													goto l617
 												}
 												position++
 												if buffer[position] != rune('=') {
-													goto l577
+													goto l617
 												}
 												position++
 												if !rules[ruleskip]() {
-													goto l577
+													goto l617
 												}
 												depth--
-												add(ruleNE, position606)
+												add(ruleNE, position646)
 											}
 											break
 										default:
 											if !rules[ruleEQ]() {
-												goto l577
+												goto l617
 											}
 											break
 										}
 									}
 
 								}
-							l598:
+							l638:
 								if !rules[rulenumericExpression]() {
-									goto l577
+									goto l617
 								}
 								break
 							}
 						}
 
-						goto l578
-					l577:
-						position, tokenIndex, depth = position577, tokenIndex577, depth577
+						goto l618
+					l617:
+						position, tokenIndex, depth = position617, tokenIndex617, depth617
 					}
-				l578:
+				l618:
 					depth--
-					add(rulevalueLogical, position576)
+					add(rulevalueLogical, position616)
 				}
 				{
-					position607, tokenIndex607, depth607 := position, tokenIndex, depth
+					position647, tokenIndex647, depth647 := position, tokenIndex, depth
 					{
-						position609 := position
+						position649 := position
 						depth++
 						if buffer[position] != rune('&') {
-							goto l607
+							goto l647
 						}
 						position++
 						if buffer[position] != rune('&') {
-							goto l607
+							goto l647
 						}
 						position++
 						if !rules[ruleskip]() {
-							goto l607
+							goto l647
 						}
 						depth--
-						add(ruleAND, position609)
+						add(ruleAND, position649)
 					}
 					if !rules[ruleconditionalAndExpression]() {
-						goto l607
+						goto l647
 					}
-					goto l608
-				l607:
-					position, tokenIndex, depth = position607, tokenIndex607, depth607
+					goto l648
+				l647:
+					position, tokenIndex, depth = position647, tokenIndex647, depth647
 				}
-			l608:
+			l648:
 				depth--
-				add(ruleconditionalAndExpression, position575)
+				add(ruleconditionalAndExpression, position615)
 			}
 			return true
-		l574:
-			position, tokenIndex, depth = position574, tokenIndex574, depth574
+		l614:
+			position, tokenIndex, depth = position614, tokenIndex614, depth614
 			return false
 		},
-		/* 52 valueLogical <- <(numericExpression ((&('N' | 'n') notin) | (&('I' | 'i') in) | (&('!' | '<' | '=' | '>') ((LT / GE / ((&('>') GT) | (&('<') LE) | (&('!') NE) | (&('=') EQ))) numericExpression)))?)> */
+		/* 55 valueLogical <- <(numericExpression ((&('N' | 'n') notin) | (&('I' | 'i') in) | (&('!' | '<' | '=' | '>') ((LT / GE / ((&('>') GT) | (&('<') LE) | (&('!') NE) | (&('=') EQ))) numericExpression)))?)> */
 		nil,
-		/* 53 numericExpression <- <(multiplicativeExpression (((PLUS / MINUS) multiplicativeExpression) / signedNumericLiteral)*)> */
+		/* 56 numericExpression <- <(multiplicativeExpression (((PLUS / MINUS) multiplicativeExpression) / signedNumericLiteral)*)> */
 		func() bool {
-			position611, tokenIndex611, depth611 := position, tokenIndex, depth
+			position651, tokenIndex651, depth651 := position, tokenIndex, depth
 			{
-				position612 := position
+				position652 := position
 				depth++
 				if !rules[rulemultiplicativeExpression]() {
-					goto l611
+					goto l651
 				}
-			l613:
+			l653:
 				{
-					position614, tokenIndex614, depth614 := position, tokenIndex, depth
+					position654, tokenIndex654, depth654 := position, tokenIndex, depth
 					{
-						position615, tokenIndex615, depth615 := position, tokenIndex, depth
+						position655, tokenIndex655, depth655 := position, tokenIndex, depth
 						{
-							position617, tokenIndex617, depth617 := position, tokenIndex, depth
+							position657, tokenIndex657, depth657 := position, tokenIndex, depth
 							if !rules[rulePLUS]() {
-								goto l618
+								goto l658
 							}
-							goto l617
-						l618:
-							position, tokenIndex, depth = position617, tokenIndex617, depth617
+							goto l657
+						l658:
+							position, tokenIndex, depth = position657, tokenIndex657, depth657
 							if !rules[ruleMINUS]() {
-								goto l616
+								goto l656
 							}
 						}
-					l617:
+					l657:
 						if !rules[rulemultiplicativeExpression]() {
-							goto l616
+							goto l656
 						}
-						goto l615
-					l616:
-						position, tokenIndex, depth = position615, tokenIndex615, depth615
+						goto l655
+					l656:
+						position, tokenIndex, depth = position655, tokenIndex655, depth655
 						{
-							position619 := position
+							position659 := position
 							depth++
 							{
-								position620, tokenIndex620, depth620 := position, tokenIndex, depth
+								position660, tokenIndex660, depth660 := position, tokenIndex, depth
 								if buffer[position] != rune('+') {
-									goto l621
+									goto l661
 								}
 								position++
-								goto l620
-							l621:
-								position, tokenIndex, depth = position620, tokenIndex620, depth620
+								goto l660
+							l661:
+								position, tokenIndex, depth = position660, tokenIndex660, depth660
 								if buffer[position] != rune('-') {
-									goto l614
+									goto l654
 								}
 								position++
 							}
-						l620:
+						l660:
 							if c := buffer[position]; c < rune('0') || c > rune('9') {
-								goto l614
+								goto l654
 							}
 							position++
-						l622:
+						l662:
 							{
-								position623, tokenIndex623, depth623 := position, tokenIndex, depth
+								position663, tokenIndex663, depth663 := position, tokenIndex, depth
 								if c := buffer[position]; c < rune('0') || c > rune('9') {
-									goto l623
+									goto l663
 								}
 								position++
-								goto l622
-							l623:
-								position, tokenIndex, depth = position623, tokenIndex623, depth623
+								goto l662
+							l663:
+								position, tokenIndex, depth = position663, tokenIndex663, depth663
 							}
 							{
-								position624, tokenIndex624, depth624 := position, tokenIndex, depth
+								position664, tokenIndex664, depth664 := position, tokenIndex, depth
 								if buffer[position] != rune('.') {
-									goto l624
+									goto l664
 								}
 								position++
-							l626:
+							l666:
 								{
-									position627, tokenIndex627, depth627 := position, tokenIndex, depth
+									position667, tokenIndex667, depth667 := position, tokenIndex, depth
 									if c := buffer[position]; c < rune('0') || c > rune('9') {
-										goto l627
+										goto l667
 									}
 									position++
-									goto l626
-								l627:
-									position, tokenIndex, depth = position627, tokenIndex627, depth627
+									goto l666
+								l667:
+									position, tokenIndex, depth = position667, tokenIndex667, depth667
 								}
-								goto l625
-							l624:
-								position, tokenIndex, depth = position624, tokenIndex624, depth624
+								goto l665
+							l664:
+								position, tokenIndex, depth = position664, tokenIndex664, depth664
 							}
-						l625:
+						l665:
 							if !rules[ruleskip]() {
-								goto l614
+								goto l654
 							}
 							depth--
-							add(rulesignedNumericLiteral, position619)
+							add(rulesignedNumericLiteral, position659)
 						}
 					}
-				l615:
-					goto l613
-				l614:
-					position, tokenIndex, depth = position614, tokenIndex614, depth614
+				l655:
+					goto l653
+				l654:
+					position, tokenIndex, depth = position654, tokenIndex654, depth654
 				}
 				depth--
-				add(rulenumericExpression, position612)
+				add(rulenumericExpression, position652)
 			}
 			return true
-		l611:
-			position, tokenIndex, depth = position611, tokenIndex611, depth611
+		l651:
+			position, tokenIndex, depth = position651, tokenIndex651, depth651
 			return false
 		},
-		/* 54 multiplicativeExpression <- <(unaryExpression ((STAR / SLASH) unaryExpression)*)> */
+		/* 57 multiplicativeExpression <- <(unaryExpression ((STAR / SLASH) unaryExpression)*)> */
 		func() bool {
-			position628, tokenIndex628, depth628 := position, tokenIndex, depth
+			position668, tokenIndex668, depth668 := position, tokenIndex, depth
 			{
-				position629 := position
+				position669 := position
 				depth++
 				if !rules[ruleunaryExpression]() {
-					goto l628
+					goto l668
 				}
-			l630:
+			l670:
 				{
-					position631, tokenIndex631, depth631 := position, tokenIndex, depth
+					position671, tokenIndex671, depth671 := position, tokenIndex, depth
 					{
-						position632, tokenIndex632, depth632 := position, tokenIndex, depth
+						position672, tokenIndex672, depth672 := position, tokenIndex, depth
 						if !rules[ruleSTAR]() {
-							goto l633
+							goto l673
 						}
-						goto l632
-					l633:
-						position, tokenIndex, depth = position632, tokenIndex632, depth632
+						goto l672
+					l673:
+						position, tokenIndex, depth = position672, tokenIndex672, depth672
 						if !rules[ruleSLASH]() {
-							goto l631
+							goto l671
 						}
 					}
-				l632:
+				l672:
 					if !rules[ruleunaryExpression]() {
-						goto l631
+						goto l671
 					}
-					goto l630
-				l631:
-					position, tokenIndex, depth = position631, tokenIndex631, depth631
+					goto l670
+				l671:
+					position, tokenIndex, depth = position671, tokenIndex671, depth671
 				}
 				depth--
-				add(rulemultiplicativeExpression, position629)
+				add(rulemultiplicativeExpression, position669)
 			}
 			return true
-		l628:
-			position, tokenIndex, depth = position628, tokenIndex628, depth628
+		l668:
+			position, tokenIndex, depth = position668, tokenIndex668, depth668
 			return false
 		},
-		/* 55 unaryExpression <- <(((&('+') PLUS) | (&('-') MINUS) | (&('!') NOT))? primaryExpression)> */
+		/* 58 unaryExpression <- <(((&('+') PLUS) | (&('-') MINUS) | (&('!') NOT))? primaryExpression)> */
 		func() bool {
-			position634, tokenIndex634, depth634 := position, tokenIndex, depth
+			position674, tokenIndex674, depth674 := position, tokenIndex, depth
 			{
-				position635 := position
+				position675 := position
 				depth++
 				{
-					position636, tokenIndex636, depth636 := position, tokenIndex, depth
+					position676, tokenIndex676, depth676 := position, tokenIndex, depth
 					{
 						switch buffer[position] {
 						case '+':
 							if !rules[rulePLUS]() {
-								goto l636
+								goto l676
 							}
 							break
 						case '-':
 							if !rules[ruleMINUS]() {
-								goto l636
+								goto l676
 							}
 							break
 						default:
 							if !rules[ruleNOT]() {
-								goto l636
+								goto l676
 							}
 							break
 						}
 					}
 
-					goto l637
-				l636:
-					position, tokenIndex, depth = position636, tokenIndex636, depth636
+					goto l677
+				l676:
+					position, tokenIndex, depth = position676, tokenIndex676, depth676
 				}
-			l637:
+			l677:
 				{
-					position639 := position
+					position679 := position
 					depth++
 					{
-						position640, tokenIndex640, depth640 := position, tokenIndex, depth
-						if !rules[rulebrackettedExpression]() {
-							goto l641
-						}
-						goto l640
-					l641:
-						position, tokenIndex, depth = position640, tokenIndex640, depth640
+						position680, tokenIndex680, depth680 := position, tokenIndex, depth
 						if !rules[rulebuiltinCall]() {
-							goto l642
+							goto l681
 						}
-						goto l640
-					l642:
-						position, tokenIndex, depth = position640, tokenIndex640, depth640
+						goto l680
+					l681:
+						position, tokenIndex, depth = position680, tokenIndex680, depth680
 						if !rules[rulefunctionCall]() {
-							goto l643
+							goto l682
 						}
-						goto l640
-					l643:
-						position, tokenIndex, depth = position640, tokenIndex640, depth640
+						goto l680
+					l682:
+						position, tokenIndex, depth = position680, tokenIndex680, depth680
 						if !rules[ruleiriref]() {
-							goto l644
+							goto l683
 						}
-						goto l640
-					l644:
-						position, tokenIndex, depth = position640, tokenIndex640, depth640
+						goto l680
+					l683:
+						position, tokenIndex, depth = position680, tokenIndex680, depth680
 						{
 							switch buffer[position] {
 							case 'A', 'C', 'G', 'M', 'S', 'a', 'c', 'g', 'm', 's':
 								{
-									position646 := position
+									position685 := position
 									depth++
 									{
 										switch buffer[position] {
 										case 'G', 'g':
 											{
-												position648 := position
+												position687 := position
 												depth++
 												{
-													position649 := position
+													position688 := position
 													depth++
 													{
-														position650, tokenIndex650, depth650 := position, tokenIndex, depth
+														position689, tokenIndex689, depth689 := position, tokenIndex, depth
 														if buffer[position] != rune('g') {
-															goto l651
+															goto l690
 														}
 														position++
-														goto l650
-													l651:
-														position, tokenIndex, depth = position650, tokenIndex650, depth650
+														goto l689
+													l690:
+														position, tokenIndex, depth = position689, tokenIndex689, depth689
 														if buffer[position] != rune('G') {
-															goto l634
-														}
-														position++
-													}
-												l650:
-													{
-														position652, tokenIndex652, depth652 := position, tokenIndex, depth
-														if buffer[position] != rune('r') {
-															goto l653
-														}
-														position++
-														goto l652
-													l653:
-														position, tokenIndex, depth = position652, tokenIndex652, depth652
-														if buffer[position] != rune('R') {
-															goto l634
-														}
-														position++
-													}
-												l652:
-													{
-														position654, tokenIndex654, depth654 := position, tokenIndex, depth
-														if buffer[position] != rune('o') {
-															goto l655
-														}
-														position++
-														goto l654
-													l655:
-														position, tokenIndex, depth = position654, tokenIndex654, depth654
-														if buffer[position] != rune('O') {
-															goto l634
-														}
-														position++
-													}
-												l654:
-													{
-														position656, tokenIndex656, depth656 := position, tokenIndex, depth
-														if buffer[position] != rune('u') {
-															goto l657
-														}
-														position++
-														goto l656
-													l657:
-														position, tokenIndex, depth = position656, tokenIndex656, depth656
-														if buffer[position] != rune('U') {
-															goto l634
-														}
-														position++
-													}
-												l656:
-													{
-														position658, tokenIndex658, depth658 := position, tokenIndex, depth
-														if buffer[position] != rune('p') {
-															goto l659
-														}
-														position++
-														goto l658
-													l659:
-														position, tokenIndex, depth = position658, tokenIndex658, depth658
-														if buffer[position] != rune('P') {
-															goto l634
-														}
-														position++
-													}
-												l658:
-													if buffer[position] != rune('_') {
-														goto l634
-													}
-													position++
-													{
-														position660, tokenIndex660, depth660 := position, tokenIndex, depth
-														if buffer[position] != rune('c') {
-															goto l661
-														}
-														position++
-														goto l660
-													l661:
-														position, tokenIndex, depth = position660, tokenIndex660, depth660
-														if buffer[position] != rune('C') {
-															goto l634
-														}
-														position++
-													}
-												l660:
-													{
-														position662, tokenIndex662, depth662 := position, tokenIndex, depth
-														if buffer[position] != rune('o') {
-															goto l663
-														}
-														position++
-														goto l662
-													l663:
-														position, tokenIndex, depth = position662, tokenIndex662, depth662
-														if buffer[position] != rune('O') {
-															goto l634
-														}
-														position++
-													}
-												l662:
-													{
-														position664, tokenIndex664, depth664 := position, tokenIndex, depth
-														if buffer[position] != rune('n') {
-															goto l665
-														}
-														position++
-														goto l664
-													l665:
-														position, tokenIndex, depth = position664, tokenIndex664, depth664
-														if buffer[position] != rune('N') {
-															goto l634
-														}
-														position++
-													}
-												l664:
-													{
-														position666, tokenIndex666, depth666 := position, tokenIndex, depth
-														if buffer[position] != rune('c') {
-															goto l667
-														}
-														position++
-														goto l666
-													l667:
-														position, tokenIndex, depth = position666, tokenIndex666, depth666
-														if buffer[position] != rune('C') {
-															goto l634
-														}
-														position++
-													}
-												l666:
-													{
-														position668, tokenIndex668, depth668 := position, tokenIndex, depth
-														if buffer[position] != rune('a') {
-															goto l669
-														}
-														position++
-														goto l668
-													l669:
-														position, tokenIndex, depth = position668, tokenIndex668, depth668
-														if buffer[position] != rune('A') {
-															goto l634
-														}
-														position++
-													}
-												l668:
-													{
-														position670, tokenIndex670, depth670 := position, tokenIndex, depth
-														if buffer[position] != rune('t') {
-															goto l671
-														}
-														position++
-														goto l670
-													l671:
-														position, tokenIndex, depth = position670, tokenIndex670, depth670
-														if buffer[position] != rune('T') {
-															goto l634
-														}
-														position++
-													}
-												l670:
-													if !rules[ruleskip]() {
-														goto l634
-													}
-													depth--
-													add(ruleGROUPCONCAT, position649)
-												}
-												if !rules[ruleLPAREN]() {
-													goto l634
-												}
-												{
-													position672, tokenIndex672, depth672 := position, tokenIndex, depth
-													if !rules[ruleDISTINCT]() {
-														goto l672
-													}
-													goto l673
-												l672:
-													position, tokenIndex, depth = position672, tokenIndex672, depth672
-												}
-											l673:
-												if !rules[ruleexpression]() {
-													goto l634
-												}
-												{
-													position674, tokenIndex674, depth674 := position, tokenIndex, depth
-													if !rules[ruleSEMICOLON]() {
-														goto l674
-													}
-													{
-														position676 := position
-														depth++
-														{
-															position677, tokenIndex677, depth677 := position, tokenIndex, depth
-															if buffer[position] != rune('s') {
-																goto l678
-															}
-															position++
-															goto l677
-														l678:
-															position, tokenIndex, depth = position677, tokenIndex677, depth677
-															if buffer[position] != rune('S') {
-																goto l674
-															}
-															position++
-														}
-													l677:
-														{
-															position679, tokenIndex679, depth679 := position, tokenIndex, depth
-															if buffer[position] != rune('e') {
-																goto l680
-															}
-															position++
-															goto l679
-														l680:
-															position, tokenIndex, depth = position679, tokenIndex679, depth679
-															if buffer[position] != rune('E') {
-																goto l674
-															}
-															position++
-														}
-													l679:
-														{
-															position681, tokenIndex681, depth681 := position, tokenIndex, depth
-															if buffer[position] != rune('p') {
-																goto l682
-															}
-															position++
-															goto l681
-														l682:
-															position, tokenIndex, depth = position681, tokenIndex681, depth681
-															if buffer[position] != rune('P') {
-																goto l674
-															}
-															position++
-														}
-													l681:
-														{
-															position683, tokenIndex683, depth683 := position, tokenIndex, depth
-															if buffer[position] != rune('a') {
-																goto l684
-															}
-															position++
-															goto l683
-														l684:
-															position, tokenIndex, depth = position683, tokenIndex683, depth683
-															if buffer[position] != rune('A') {
-																goto l674
-															}
-															position++
-														}
-													l683:
-														{
-															position685, tokenIndex685, depth685 := position, tokenIndex, depth
-															if buffer[position] != rune('r') {
-																goto l686
-															}
-															position++
-															goto l685
-														l686:
-															position, tokenIndex, depth = position685, tokenIndex685, depth685
-															if buffer[position] != rune('R') {
-																goto l674
-															}
-															position++
-														}
-													l685:
-														{
-															position687, tokenIndex687, depth687 := position, tokenIndex, depth
-															if buffer[position] != rune('a') {
-																goto l688
-															}
-															position++
-															goto l687
-														l688:
-															position, tokenIndex, depth = position687, tokenIndex687, depth687
-															if buffer[position] != rune('A') {
-																goto l674
-															}
-															position++
-														}
-													l687:
-														{
-															position689, tokenIndex689, depth689 := position, tokenIndex, depth
-															if buffer[position] != rune('t') {
-																goto l690
-															}
-															position++
-															goto l689
-														l690:
-															position, tokenIndex, depth = position689, tokenIndex689, depth689
-															if buffer[position] != rune('T') {
-																goto l674
-															}
-															position++
-														}
-													l689:
-														{
-															position691, tokenIndex691, depth691 := position, tokenIndex, depth
-															if buffer[position] != rune('o') {
-																goto l692
-															}
-															position++
-															goto l691
-														l692:
-															position, tokenIndex, depth = position691, tokenIndex691, depth691
-															if buffer[position] != rune('O') {
-																goto l674
-															}
-															position++
-														}
-													l691:
-														{
-															position693, tokenIndex693, depth693 := position, tokenIndex, depth
-															if buffer[position] != rune('r') {
-																goto l694
-															}
-															position++
-															goto l693
-														l694:
-															position, tokenIndex, depth = position693, tokenIndex693, depth693
-															if buffer[position] != rune('R') {
-																goto l674
-															}
-															position++
-														}
-													l693:
-														if !rules[ruleskip]() {
 															goto l674
 														}
-														depth--
-														add(ruleSEPARATOR, position676)
+														position++
 													}
-													if !rules[ruleEQ]() {
-														goto l674
+												l689:
+													{
+														position691, tokenIndex691, depth691 := position, tokenIndex, depth
+														if buffer[position] != rune('r') {
+															goto l692
+														}
+														position++
+														goto l691
+													l692:
+														position, tokenIndex, depth = position691, tokenIndex691, depth691
+														if buffer[position] != rune('R') {
+															goto l674
+														}
+														position++
 													}
-													if !rules[rulestring]() {
-														goto l674
+												l691:
+													{
+														position693, tokenIndex693, depth693 := position, tokenIndex, depth
+														if buffer[position] != rune('o') {
+															goto l694
+														}
+														position++
+														goto l693
+													l694:
+														position, tokenIndex, depth = position693, tokenIndex693, depth693
+														if buffer[position] != rune('O') {
+															goto l674
+														}
+														position++
 													}
-													goto l675
-												l674:
-													position, tokenIndex, depth = position674, tokenIndex674, depth674
-												}
-											l675:
-												if !rules[ruleRPAREN]() {
-													goto l634
-												}
-												depth--
-												add(rulegroupConcat, position648)
-											}
-											break
-										case 'C', 'c':
-											{
-												position695 := position
-												depth++
-												{
-													position696 := position
-													depth++
+												l693:
+													{
+														position695, tokenIndex695, depth695 := position, tokenIndex, depth
+														if buffer[position] != rune('u') {
+															goto l696
+														}
+														position++
+														goto l695
+													l696:
+														position, tokenIndex, depth = position695, tokenIndex695, depth695
+														if buffer[position] != rune('U') {
+															goto l674
+														}
+														position++
+													}
+												l695:
 													{
 														position697, tokenIndex697, depth697 := position, tokenIndex, depth
-														if buffer[position] != rune('c') {
+														if buffer[position] != rune('p') {
 															goto l698
 														}
 														position++
 														goto l697
 													l698:
 														position, tokenIndex, depth = position697, tokenIndex697, depth697
-														if buffer[position] != rune('C') {
-															goto l634
+														if buffer[position] != rune('P') {
+															goto l674
 														}
 														position++
 													}
 												l697:
+													if buffer[position] != rune('_') {
+														goto l674
+													}
+													position++
 													{
 														position699, tokenIndex699, depth699 := position, tokenIndex, depth
-														if buffer[position] != rune('o') {
+														if buffer[position] != rune('c') {
 															goto l700
 														}
 														position++
 														goto l699
 													l700:
 														position, tokenIndex, depth = position699, tokenIndex699, depth699
-														if buffer[position] != rune('O') {
-															goto l634
+														if buffer[position] != rune('C') {
+															goto l674
 														}
 														position++
 													}
 												l699:
 													{
 														position701, tokenIndex701, depth701 := position, tokenIndex, depth
-														if buffer[position] != rune('u') {
+														if buffer[position] != rune('o') {
 															goto l702
 														}
 														position++
 														goto l701
 													l702:
 														position, tokenIndex, depth = position701, tokenIndex701, depth701
-														if buffer[position] != rune('U') {
-															goto l634
+														if buffer[position] != rune('O') {
+															goto l674
 														}
 														position++
 													}
@@ -6139,2763 +6158,2762 @@ func (p *Sparql) Init() {
 													l704:
 														position, tokenIndex, depth = position703, tokenIndex703, depth703
 														if buffer[position] != rune('N') {
-															goto l634
+															goto l674
 														}
 														position++
 													}
 												l703:
 													{
 														position705, tokenIndex705, depth705 := position, tokenIndex, depth
-														if buffer[position] != rune('t') {
+														if buffer[position] != rune('c') {
 															goto l706
 														}
 														position++
 														goto l705
 													l706:
 														position, tokenIndex, depth = position705, tokenIndex705, depth705
-														if buffer[position] != rune('T') {
-															goto l634
+														if buffer[position] != rune('C') {
+															goto l674
 														}
 														position++
 													}
 												l705:
+													{
+														position707, tokenIndex707, depth707 := position, tokenIndex, depth
+														if buffer[position] != rune('a') {
+															goto l708
+														}
+														position++
+														goto l707
+													l708:
+														position, tokenIndex, depth = position707, tokenIndex707, depth707
+														if buffer[position] != rune('A') {
+															goto l674
+														}
+														position++
+													}
+												l707:
+													{
+														position709, tokenIndex709, depth709 := position, tokenIndex, depth
+														if buffer[position] != rune('t') {
+															goto l710
+														}
+														position++
+														goto l709
+													l710:
+														position, tokenIndex, depth = position709, tokenIndex709, depth709
+														if buffer[position] != rune('T') {
+															goto l674
+														}
+														position++
+													}
+												l709:
 													if !rules[ruleskip]() {
-														goto l634
+														goto l674
 													}
 													depth--
-													add(ruleCOUNT, position696)
+													add(ruleGROUPCONCAT, position688)
 												}
 												if !rules[ruleLPAREN]() {
-													goto l634
+													goto l674
 												}
 												{
-													position707, tokenIndex707, depth707 := position, tokenIndex, depth
+													position711, tokenIndex711, depth711 := position, tokenIndex, depth
 													if !rules[ruleDISTINCT]() {
-														goto l707
+														goto l711
 													}
-													goto l708
-												l707:
-													position, tokenIndex, depth = position707, tokenIndex707, depth707
+													goto l712
+												l711:
+													position, tokenIndex, depth = position711, tokenIndex711, depth711
 												}
-											l708:
+											l712:
+												if !rules[ruleexpression]() {
+													goto l674
+												}
 												{
-													position709, tokenIndex709, depth709 := position, tokenIndex, depth
-													if !rules[ruleSTAR]() {
-														goto l710
+													position713, tokenIndex713, depth713 := position, tokenIndex, depth
+													if !rules[ruleSEMICOLON]() {
+														goto l713
 													}
-													goto l709
-												l710:
-													position, tokenIndex, depth = position709, tokenIndex709, depth709
-													if !rules[ruleexpression]() {
-														goto l634
+													{
+														position715 := position
+														depth++
+														{
+															position716, tokenIndex716, depth716 := position, tokenIndex, depth
+															if buffer[position] != rune('s') {
+																goto l717
+															}
+															position++
+															goto l716
+														l717:
+															position, tokenIndex, depth = position716, tokenIndex716, depth716
+															if buffer[position] != rune('S') {
+																goto l713
+															}
+															position++
+														}
+													l716:
+														{
+															position718, tokenIndex718, depth718 := position, tokenIndex, depth
+															if buffer[position] != rune('e') {
+																goto l719
+															}
+															position++
+															goto l718
+														l719:
+															position, tokenIndex, depth = position718, tokenIndex718, depth718
+															if buffer[position] != rune('E') {
+																goto l713
+															}
+															position++
+														}
+													l718:
+														{
+															position720, tokenIndex720, depth720 := position, tokenIndex, depth
+															if buffer[position] != rune('p') {
+																goto l721
+															}
+															position++
+															goto l720
+														l721:
+															position, tokenIndex, depth = position720, tokenIndex720, depth720
+															if buffer[position] != rune('P') {
+																goto l713
+															}
+															position++
+														}
+													l720:
+														{
+															position722, tokenIndex722, depth722 := position, tokenIndex, depth
+															if buffer[position] != rune('a') {
+																goto l723
+															}
+															position++
+															goto l722
+														l723:
+															position, tokenIndex, depth = position722, tokenIndex722, depth722
+															if buffer[position] != rune('A') {
+																goto l713
+															}
+															position++
+														}
+													l722:
+														{
+															position724, tokenIndex724, depth724 := position, tokenIndex, depth
+															if buffer[position] != rune('r') {
+																goto l725
+															}
+															position++
+															goto l724
+														l725:
+															position, tokenIndex, depth = position724, tokenIndex724, depth724
+															if buffer[position] != rune('R') {
+																goto l713
+															}
+															position++
+														}
+													l724:
+														{
+															position726, tokenIndex726, depth726 := position, tokenIndex, depth
+															if buffer[position] != rune('a') {
+																goto l727
+															}
+															position++
+															goto l726
+														l727:
+															position, tokenIndex, depth = position726, tokenIndex726, depth726
+															if buffer[position] != rune('A') {
+																goto l713
+															}
+															position++
+														}
+													l726:
+														{
+															position728, tokenIndex728, depth728 := position, tokenIndex, depth
+															if buffer[position] != rune('t') {
+																goto l729
+															}
+															position++
+															goto l728
+														l729:
+															position, tokenIndex, depth = position728, tokenIndex728, depth728
+															if buffer[position] != rune('T') {
+																goto l713
+															}
+															position++
+														}
+													l728:
+														{
+															position730, tokenIndex730, depth730 := position, tokenIndex, depth
+															if buffer[position] != rune('o') {
+																goto l731
+															}
+															position++
+															goto l730
+														l731:
+															position, tokenIndex, depth = position730, tokenIndex730, depth730
+															if buffer[position] != rune('O') {
+																goto l713
+															}
+															position++
+														}
+													l730:
+														{
+															position732, tokenIndex732, depth732 := position, tokenIndex, depth
+															if buffer[position] != rune('r') {
+																goto l733
+															}
+															position++
+															goto l732
+														l733:
+															position, tokenIndex, depth = position732, tokenIndex732, depth732
+															if buffer[position] != rune('R') {
+																goto l713
+															}
+															position++
+														}
+													l732:
+														if !rules[ruleskip]() {
+															goto l713
+														}
+														depth--
+														add(ruleSEPARATOR, position715)
 													}
+													if !rules[ruleEQ]() {
+														goto l713
+													}
+													if !rules[rulestring]() {
+														goto l713
+													}
+													goto l714
+												l713:
+													position, tokenIndex, depth = position713, tokenIndex713, depth713
 												}
-											l709:
+											l714:
 												if !rules[ruleRPAREN]() {
-													goto l634
+													goto l674
 												}
 												depth--
-												add(rulecount, position695)
+												add(rulegroupConcat, position687)
+											}
+											break
+										case 'C', 'c':
+											{
+												position734 := position
+												depth++
+												{
+													position735 := position
+													depth++
+													{
+														position736, tokenIndex736, depth736 := position, tokenIndex, depth
+														if buffer[position] != rune('c') {
+															goto l737
+														}
+														position++
+														goto l736
+													l737:
+														position, tokenIndex, depth = position736, tokenIndex736, depth736
+														if buffer[position] != rune('C') {
+															goto l674
+														}
+														position++
+													}
+												l736:
+													{
+														position738, tokenIndex738, depth738 := position, tokenIndex, depth
+														if buffer[position] != rune('o') {
+															goto l739
+														}
+														position++
+														goto l738
+													l739:
+														position, tokenIndex, depth = position738, tokenIndex738, depth738
+														if buffer[position] != rune('O') {
+															goto l674
+														}
+														position++
+													}
+												l738:
+													{
+														position740, tokenIndex740, depth740 := position, tokenIndex, depth
+														if buffer[position] != rune('u') {
+															goto l741
+														}
+														position++
+														goto l740
+													l741:
+														position, tokenIndex, depth = position740, tokenIndex740, depth740
+														if buffer[position] != rune('U') {
+															goto l674
+														}
+														position++
+													}
+												l740:
+													{
+														position742, tokenIndex742, depth742 := position, tokenIndex, depth
+														if buffer[position] != rune('n') {
+															goto l743
+														}
+														position++
+														goto l742
+													l743:
+														position, tokenIndex, depth = position742, tokenIndex742, depth742
+														if buffer[position] != rune('N') {
+															goto l674
+														}
+														position++
+													}
+												l742:
+													{
+														position744, tokenIndex744, depth744 := position, tokenIndex, depth
+														if buffer[position] != rune('t') {
+															goto l745
+														}
+														position++
+														goto l744
+													l745:
+														position, tokenIndex, depth = position744, tokenIndex744, depth744
+														if buffer[position] != rune('T') {
+															goto l674
+														}
+														position++
+													}
+												l744:
+													if !rules[ruleskip]() {
+														goto l674
+													}
+													depth--
+													add(ruleCOUNT, position735)
+												}
+												if !rules[ruleLPAREN]() {
+													goto l674
+												}
+												{
+													position746, tokenIndex746, depth746 := position, tokenIndex, depth
+													if !rules[ruleDISTINCT]() {
+														goto l746
+													}
+													goto l747
+												l746:
+													position, tokenIndex, depth = position746, tokenIndex746, depth746
+												}
+											l747:
+												{
+													position748, tokenIndex748, depth748 := position, tokenIndex, depth
+													if !rules[ruleSTAR]() {
+														goto l749
+													}
+													goto l748
+												l749:
+													position, tokenIndex, depth = position748, tokenIndex748, depth748
+													if !rules[ruleexpression]() {
+														goto l674
+													}
+												}
+											l748:
+												if !rules[ruleRPAREN]() {
+													goto l674
+												}
+												depth--
+												add(rulecount, position734)
 											}
 											break
 										default:
 											{
-												position711, tokenIndex711, depth711 := position, tokenIndex, depth
+												position750, tokenIndex750, depth750 := position, tokenIndex, depth
 												{
-													position713 := position
+													position752 := position
 													depth++
 													{
-														position714, tokenIndex714, depth714 := position, tokenIndex, depth
+														position753, tokenIndex753, depth753 := position, tokenIndex, depth
 														if buffer[position] != rune('s') {
-															goto l715
+															goto l754
 														}
 														position++
-														goto l714
-													l715:
-														position, tokenIndex, depth = position714, tokenIndex714, depth714
+														goto l753
+													l754:
+														position, tokenIndex, depth = position753, tokenIndex753, depth753
 														if buffer[position] != rune('S') {
-															goto l712
+															goto l751
 														}
 														position++
 													}
-												l714:
+												l753:
 													{
-														position716, tokenIndex716, depth716 := position, tokenIndex, depth
+														position755, tokenIndex755, depth755 := position, tokenIndex, depth
 														if buffer[position] != rune('u') {
-															goto l717
+															goto l756
 														}
 														position++
-														goto l716
-													l717:
-														position, tokenIndex, depth = position716, tokenIndex716, depth716
+														goto l755
+													l756:
+														position, tokenIndex, depth = position755, tokenIndex755, depth755
 														if buffer[position] != rune('U') {
-															goto l712
+															goto l751
 														}
 														position++
 													}
-												l716:
+												l755:
 													{
-														position718, tokenIndex718, depth718 := position, tokenIndex, depth
+														position757, tokenIndex757, depth757 := position, tokenIndex, depth
 														if buffer[position] != rune('m') {
-															goto l719
+															goto l758
 														}
 														position++
-														goto l718
-													l719:
-														position, tokenIndex, depth = position718, tokenIndex718, depth718
+														goto l757
+													l758:
+														position, tokenIndex, depth = position757, tokenIndex757, depth757
 														if buffer[position] != rune('M') {
-															goto l712
+															goto l751
 														}
 														position++
 													}
-												l718:
+												l757:
 													if !rules[ruleskip]() {
-														goto l712
+														goto l751
 													}
 													depth--
-													add(ruleSUM, position713)
+													add(ruleSUM, position752)
 												}
-												goto l711
-											l712:
-												position, tokenIndex, depth = position711, tokenIndex711, depth711
+												goto l750
+											l751:
+												position, tokenIndex, depth = position750, tokenIndex750, depth750
 												{
-													position721 := position
+													position760 := position
 													depth++
 													{
-														position722, tokenIndex722, depth722 := position, tokenIndex, depth
+														position761, tokenIndex761, depth761 := position, tokenIndex, depth
 														if buffer[position] != rune('m') {
-															goto l723
+															goto l762
 														}
 														position++
-														goto l722
-													l723:
-														position, tokenIndex, depth = position722, tokenIndex722, depth722
+														goto l761
+													l762:
+														position, tokenIndex, depth = position761, tokenIndex761, depth761
 														if buffer[position] != rune('M') {
-															goto l720
+															goto l759
 														}
 														position++
 													}
-												l722:
+												l761:
 													{
-														position724, tokenIndex724, depth724 := position, tokenIndex, depth
+														position763, tokenIndex763, depth763 := position, tokenIndex, depth
 														if buffer[position] != rune('i') {
-															goto l725
+															goto l764
 														}
 														position++
-														goto l724
-													l725:
-														position, tokenIndex, depth = position724, tokenIndex724, depth724
+														goto l763
+													l764:
+														position, tokenIndex, depth = position763, tokenIndex763, depth763
 														if buffer[position] != rune('I') {
-															goto l720
+															goto l759
 														}
 														position++
 													}
-												l724:
+												l763:
 													{
-														position726, tokenIndex726, depth726 := position, tokenIndex, depth
+														position765, tokenIndex765, depth765 := position, tokenIndex, depth
 														if buffer[position] != rune('n') {
-															goto l727
+															goto l766
 														}
 														position++
-														goto l726
-													l727:
-														position, tokenIndex, depth = position726, tokenIndex726, depth726
+														goto l765
+													l766:
+														position, tokenIndex, depth = position765, tokenIndex765, depth765
 														if buffer[position] != rune('N') {
-															goto l720
+															goto l759
 														}
 														position++
 													}
-												l726:
+												l765:
 													if !rules[ruleskip]() {
-														goto l720
+														goto l759
 													}
 													depth--
-													add(ruleMIN, position721)
+													add(ruleMIN, position760)
 												}
-												goto l711
-											l720:
-												position, tokenIndex, depth = position711, tokenIndex711, depth711
+												goto l750
+											l759:
+												position, tokenIndex, depth = position750, tokenIndex750, depth750
 												{
 													switch buffer[position] {
 													case 'S', 's':
 														{
-															position729 := position
+															position768 := position
 															depth++
 															{
-																position730, tokenIndex730, depth730 := position, tokenIndex, depth
+																position769, tokenIndex769, depth769 := position, tokenIndex, depth
 																if buffer[position] != rune('s') {
-																	goto l731
+																	goto l770
 																}
 																position++
-																goto l730
-															l731:
-																position, tokenIndex, depth = position730, tokenIndex730, depth730
+																goto l769
+															l770:
+																position, tokenIndex, depth = position769, tokenIndex769, depth769
 																if buffer[position] != rune('S') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l730:
+														l769:
 															{
-																position732, tokenIndex732, depth732 := position, tokenIndex, depth
+																position771, tokenIndex771, depth771 := position, tokenIndex, depth
 																if buffer[position] != rune('a') {
-																	goto l733
+																	goto l772
 																}
 																position++
-																goto l732
-															l733:
-																position, tokenIndex, depth = position732, tokenIndex732, depth732
+																goto l771
+															l772:
+																position, tokenIndex, depth = position771, tokenIndex771, depth771
 																if buffer[position] != rune('A') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l732:
+														l771:
 															{
-																position734, tokenIndex734, depth734 := position, tokenIndex, depth
+																position773, tokenIndex773, depth773 := position, tokenIndex, depth
 																if buffer[position] != rune('m') {
-																	goto l735
+																	goto l774
 																}
 																position++
-																goto l734
-															l735:
-																position, tokenIndex, depth = position734, tokenIndex734, depth734
+																goto l773
+															l774:
+																position, tokenIndex, depth = position773, tokenIndex773, depth773
 																if buffer[position] != rune('M') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l734:
+														l773:
 															{
-																position736, tokenIndex736, depth736 := position, tokenIndex, depth
+																position775, tokenIndex775, depth775 := position, tokenIndex, depth
 																if buffer[position] != rune('p') {
-																	goto l737
+																	goto l776
 																}
 																position++
-																goto l736
-															l737:
-																position, tokenIndex, depth = position736, tokenIndex736, depth736
+																goto l775
+															l776:
+																position, tokenIndex, depth = position775, tokenIndex775, depth775
 																if buffer[position] != rune('P') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l736:
+														l775:
 															{
-																position738, tokenIndex738, depth738 := position, tokenIndex, depth
+																position777, tokenIndex777, depth777 := position, tokenIndex, depth
 																if buffer[position] != rune('l') {
-																	goto l739
+																	goto l778
 																}
 																position++
-																goto l738
-															l739:
-																position, tokenIndex, depth = position738, tokenIndex738, depth738
+																goto l777
+															l778:
+																position, tokenIndex, depth = position777, tokenIndex777, depth777
 																if buffer[position] != rune('L') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l738:
+														l777:
 															{
-																position740, tokenIndex740, depth740 := position, tokenIndex, depth
+																position779, tokenIndex779, depth779 := position, tokenIndex, depth
 																if buffer[position] != rune('e') {
-																	goto l741
+																	goto l780
 																}
 																position++
-																goto l740
-															l741:
-																position, tokenIndex, depth = position740, tokenIndex740, depth740
+																goto l779
+															l780:
+																position, tokenIndex, depth = position779, tokenIndex779, depth779
 																if buffer[position] != rune('E') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l740:
+														l779:
 															if !rules[ruleskip]() {
-																goto l634
+																goto l674
 															}
 															depth--
-															add(ruleSAMPLE, position729)
+															add(ruleSAMPLE, position768)
 														}
 														break
 													case 'A', 'a':
 														{
-															position742 := position
+															position781 := position
 															depth++
 															{
-																position743, tokenIndex743, depth743 := position, tokenIndex, depth
+																position782, tokenIndex782, depth782 := position, tokenIndex, depth
 																if buffer[position] != rune('a') {
-																	goto l744
+																	goto l783
 																}
 																position++
-																goto l743
-															l744:
-																position, tokenIndex, depth = position743, tokenIndex743, depth743
+																goto l782
+															l783:
+																position, tokenIndex, depth = position782, tokenIndex782, depth782
 																if buffer[position] != rune('A') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l743:
+														l782:
 															{
-																position745, tokenIndex745, depth745 := position, tokenIndex, depth
+																position784, tokenIndex784, depth784 := position, tokenIndex, depth
 																if buffer[position] != rune('v') {
-																	goto l746
+																	goto l785
 																}
 																position++
-																goto l745
-															l746:
-																position, tokenIndex, depth = position745, tokenIndex745, depth745
+																goto l784
+															l785:
+																position, tokenIndex, depth = position784, tokenIndex784, depth784
 																if buffer[position] != rune('V') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l745:
+														l784:
 															{
-																position747, tokenIndex747, depth747 := position, tokenIndex, depth
+																position786, tokenIndex786, depth786 := position, tokenIndex, depth
 																if buffer[position] != rune('g') {
-																	goto l748
+																	goto l787
 																}
 																position++
-																goto l747
-															l748:
-																position, tokenIndex, depth = position747, tokenIndex747, depth747
+																goto l786
+															l787:
+																position, tokenIndex, depth = position786, tokenIndex786, depth786
 																if buffer[position] != rune('G') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l747:
+														l786:
 															if !rules[ruleskip]() {
-																goto l634
+																goto l674
 															}
 															depth--
-															add(ruleAVG, position742)
+															add(ruleAVG, position781)
 														}
 														break
 													default:
 														{
-															position749 := position
+															position788 := position
 															depth++
 															{
-																position750, tokenIndex750, depth750 := position, tokenIndex, depth
+																position789, tokenIndex789, depth789 := position, tokenIndex, depth
 																if buffer[position] != rune('m') {
-																	goto l751
+																	goto l790
 																}
 																position++
-																goto l750
-															l751:
-																position, tokenIndex, depth = position750, tokenIndex750, depth750
+																goto l789
+															l790:
+																position, tokenIndex, depth = position789, tokenIndex789, depth789
 																if buffer[position] != rune('M') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l750:
+														l789:
 															{
-																position752, tokenIndex752, depth752 := position, tokenIndex, depth
+																position791, tokenIndex791, depth791 := position, tokenIndex, depth
 																if buffer[position] != rune('a') {
-																	goto l753
+																	goto l792
 																}
 																position++
-																goto l752
-															l753:
-																position, tokenIndex, depth = position752, tokenIndex752, depth752
+																goto l791
+															l792:
+																position, tokenIndex, depth = position791, tokenIndex791, depth791
 																if buffer[position] != rune('A') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l752:
+														l791:
 															{
-																position754, tokenIndex754, depth754 := position, tokenIndex, depth
+																position793, tokenIndex793, depth793 := position, tokenIndex, depth
 																if buffer[position] != rune('x') {
-																	goto l755
+																	goto l794
 																}
 																position++
-																goto l754
-															l755:
-																position, tokenIndex, depth = position754, tokenIndex754, depth754
+																goto l793
+															l794:
+																position, tokenIndex, depth = position793, tokenIndex793, depth793
 																if buffer[position] != rune('X') {
-																	goto l634
+																	goto l674
 																}
 																position++
 															}
-														l754:
+														l793:
 															if !rules[ruleskip]() {
-																goto l634
+																goto l674
 															}
 															depth--
-															add(ruleMAX, position749)
+															add(ruleMAX, position788)
 														}
 														break
 													}
 												}
 
 											}
-										l711:
+										l750:
 											if !rules[ruleLPAREN]() {
-												goto l634
+												goto l674
 											}
 											{
-												position756, tokenIndex756, depth756 := position, tokenIndex, depth
+												position795, tokenIndex795, depth795 := position, tokenIndex, depth
 												if !rules[ruleDISTINCT]() {
-													goto l756
+													goto l795
 												}
-												goto l757
-											l756:
-												position, tokenIndex, depth = position756, tokenIndex756, depth756
+												goto l796
+											l795:
+												position, tokenIndex, depth = position795, tokenIndex795, depth795
 											}
-										l757:
+										l796:
 											if !rules[ruleexpression]() {
-												goto l634
+												goto l674
 											}
 											if !rules[ruleRPAREN]() {
-												goto l634
+												goto l674
 											}
 											break
 										}
 									}
 
 									depth--
-									add(ruleaggregate, position646)
+									add(ruleaggregate, position685)
 								}
 								break
 							case '$', '?':
 								if !rules[rulevar]() {
-									goto l634
+									goto l674
 								}
 								break
 							case 'F', 'T', 'f', 't':
 								if !rules[rulebooleanLiteral]() {
-									goto l634
+									goto l674
 								}
 								break
-							case '"':
+							case '(':
+								if !rules[rulebrackettedExpression]() {
+									goto l674
+								}
+								break
+							case '"', '\'':
 								if !rules[ruleliteral]() {
-									goto l634
+									goto l674
 								}
 								break
 							default:
 								if !rules[rulenumericLiteral]() {
-									goto l634
+									goto l674
 								}
 								break
 							}
 						}
 
 					}
-				l640:
+				l680:
 					depth--
-					add(ruleprimaryExpression, position639)
+					add(ruleprimaryExpression, position679)
 				}
 				depth--
-				add(ruleunaryExpression, position635)
+				add(ruleunaryExpression, position675)
 			}
 			return true
-		l634:
-			position, tokenIndex, depth = position634, tokenIndex634, depth634
+		l674:
+			position, tokenIndex, depth = position674, tokenIndex674, depth674
 			return false
 		},
-		/* 56 primaryExpression <- <(brackettedExpression / builtinCall / functionCall / iriref / ((&('A' | 'C' | 'G' | 'M' | 'S' | 'a' | 'c' | 'g' | 'm' | 's') aggregate) | (&('$' | '?') var) | (&('F' | 'T' | 'f' | 't') booleanLiteral) | (&('"') literal) | (&('+' | '-' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') numericLiteral)))> */
+		/* 59 primaryExpression <- <(builtinCall / functionCall / iriref / ((&('A' | 'C' | 'G' | 'M' | 'S' | 'a' | 'c' | 'g' | 'm' | 's') aggregate) | (&('$' | '?') var) | (&('F' | 'T' | 'f' | 't') booleanLiteral) | (&('(') brackettedExpression) | (&('"' | '\'') literal) | (&('+' | '-' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') numericLiteral)))> */
 		nil,
-		/* 57 brackettedExpression <- <(LPAREN expression RPAREN)> */
+		/* 60 brackettedExpression <- <(LPAREN expression RPAREN)> */
 		func() bool {
-			position759, tokenIndex759, depth759 := position, tokenIndex, depth
+			position798, tokenIndex798, depth798 := position, tokenIndex, depth
 			{
-				position760 := position
+				position799 := position
 				depth++
 				if !rules[ruleLPAREN]() {
-					goto l759
+					goto l798
 				}
 				if !rules[ruleexpression]() {
-					goto l759
+					goto l798
 				}
 				if !rules[ruleRPAREN]() {
-					goto l759
+					goto l798
 				}
 				depth--
-				add(rulebrackettedExpression, position760)
+				add(rulebrackettedExpression, position799)
 			}
 			return true
-		l759:
-			position, tokenIndex, depth = position759, tokenIndex759, depth759
+		l798:
+			position, tokenIndex, depth = position798, tokenIndex798, depth798
 			return false
 		},
-		/* 58 functionCall <- <(iriref argList)> */
+		/* 61 functionCall <- <(iriref argList)> */
 		func() bool {
-			position761, tokenIndex761, depth761 := position, tokenIndex, depth
+			position800, tokenIndex800, depth800 := position, tokenIndex, depth
 			{
-				position762 := position
+				position801 := position
 				depth++
 				if !rules[ruleiriref]() {
-					goto l761
+					goto l800
 				}
 				if !rules[ruleargList]() {
-					goto l761
+					goto l800
 				}
 				depth--
-				add(rulefunctionCall, position762)
+				add(rulefunctionCall, position801)
 			}
 			return true
-		l761:
-			position, tokenIndex, depth = position761, tokenIndex761, depth761
+		l800:
+			position, tokenIndex, depth = position800, tokenIndex800, depth800
 			return false
 		},
-		/* 59 in <- <(IN argList)> */
+		/* 62 in <- <(IN argList)> */
 		nil,
-		/* 60 notin <- <(NOTIN argList)> */
+		/* 63 notin <- <(NOTIN argList)> */
 		nil,
-		/* 61 argList <- <(nil / (LPAREN expression (COMMA expression)* RPAREN))> */
+		/* 64 argList <- <(nil / (LPAREN expression (COMMA expression)* RPAREN))> */
 		func() bool {
-			position765, tokenIndex765, depth765 := position, tokenIndex, depth
+			position804, tokenIndex804, depth804 := position, tokenIndex, depth
 			{
-				position766 := position
+				position805 := position
 				depth++
 				{
-					position767, tokenIndex767, depth767 := position, tokenIndex, depth
+					position806, tokenIndex806, depth806 := position, tokenIndex, depth
 					if !rules[rulenil]() {
-						goto l768
+						goto l807
 					}
-					goto l767
-				l768:
-					position, tokenIndex, depth = position767, tokenIndex767, depth767
+					goto l806
+				l807:
+					position, tokenIndex, depth = position806, tokenIndex806, depth806
 					if !rules[ruleLPAREN]() {
-						goto l765
+						goto l804
 					}
 					if !rules[ruleexpression]() {
-						goto l765
+						goto l804
 					}
-				l769:
+				l808:
 					{
-						position770, tokenIndex770, depth770 := position, tokenIndex, depth
+						position809, tokenIndex809, depth809 := position, tokenIndex, depth
 						if !rules[ruleCOMMA]() {
-							goto l770
+							goto l809
 						}
 						if !rules[ruleexpression]() {
-							goto l770
+							goto l809
 						}
-						goto l769
-					l770:
-						position, tokenIndex, depth = position770, tokenIndex770, depth770
+						goto l808
+					l809:
+						position, tokenIndex, depth = position809, tokenIndex809, depth809
 					}
 					if !rules[ruleRPAREN]() {
-						goto l765
+						goto l804
 					}
 				}
-			l767:
+			l806:
 				depth--
-				add(ruleargList, position766)
+				add(ruleargList, position805)
 			}
 			return true
-		l765:
-			position, tokenIndex, depth = position765, tokenIndex765, depth765
+		l804:
+			position, tokenIndex, depth = position804, tokenIndex804, depth804
 			return false
 		},
-		/* 62 aggregate <- <((&('G' | 'g') groupConcat) | (&('C' | 'c') count) | (&('A' | 'M' | 'S' | 'a' | 'm' | 's') ((SUM / MIN / ((&('S' | 's') SAMPLE) | (&('A' | 'a') AVG) | (&('M' | 'm') MAX))) LPAREN DISTINCT? expression RPAREN)))> */
+		/* 65 aggregate <- <((&('G' | 'g') groupConcat) | (&('C' | 'c') count) | (&('A' | 'M' | 'S' | 'a' | 'm' | 's') ((SUM / MIN / ((&('S' | 's') SAMPLE) | (&('A' | 'a') AVG) | (&('M' | 'm') MAX))) LPAREN DISTINCT? expression RPAREN)))> */
 		nil,
-		/* 63 count <- <(COUNT LPAREN DISTINCT? (STAR / expression) RPAREN)> */
+		/* 66 count <- <(COUNT LPAREN DISTINCT? (STAR / expression) RPAREN)> */
 		nil,
-		/* 64 groupConcat <- <(GROUPCONCAT LPAREN DISTINCT? expression (SEMICOLON SEPARATOR EQ string)? RPAREN)> */
+		/* 67 groupConcat <- <(GROUPCONCAT LPAREN DISTINCT? expression (SEMICOLON SEPARATOR EQ string)? RPAREN)> */
 		nil,
-		/* 65 builtinCall <- <(((STR / LANG / DATATYPE / IRI / URI / STRLEN / MONTH / MINUTES / SECONDS / TIMEZONE / SHA1 / SHA256 / SHA384 / ISIRI / ISURI / ISBLANK / ISLITERAL / ((&('I' | 'i') ISNUMERIC) | (&('S' | 's') SHA512) | (&('M' | 'm') MD5) | (&('T' | 't') TZ) | (&('H' | 'h') HOURS) | (&('D' | 'd') DAY) | (&('Y' | 'y') YEAR) | (&('E' | 'e') ENCODEFORURI) | (&('L' | 'l') LCASE) | (&('U' | 'u') UCASE) | (&('F' | 'f') FLOOR) | (&('R' | 'r') ROUND) | (&('C' | 'c') CEIL) | (&('A' | 'a') ABS))) LPAREN expression RPAREN) / ((STRSTARTS / STRENDS / STRBEFORE / STRAFTER / STRLANG / STRDT / ((&('S' | 's') SAMETERM) | (&('C' | 'c') CONTAINS) | (&('L' | 'l') LANGMATCHES))) LPAREN expression COMMA expression RPAREN) / (BOUND LPAREN var RPAREN) / (((&('S' | 's') STRUUID) | (&('U' | 'u') UUID) | (&('N' | 'n') NOW) | (&('R' | 'r') RAND)) nil) / ((&('E' | 'N' | 'e' | 'n') ((EXISTS / NOTEXIST) groupGraphPattern)) | (&('I' | 'i') (IF LPAREN expression COMMA expression COMMA expression RPAREN)) | (&('C' | 'c') ((CONCAT / COALESCE) argList)) | (&('B' | 'b') (BNODE ((LPAREN expression RPAREN) / nil))) | (&('R' | 'S' | 'r' | 's') ((SUBSTR / REPLACE / REGEX) LPAREN expression COMMA expression (COMMA expression)? RPAREN))))> */
+		/* 68 builtinCall <- <(((STR / LANG / DATATYPE / IRI / URI / STRLEN / MONTH / MINUTES / SECONDS / TIMEZONE / SHA1 / SHA256 / SHA384 / ISIRI / ISURI / ISBLANK / ISLITERAL / ((&('I' | 'i') ISNUMERIC) | (&('S' | 's') SHA512) | (&('M' | 'm') MD5) | (&('T' | 't') TZ) | (&('H' | 'h') HOURS) | (&('D' | 'd') DAY) | (&('Y' | 'y') YEAR) | (&('E' | 'e') ENCODEFORURI) | (&('L' | 'l') LCASE) | (&('U' | 'u') UCASE) | (&('F' | 'f') FLOOR) | (&('R' | 'r') ROUND) | (&('C' | 'c') CEIL) | (&('A' | 'a') ABS))) LPAREN expression RPAREN) / ((STRSTARTS / STRENDS / STRBEFORE / STRAFTER / STRLANG / STRDT / ((&('S' | 's') SAMETERM) | (&('C' | 'c') CONTAINS) | (&('L' | 'l') LANGMATCHES))) LPAREN expression COMMA expression RPAREN) / (BOUND LPAREN var RPAREN) / (((&('S' | 's') STRUUID) | (&('U' | 'u') UUID) | (&('N' | 'n') NOW) | (&('R' | 'r') RAND)) nil) / ((&('E' | 'N' | 'e' | 'n') ((EXISTS / NOTEXIST) groupGraphPattern)) | (&('I' | 'i') (IF LPAREN expression COMMA expression COMMA expression RPAREN)) | (&('C' | 'c') ((CONCAT / COALESCE) argList)) | (&('B' | 'b') (BNODE ((LPAREN expression RPAREN) / nil))) | (&('R' | 'S' | 'r' | 's') ((SUBSTR / REPLACE / REGEX) LPAREN expression COMMA expression (COMMA expression)? RPAREN))))> */
 		func() bool {
-			position774, tokenIndex774, depth774 := position, tokenIndex, depth
+			position813, tokenIndex813, depth813 := position, tokenIndex, depth
 			{
-				position775 := position
+				position814 := position
 				depth++
 				{
-					position776, tokenIndex776, depth776 := position, tokenIndex, depth
+					position815, tokenIndex815, depth815 := position, tokenIndex, depth
 					{
-						position778, tokenIndex778, depth778 := position, tokenIndex, depth
+						position817, tokenIndex817, depth817 := position, tokenIndex, depth
 						{
-							position780 := position
+							position819 := position
 							depth++
 							{
-								position781, tokenIndex781, depth781 := position, tokenIndex, depth
+								position820, tokenIndex820, depth820 := position, tokenIndex, depth
 								if buffer[position] != rune('s') {
-									goto l782
+									goto l821
 								}
 								position++
-								goto l781
-							l782:
-								position, tokenIndex, depth = position781, tokenIndex781, depth781
+								goto l820
+							l821:
+								position, tokenIndex, depth = position820, tokenIndex820, depth820
 								if buffer[position] != rune('S') {
-									goto l779
-								}
-								position++
-							}
-						l781:
-							{
-								position783, tokenIndex783, depth783 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l784
-								}
-								position++
-								goto l783
-							l784:
-								position, tokenIndex, depth = position783, tokenIndex783, depth783
-								if buffer[position] != rune('T') {
-									goto l779
-								}
-								position++
-							}
-						l783:
-							{
-								position785, tokenIndex785, depth785 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l786
-								}
-								position++
-								goto l785
-							l786:
-								position, tokenIndex, depth = position785, tokenIndex785, depth785
-								if buffer[position] != rune('R') {
-									goto l779
-								}
-								position++
-							}
-						l785:
-							if !rules[ruleskip]() {
-								goto l779
-							}
-							depth--
-							add(ruleSTR, position780)
-						}
-						goto l778
-					l779:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position788 := position
-							depth++
-							{
-								position789, tokenIndex789, depth789 := position, tokenIndex, depth
-								if buffer[position] != rune('l') {
-									goto l790
-								}
-								position++
-								goto l789
-							l790:
-								position, tokenIndex, depth = position789, tokenIndex789, depth789
-								if buffer[position] != rune('L') {
-									goto l787
-								}
-								position++
-							}
-						l789:
-							{
-								position791, tokenIndex791, depth791 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l792
-								}
-								position++
-								goto l791
-							l792:
-								position, tokenIndex, depth = position791, tokenIndex791, depth791
-								if buffer[position] != rune('A') {
-									goto l787
-								}
-								position++
-							}
-						l791:
-							{
-								position793, tokenIndex793, depth793 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l794
-								}
-								position++
-								goto l793
-							l794:
-								position, tokenIndex, depth = position793, tokenIndex793, depth793
-								if buffer[position] != rune('N') {
-									goto l787
-								}
-								position++
-							}
-						l793:
-							{
-								position795, tokenIndex795, depth795 := position, tokenIndex, depth
-								if buffer[position] != rune('g') {
-									goto l796
-								}
-								position++
-								goto l795
-							l796:
-								position, tokenIndex, depth = position795, tokenIndex795, depth795
-								if buffer[position] != rune('G') {
-									goto l787
-								}
-								position++
-							}
-						l795:
-							if !rules[ruleskip]() {
-								goto l787
-							}
-							depth--
-							add(ruleLANG, position788)
-						}
-						goto l778
-					l787:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position798 := position
-							depth++
-							{
-								position799, tokenIndex799, depth799 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l800
-								}
-								position++
-								goto l799
-							l800:
-								position, tokenIndex, depth = position799, tokenIndex799, depth799
-								if buffer[position] != rune('D') {
-									goto l797
-								}
-								position++
-							}
-						l799:
-							{
-								position801, tokenIndex801, depth801 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l802
-								}
-								position++
-								goto l801
-							l802:
-								position, tokenIndex, depth = position801, tokenIndex801, depth801
-								if buffer[position] != rune('A') {
-									goto l797
-								}
-								position++
-							}
-						l801:
-							{
-								position803, tokenIndex803, depth803 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l804
-								}
-								position++
-								goto l803
-							l804:
-								position, tokenIndex, depth = position803, tokenIndex803, depth803
-								if buffer[position] != rune('T') {
-									goto l797
-								}
-								position++
-							}
-						l803:
-							{
-								position805, tokenIndex805, depth805 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l806
-								}
-								position++
-								goto l805
-							l806:
-								position, tokenIndex, depth = position805, tokenIndex805, depth805
-								if buffer[position] != rune('A') {
-									goto l797
-								}
-								position++
-							}
-						l805:
-							{
-								position807, tokenIndex807, depth807 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l808
-								}
-								position++
-								goto l807
-							l808:
-								position, tokenIndex, depth = position807, tokenIndex807, depth807
-								if buffer[position] != rune('T') {
-									goto l797
-								}
-								position++
-							}
-						l807:
-							{
-								position809, tokenIndex809, depth809 := position, tokenIndex, depth
-								if buffer[position] != rune('y') {
-									goto l810
-								}
-								position++
-								goto l809
-							l810:
-								position, tokenIndex, depth = position809, tokenIndex809, depth809
-								if buffer[position] != rune('Y') {
-									goto l797
-								}
-								position++
-							}
-						l809:
-							{
-								position811, tokenIndex811, depth811 := position, tokenIndex, depth
-								if buffer[position] != rune('p') {
-									goto l812
-								}
-								position++
-								goto l811
-							l812:
-								position, tokenIndex, depth = position811, tokenIndex811, depth811
-								if buffer[position] != rune('P') {
-									goto l797
-								}
-								position++
-							}
-						l811:
-							{
-								position813, tokenIndex813, depth813 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l814
-								}
-								position++
-								goto l813
-							l814:
-								position, tokenIndex, depth = position813, tokenIndex813, depth813
-								if buffer[position] != rune('E') {
-									goto l797
-								}
-								position++
-							}
-						l813:
-							if !rules[ruleskip]() {
-								goto l797
-							}
-							depth--
-							add(ruleDATATYPE, position798)
-						}
-						goto l778
-					l797:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position816 := position
-							depth++
-							{
-								position817, tokenIndex817, depth817 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
 									goto l818
 								}
 								position++
-								goto l817
-							l818:
-								position, tokenIndex, depth = position817, tokenIndex817, depth817
-								if buffer[position] != rune('I') {
-									goto l815
+							}
+						l820:
+							{
+								position822, tokenIndex822, depth822 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l823
+								}
+								position++
+								goto l822
+							l823:
+								position, tokenIndex, depth = position822, tokenIndex822, depth822
+								if buffer[position] != rune('T') {
+									goto l818
 								}
 								position++
 							}
-						l817:
+						l822:
 							{
-								position819, tokenIndex819, depth819 := position, tokenIndex, depth
+								position824, tokenIndex824, depth824 := position, tokenIndex, depth
 								if buffer[position] != rune('r') {
-									goto l820
+									goto l825
 								}
 								position++
-								goto l819
-							l820:
-								position, tokenIndex, depth = position819, tokenIndex819, depth819
+								goto l824
+							l825:
+								position, tokenIndex, depth = position824, tokenIndex824, depth824
 								if buffer[position] != rune('R') {
-									goto l815
+									goto l818
 								}
 								position++
 							}
-						l819:
-							{
-								position821, tokenIndex821, depth821 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l822
-								}
-								position++
-								goto l821
-							l822:
-								position, tokenIndex, depth = position821, tokenIndex821, depth821
-								if buffer[position] != rune('I') {
-									goto l815
-								}
-								position++
-							}
-						l821:
+						l824:
 							if !rules[ruleskip]() {
-								goto l815
+								goto l818
 							}
 							depth--
-							add(ruleIRI, position816)
+							add(ruleSTR, position819)
 						}
-						goto l778
-					l815:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l818:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position824 := position
+							position827 := position
 							depth++
 							{
-								position825, tokenIndex825, depth825 := position, tokenIndex, depth
-								if buffer[position] != rune('u') {
+								position828, tokenIndex828, depth828 := position, tokenIndex, depth
+								if buffer[position] != rune('l') {
+									goto l829
+								}
+								position++
+								goto l828
+							l829:
+								position, tokenIndex, depth = position828, tokenIndex828, depth828
+								if buffer[position] != rune('L') {
 									goto l826
 								}
 								position++
-								goto l825
-							l826:
-								position, tokenIndex, depth = position825, tokenIndex825, depth825
-								if buffer[position] != rune('U') {
-									goto l823
-								}
-								position++
 							}
-						l825:
+						l828:
 							{
-								position827, tokenIndex827, depth827 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l828
-								}
-								position++
-								goto l827
-							l828:
-								position, tokenIndex, depth = position827, tokenIndex827, depth827
-								if buffer[position] != rune('R') {
-									goto l823
-								}
-								position++
-							}
-						l827:
-							{
-								position829, tokenIndex829, depth829 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l830
-								}
-								position++
-								goto l829
-							l830:
-								position, tokenIndex, depth = position829, tokenIndex829, depth829
-								if buffer[position] != rune('I') {
-									goto l823
-								}
-								position++
-							}
-						l829:
-							if !rules[ruleskip]() {
-								goto l823
-							}
-							depth--
-							add(ruleURI, position824)
-						}
-						goto l778
-					l823:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position832 := position
-							depth++
-							{
-								position833, tokenIndex833, depth833 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l834
-								}
-								position++
-								goto l833
-							l834:
-								position, tokenIndex, depth = position833, tokenIndex833, depth833
-								if buffer[position] != rune('S') {
+								position830, tokenIndex830, depth830 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
 									goto l831
 								}
 								position++
+								goto l830
+							l831:
+								position, tokenIndex, depth = position830, tokenIndex830, depth830
+								if buffer[position] != rune('A') {
+									goto l826
+								}
+								position++
 							}
-						l833:
+						l830:
 							{
-								position835, tokenIndex835, depth835 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
+								position832, tokenIndex832, depth832 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l833
+								}
+								position++
+								goto l832
+							l833:
+								position, tokenIndex, depth = position832, tokenIndex832, depth832
+								if buffer[position] != rune('N') {
+									goto l826
+								}
+								position++
+							}
+						l832:
+							{
+								position834, tokenIndex834, depth834 := position, tokenIndex, depth
+								if buffer[position] != rune('g') {
+									goto l835
+								}
+								position++
+								goto l834
+							l835:
+								position, tokenIndex, depth = position834, tokenIndex834, depth834
+								if buffer[position] != rune('G') {
+									goto l826
+								}
+								position++
+							}
+						l834:
+							if !rules[ruleskip]() {
+								goto l826
+							}
+							depth--
+							add(ruleLANG, position827)
+						}
+						goto l817
+					l826:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position837 := position
+							depth++
+							{
+								position838, tokenIndex838, depth838 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l839
+								}
+								position++
+								goto l838
+							l839:
+								position, tokenIndex, depth = position838, tokenIndex838, depth838
+								if buffer[position] != rune('D') {
 									goto l836
 								}
 								position++
-								goto l835
-							l836:
-								position, tokenIndex, depth = position835, tokenIndex835, depth835
+							}
+						l838:
+							{
+								position840, tokenIndex840, depth840 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l841
+								}
+								position++
+								goto l840
+							l841:
+								position, tokenIndex, depth = position840, tokenIndex840, depth840
+								if buffer[position] != rune('A') {
+									goto l836
+								}
+								position++
+							}
+						l840:
+							{
+								position842, tokenIndex842, depth842 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l843
+								}
+								position++
+								goto l842
+							l843:
+								position, tokenIndex, depth = position842, tokenIndex842, depth842
 								if buffer[position] != rune('T') {
-									goto l831
+									goto l836
 								}
 								position++
 							}
-						l835:
+						l842:
 							{
-								position837, tokenIndex837, depth837 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l838
+								position844, tokenIndex844, depth844 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l845
 								}
 								position++
-								goto l837
-							l838:
-								position, tokenIndex, depth = position837, tokenIndex837, depth837
-								if buffer[position] != rune('R') {
-									goto l831
+								goto l844
+							l845:
+								position, tokenIndex, depth = position844, tokenIndex844, depth844
+								if buffer[position] != rune('A') {
+									goto l836
 								}
 								position++
 							}
-						l837:
+						l844:
 							{
-								position839, tokenIndex839, depth839 := position, tokenIndex, depth
-								if buffer[position] != rune('l') {
-									goto l840
+								position846, tokenIndex846, depth846 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l847
 								}
 								position++
-								goto l839
-							l840:
-								position, tokenIndex, depth = position839, tokenIndex839, depth839
-								if buffer[position] != rune('L') {
-									goto l831
+								goto l846
+							l847:
+								position, tokenIndex, depth = position846, tokenIndex846, depth846
+								if buffer[position] != rune('T') {
+									goto l836
 								}
 								position++
 							}
-						l839:
+						l846:
 							{
-								position841, tokenIndex841, depth841 := position, tokenIndex, depth
+								position848, tokenIndex848, depth848 := position, tokenIndex, depth
+								if buffer[position] != rune('y') {
+									goto l849
+								}
+								position++
+								goto l848
+							l849:
+								position, tokenIndex, depth = position848, tokenIndex848, depth848
+								if buffer[position] != rune('Y') {
+									goto l836
+								}
+								position++
+							}
+						l848:
+							{
+								position850, tokenIndex850, depth850 := position, tokenIndex, depth
+								if buffer[position] != rune('p') {
+									goto l851
+								}
+								position++
+								goto l850
+							l851:
+								position, tokenIndex, depth = position850, tokenIndex850, depth850
+								if buffer[position] != rune('P') {
+									goto l836
+								}
+								position++
+							}
+						l850:
+							{
+								position852, tokenIndex852, depth852 := position, tokenIndex, depth
 								if buffer[position] != rune('e') {
-									goto l842
+									goto l853
 								}
 								position++
-								goto l841
-							l842:
-								position, tokenIndex, depth = position841, tokenIndex841, depth841
+								goto l852
+							l853:
+								position, tokenIndex, depth = position852, tokenIndex852, depth852
 								if buffer[position] != rune('E') {
-									goto l831
+									goto l836
 								}
 								position++
 							}
-						l841:
-							{
-								position843, tokenIndex843, depth843 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l844
-								}
-								position++
-								goto l843
-							l844:
-								position, tokenIndex, depth = position843, tokenIndex843, depth843
-								if buffer[position] != rune('N') {
-									goto l831
-								}
-								position++
-							}
-						l843:
+						l852:
 							if !rules[ruleskip]() {
-								goto l831
+								goto l836
 							}
 							depth--
-							add(ruleSTRLEN, position832)
+							add(ruleDATATYPE, position837)
 						}
-						goto l778
-					l831:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l836:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position846 := position
+							position855 := position
 							depth++
 							{
-								position847, tokenIndex847, depth847 := position, tokenIndex, depth
-								if buffer[position] != rune('m') {
-									goto l848
+								position856, tokenIndex856, depth856 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l857
 								}
 								position++
-								goto l847
-							l848:
-								position, tokenIndex, depth = position847, tokenIndex847, depth847
-								if buffer[position] != rune('M') {
-									goto l845
-								}
-								position++
-							}
-						l847:
-							{
-								position849, tokenIndex849, depth849 := position, tokenIndex, depth
-								if buffer[position] != rune('o') {
-									goto l850
-								}
-								position++
-								goto l849
-							l850:
-								position, tokenIndex, depth = position849, tokenIndex849, depth849
-								if buffer[position] != rune('O') {
-									goto l845
-								}
-								position++
-							}
-						l849:
-							{
-								position851, tokenIndex851, depth851 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l852
-								}
-								position++
-								goto l851
-							l852:
-								position, tokenIndex, depth = position851, tokenIndex851, depth851
-								if buffer[position] != rune('N') {
-									goto l845
-								}
-								position++
-							}
-						l851:
-							{
-								position853, tokenIndex853, depth853 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
+								goto l856
+							l857:
+								position, tokenIndex, depth = position856, tokenIndex856, depth856
+								if buffer[position] != rune('I') {
 									goto l854
 								}
 								position++
-								goto l853
-							l854:
-								position, tokenIndex, depth = position853, tokenIndex853, depth853
-								if buffer[position] != rune('T') {
-									goto l845
-								}
-								position++
 							}
-						l853:
+						l856:
 							{
-								position855, tokenIndex855, depth855 := position, tokenIndex, depth
-								if buffer[position] != rune('h') {
-									goto l856
+								position858, tokenIndex858, depth858 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l859
 								}
 								position++
-								goto l855
-							l856:
-								position, tokenIndex, depth = position855, tokenIndex855, depth855
-								if buffer[position] != rune('H') {
-									goto l845
+								goto l858
+							l859:
+								position, tokenIndex, depth = position858, tokenIndex858, depth858
+								if buffer[position] != rune('R') {
+									goto l854
 								}
 								position++
 							}
-						l855:
+						l858:
+							{
+								position860, tokenIndex860, depth860 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l861
+								}
+								position++
+								goto l860
+							l861:
+								position, tokenIndex, depth = position860, tokenIndex860, depth860
+								if buffer[position] != rune('I') {
+									goto l854
+								}
+								position++
+							}
+						l860:
 							if !rules[ruleskip]() {
-								goto l845
+								goto l854
 							}
 							depth--
-							add(ruleMONTH, position846)
+							add(ruleIRI, position855)
 						}
-						goto l778
-					l845:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l854:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position858 := position
+							position863 := position
 							depth++
 							{
-								position859, tokenIndex859, depth859 := position, tokenIndex, depth
-								if buffer[position] != rune('m') {
-									goto l860
+								position864, tokenIndex864, depth864 := position, tokenIndex, depth
+								if buffer[position] != rune('u') {
+									goto l865
 								}
 								position++
-								goto l859
-							l860:
-								position, tokenIndex, depth = position859, tokenIndex859, depth859
-								if buffer[position] != rune('M') {
-									goto l857
-								}
-								position++
-							}
-						l859:
-							{
-								position861, tokenIndex861, depth861 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
+								goto l864
+							l865:
+								position, tokenIndex, depth = position864, tokenIndex864, depth864
+								if buffer[position] != rune('U') {
 									goto l862
 								}
 								position++
-								goto l861
-							l862:
-								position, tokenIndex, depth = position861, tokenIndex861, depth861
+							}
+						l864:
+							{
+								position866, tokenIndex866, depth866 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l867
+								}
+								position++
+								goto l866
+							l867:
+								position, tokenIndex, depth = position866, tokenIndex866, depth866
+								if buffer[position] != rune('R') {
+									goto l862
+								}
+								position++
+							}
+						l866:
+							{
+								position868, tokenIndex868, depth868 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l869
+								}
+								position++
+								goto l868
+							l869:
+								position, tokenIndex, depth = position868, tokenIndex868, depth868
 								if buffer[position] != rune('I') {
-									goto l857
+									goto l862
 								}
 								position++
 							}
-						l861:
-							{
-								position863, tokenIndex863, depth863 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l864
-								}
-								position++
-								goto l863
-							l864:
-								position, tokenIndex, depth = position863, tokenIndex863, depth863
-								if buffer[position] != rune('N') {
-									goto l857
-								}
-								position++
+						l868:
+							if !rules[ruleskip]() {
+								goto l862
 							}
-						l863:
+							depth--
+							add(ruleURI, position863)
+						}
+						goto l817
+					l862:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position871 := position
+							depth++
 							{
-								position865, tokenIndex865, depth865 := position, tokenIndex, depth
-								if buffer[position] != rune('u') {
-									goto l866
+								position872, tokenIndex872, depth872 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l873
 								}
 								position++
-								goto l865
-							l866:
-								position, tokenIndex, depth = position865, tokenIndex865, depth865
-								if buffer[position] != rune('U') {
-									goto l857
-								}
-								position++
-							}
-						l865:
-							{
-								position867, tokenIndex867, depth867 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l868
-								}
-								position++
-								goto l867
-							l868:
-								position, tokenIndex, depth = position867, tokenIndex867, depth867
-								if buffer[position] != rune('T') {
-									goto l857
-								}
-								position++
-							}
-						l867:
-							{
-								position869, tokenIndex869, depth869 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
+								goto l872
+							l873:
+								position, tokenIndex, depth = position872, tokenIndex872, depth872
+								if buffer[position] != rune('S') {
 									goto l870
 								}
 								position++
-								goto l869
-							l870:
-								position, tokenIndex, depth = position869, tokenIndex869, depth869
-								if buffer[position] != rune('E') {
-									goto l857
-								}
-								position++
 							}
-						l869:
+						l872:
 							{
-								position871, tokenIndex871, depth871 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l872
+								position874, tokenIndex874, depth874 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l875
 								}
 								position++
-								goto l871
-							l872:
-								position, tokenIndex, depth = position871, tokenIndex871, depth871
-								if buffer[position] != rune('S') {
-									goto l857
+								goto l874
+							l875:
+								position, tokenIndex, depth = position874, tokenIndex874, depth874
+								if buffer[position] != rune('T') {
+									goto l870
 								}
 								position++
 							}
-						l871:
+						l874:
+							{
+								position876, tokenIndex876, depth876 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l877
+								}
+								position++
+								goto l876
+							l877:
+								position, tokenIndex, depth = position876, tokenIndex876, depth876
+								if buffer[position] != rune('R') {
+									goto l870
+								}
+								position++
+							}
+						l876:
+							{
+								position878, tokenIndex878, depth878 := position, tokenIndex, depth
+								if buffer[position] != rune('l') {
+									goto l879
+								}
+								position++
+								goto l878
+							l879:
+								position, tokenIndex, depth = position878, tokenIndex878, depth878
+								if buffer[position] != rune('L') {
+									goto l870
+								}
+								position++
+							}
+						l878:
+							{
+								position880, tokenIndex880, depth880 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l881
+								}
+								position++
+								goto l880
+							l881:
+								position, tokenIndex, depth = position880, tokenIndex880, depth880
+								if buffer[position] != rune('E') {
+									goto l870
+								}
+								position++
+							}
+						l880:
+							{
+								position882, tokenIndex882, depth882 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l883
+								}
+								position++
+								goto l882
+							l883:
+								position, tokenIndex, depth = position882, tokenIndex882, depth882
+								if buffer[position] != rune('N') {
+									goto l870
+								}
+								position++
+							}
+						l882:
 							if !rules[ruleskip]() {
-								goto l857
+								goto l870
 							}
 							depth--
-							add(ruleMINUTES, position858)
+							add(ruleSTRLEN, position871)
 						}
-						goto l778
-					l857:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l870:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position874 := position
+							position885 := position
 							depth++
 							{
-								position875, tokenIndex875, depth875 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l876
+								position886, tokenIndex886, depth886 := position, tokenIndex, depth
+								if buffer[position] != rune('m') {
+									goto l887
 								}
 								position++
-								goto l875
-							l876:
-								position, tokenIndex, depth = position875, tokenIndex875, depth875
-								if buffer[position] != rune('S') {
-									goto l873
-								}
-								position++
-							}
-						l875:
-							{
-								position877, tokenIndex877, depth877 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l878
-								}
-								position++
-								goto l877
-							l878:
-								position, tokenIndex, depth = position877, tokenIndex877, depth877
-								if buffer[position] != rune('E') {
-									goto l873
-								}
-								position++
-							}
-						l877:
-							{
-								position879, tokenIndex879, depth879 := position, tokenIndex, depth
-								if buffer[position] != rune('c') {
-									goto l880
-								}
-								position++
-								goto l879
-							l880:
-								position, tokenIndex, depth = position879, tokenIndex879, depth879
-								if buffer[position] != rune('C') {
-									goto l873
-								}
-								position++
-							}
-						l879:
-							{
-								position881, tokenIndex881, depth881 := position, tokenIndex, depth
-								if buffer[position] != rune('o') {
-									goto l882
-								}
-								position++
-								goto l881
-							l882:
-								position, tokenIndex, depth = position881, tokenIndex881, depth881
-								if buffer[position] != rune('O') {
-									goto l873
-								}
-								position++
-							}
-						l881:
-							{
-								position883, tokenIndex883, depth883 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
+								goto l886
+							l887:
+								position, tokenIndex, depth = position886, tokenIndex886, depth886
+								if buffer[position] != rune('M') {
 									goto l884
 								}
 								position++
-								goto l883
-							l884:
-								position, tokenIndex, depth = position883, tokenIndex883, depth883
+							}
+						l886:
+							{
+								position888, tokenIndex888, depth888 := position, tokenIndex, depth
+								if buffer[position] != rune('o') {
+									goto l889
+								}
+								position++
+								goto l888
+							l889:
+								position, tokenIndex, depth = position888, tokenIndex888, depth888
+								if buffer[position] != rune('O') {
+									goto l884
+								}
+								position++
+							}
+						l888:
+							{
+								position890, tokenIndex890, depth890 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l891
+								}
+								position++
+								goto l890
+							l891:
+								position, tokenIndex, depth = position890, tokenIndex890, depth890
 								if buffer[position] != rune('N') {
-									goto l873
+									goto l884
 								}
 								position++
 							}
-						l883:
+						l890:
 							{
-								position885, tokenIndex885, depth885 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l886
+								position892, tokenIndex892, depth892 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l893
 								}
 								position++
-								goto l885
-							l886:
-								position, tokenIndex, depth = position885, tokenIndex885, depth885
-								if buffer[position] != rune('D') {
-									goto l873
+								goto l892
+							l893:
+								position, tokenIndex, depth = position892, tokenIndex892, depth892
+								if buffer[position] != rune('T') {
+									goto l884
 								}
 								position++
 							}
-						l885:
+						l892:
 							{
-								position887, tokenIndex887, depth887 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l888
+								position894, tokenIndex894, depth894 := position, tokenIndex, depth
+								if buffer[position] != rune('h') {
+									goto l895
 								}
 								position++
-								goto l887
-							l888:
-								position, tokenIndex, depth = position887, tokenIndex887, depth887
-								if buffer[position] != rune('S') {
-									goto l873
+								goto l894
+							l895:
+								position, tokenIndex, depth = position894, tokenIndex894, depth894
+								if buffer[position] != rune('H') {
+									goto l884
 								}
 								position++
 							}
-						l887:
+						l894:
 							if !rules[ruleskip]() {
-								goto l873
+								goto l884
 							}
 							depth--
-							add(ruleSECONDS, position874)
+							add(ruleMONTH, position885)
 						}
-						goto l778
-					l873:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l884:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position890 := position
+							position897 := position
 							depth++
 							{
-								position891, tokenIndex891, depth891 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l892
-								}
-								position++
-								goto l891
-							l892:
-								position, tokenIndex, depth = position891, tokenIndex891, depth891
-								if buffer[position] != rune('T') {
-									goto l889
-								}
-								position++
-							}
-						l891:
-							{
-								position893, tokenIndex893, depth893 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l894
-								}
-								position++
-								goto l893
-							l894:
-								position, tokenIndex, depth = position893, tokenIndex893, depth893
-								if buffer[position] != rune('I') {
-									goto l889
-								}
-								position++
-							}
-						l893:
-							{
-								position895, tokenIndex895, depth895 := position, tokenIndex, depth
+								position898, tokenIndex898, depth898 := position, tokenIndex, depth
 								if buffer[position] != rune('m') {
+									goto l899
+								}
+								position++
+								goto l898
+							l899:
+								position, tokenIndex, depth = position898, tokenIndex898, depth898
+								if buffer[position] != rune('M') {
 									goto l896
 								}
 								position++
-								goto l895
-							l896:
-								position, tokenIndex, depth = position895, tokenIndex895, depth895
-								if buffer[position] != rune('M') {
-									goto l889
+							}
+						l898:
+							{
+								position900, tokenIndex900, depth900 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l901
+								}
+								position++
+								goto l900
+							l901:
+								position, tokenIndex, depth = position900, tokenIndex900, depth900
+								if buffer[position] != rune('I') {
+									goto l896
 								}
 								position++
 							}
-						l895:
+						l900:
 							{
-								position897, tokenIndex897, depth897 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l898
-								}
-								position++
-								goto l897
-							l898:
-								position, tokenIndex, depth = position897, tokenIndex897, depth897
-								if buffer[position] != rune('E') {
-									goto l889
-								}
-								position++
-							}
-						l897:
-							{
-								position899, tokenIndex899, depth899 := position, tokenIndex, depth
-								if buffer[position] != rune('z') {
-									goto l900
-								}
-								position++
-								goto l899
-							l900:
-								position, tokenIndex, depth = position899, tokenIndex899, depth899
-								if buffer[position] != rune('Z') {
-									goto l889
-								}
-								position++
-							}
-						l899:
-							{
-								position901, tokenIndex901, depth901 := position, tokenIndex, depth
-								if buffer[position] != rune('o') {
-									goto l902
-								}
-								position++
-								goto l901
-							l902:
-								position, tokenIndex, depth = position901, tokenIndex901, depth901
-								if buffer[position] != rune('O') {
-									goto l889
-								}
-								position++
-							}
-						l901:
-							{
-								position903, tokenIndex903, depth903 := position, tokenIndex, depth
+								position902, tokenIndex902, depth902 := position, tokenIndex, depth
 								if buffer[position] != rune('n') {
-									goto l904
+									goto l903
 								}
 								position++
-								goto l903
-							l904:
-								position, tokenIndex, depth = position903, tokenIndex903, depth903
+								goto l902
+							l903:
+								position, tokenIndex, depth = position902, tokenIndex902, depth902
 								if buffer[position] != rune('N') {
-									goto l889
+									goto l896
 								}
 								position++
 							}
-						l903:
+						l902:
 							{
-								position905, tokenIndex905, depth905 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l906
+								position904, tokenIndex904, depth904 := position, tokenIndex, depth
+								if buffer[position] != rune('u') {
+									goto l905
 								}
 								position++
-								goto l905
-							l906:
-								position, tokenIndex, depth = position905, tokenIndex905, depth905
-								if buffer[position] != rune('E') {
-									goto l889
+								goto l904
+							l905:
+								position, tokenIndex, depth = position904, tokenIndex904, depth904
+								if buffer[position] != rune('U') {
+									goto l896
 								}
 								position++
 							}
-						l905:
-							if !rules[ruleskip]() {
-								goto l889
-							}
-							depth--
-							add(ruleTIMEZONE, position890)
-						}
-						goto l778
-					l889:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position908 := position
-							depth++
+						l904:
 							{
-								position909, tokenIndex909, depth909 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l910
-								}
-								position++
-								goto l909
-							l910:
-								position, tokenIndex, depth = position909, tokenIndex909, depth909
-								if buffer[position] != rune('S') {
+								position906, tokenIndex906, depth906 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
 									goto l907
 								}
 								position++
+								goto l906
+							l907:
+								position, tokenIndex, depth = position906, tokenIndex906, depth906
+								if buffer[position] != rune('T') {
+									goto l896
+								}
+								position++
 							}
-						l909:
+						l906:
 							{
-								position911, tokenIndex911, depth911 := position, tokenIndex, depth
-								if buffer[position] != rune('h') {
+								position908, tokenIndex908, depth908 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l909
+								}
+								position++
+								goto l908
+							l909:
+								position, tokenIndex, depth = position908, tokenIndex908, depth908
+								if buffer[position] != rune('E') {
+									goto l896
+								}
+								position++
+							}
+						l908:
+							{
+								position910, tokenIndex910, depth910 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l911
+								}
+								position++
+								goto l910
+							l911:
+								position, tokenIndex, depth = position910, tokenIndex910, depth910
+								if buffer[position] != rune('S') {
+									goto l896
+								}
+								position++
+							}
+						l910:
+							if !rules[ruleskip]() {
+								goto l896
+							}
+							depth--
+							add(ruleMINUTES, position897)
+						}
+						goto l817
+					l896:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position913 := position
+							depth++
+							{
+								position914, tokenIndex914, depth914 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l915
+								}
+								position++
+								goto l914
+							l915:
+								position, tokenIndex, depth = position914, tokenIndex914, depth914
+								if buffer[position] != rune('S') {
 									goto l912
 								}
 								position++
-								goto l911
-							l912:
-								position, tokenIndex, depth = position911, tokenIndex911, depth911
-								if buffer[position] != rune('H') {
-									goto l907
-								}
-								position++
 							}
-						l911:
+						l914:
 							{
-								position913, tokenIndex913, depth913 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l914
+								position916, tokenIndex916, depth916 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l917
 								}
 								position++
-								goto l913
-							l914:
-								position, tokenIndex, depth = position913, tokenIndex913, depth913
-								if buffer[position] != rune('A') {
-									goto l907
+								goto l916
+							l917:
+								position, tokenIndex, depth = position916, tokenIndex916, depth916
+								if buffer[position] != rune('E') {
+									goto l912
 								}
 								position++
 							}
-						l913:
-							if buffer[position] != rune('1') {
-								goto l907
-							}
-							position++
-							if !rules[ruleskip]() {
-								goto l907
-							}
-							depth--
-							add(ruleSHA1, position908)
-						}
-						goto l778
-					l907:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position916 := position
-							depth++
+						l916:
 							{
-								position917, tokenIndex917, depth917 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l918
+								position918, tokenIndex918, depth918 := position, tokenIndex, depth
+								if buffer[position] != rune('c') {
+									goto l919
 								}
 								position++
-								goto l917
-							l918:
-								position, tokenIndex, depth = position917, tokenIndex917, depth917
-								if buffer[position] != rune('S') {
-									goto l915
+								goto l918
+							l919:
+								position, tokenIndex, depth = position918, tokenIndex918, depth918
+								if buffer[position] != rune('C') {
+									goto l912
 								}
 								position++
 							}
-						l917:
+						l918:
 							{
-								position919, tokenIndex919, depth919 := position, tokenIndex, depth
-								if buffer[position] != rune('h') {
-									goto l920
+								position920, tokenIndex920, depth920 := position, tokenIndex, depth
+								if buffer[position] != rune('o') {
+									goto l921
 								}
 								position++
-								goto l919
-							l920:
-								position, tokenIndex, depth = position919, tokenIndex919, depth919
-								if buffer[position] != rune('H') {
-									goto l915
+								goto l920
+							l921:
+								position, tokenIndex, depth = position920, tokenIndex920, depth920
+								if buffer[position] != rune('O') {
+									goto l912
 								}
 								position++
 							}
-						l919:
+						l920:
 							{
-								position921, tokenIndex921, depth921 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l922
-								}
-								position++
-								goto l921
-							l922:
-								position, tokenIndex, depth = position921, tokenIndex921, depth921
-								if buffer[position] != rune('A') {
-									goto l915
-								}
-								position++
-							}
-						l921:
-							if buffer[position] != rune('2') {
-								goto l915
-							}
-							position++
-							if buffer[position] != rune('5') {
-								goto l915
-							}
-							position++
-							if buffer[position] != rune('6') {
-								goto l915
-							}
-							position++
-							if !rules[ruleskip]() {
-								goto l915
-							}
-							depth--
-							add(ruleSHA256, position916)
-						}
-						goto l778
-					l915:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position924 := position
-							depth++
-							{
-								position925, tokenIndex925, depth925 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l926
-								}
-								position++
-								goto l925
-							l926:
-								position, tokenIndex, depth = position925, tokenIndex925, depth925
-								if buffer[position] != rune('S') {
+								position922, tokenIndex922, depth922 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
 									goto l923
 								}
 								position++
+								goto l922
+							l923:
+								position, tokenIndex, depth = position922, tokenIndex922, depth922
+								if buffer[position] != rune('N') {
+									goto l912
+								}
+								position++
 							}
-						l925:
+						l922:
 							{
-								position927, tokenIndex927, depth927 := position, tokenIndex, depth
-								if buffer[position] != rune('h') {
+								position924, tokenIndex924, depth924 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l925
+								}
+								position++
+								goto l924
+							l925:
+								position, tokenIndex, depth = position924, tokenIndex924, depth924
+								if buffer[position] != rune('D') {
+									goto l912
+								}
+								position++
+							}
+						l924:
+							{
+								position926, tokenIndex926, depth926 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l927
+								}
+								position++
+								goto l926
+							l927:
+								position, tokenIndex, depth = position926, tokenIndex926, depth926
+								if buffer[position] != rune('S') {
+									goto l912
+								}
+								position++
+							}
+						l926:
+							if !rules[ruleskip]() {
+								goto l912
+							}
+							depth--
+							add(ruleSECONDS, position913)
+						}
+						goto l817
+					l912:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position929 := position
+							depth++
+							{
+								position930, tokenIndex930, depth930 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l931
+								}
+								position++
+								goto l930
+							l931:
+								position, tokenIndex, depth = position930, tokenIndex930, depth930
+								if buffer[position] != rune('T') {
 									goto l928
 								}
 								position++
-								goto l927
-							l928:
-								position, tokenIndex, depth = position927, tokenIndex927, depth927
-								if buffer[position] != rune('H') {
-									goto l923
-								}
-								position++
 							}
-						l927:
+						l930:
 							{
-								position929, tokenIndex929, depth929 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l930
+								position932, tokenIndex932, depth932 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l933
 								}
 								position++
-								goto l929
-							l930:
-								position, tokenIndex, depth = position929, tokenIndex929, depth929
-								if buffer[position] != rune('A') {
-									goto l923
+								goto l932
+							l933:
+								position, tokenIndex, depth = position932, tokenIndex932, depth932
+								if buffer[position] != rune('I') {
+									goto l928
 								}
 								position++
 							}
-						l929:
-							if buffer[position] != rune('3') {
-								goto l923
+						l932:
+							{
+								position934, tokenIndex934, depth934 := position, tokenIndex, depth
+								if buffer[position] != rune('m') {
+									goto l935
+								}
+								position++
+								goto l934
+							l935:
+								position, tokenIndex, depth = position934, tokenIndex934, depth934
+								if buffer[position] != rune('M') {
+									goto l928
+								}
+								position++
 							}
-							position++
-							if buffer[position] != rune('8') {
-								goto l923
+						l934:
+							{
+								position936, tokenIndex936, depth936 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l937
+								}
+								position++
+								goto l936
+							l937:
+								position, tokenIndex, depth = position936, tokenIndex936, depth936
+								if buffer[position] != rune('E') {
+									goto l928
+								}
+								position++
 							}
-							position++
-							if buffer[position] != rune('4') {
-								goto l923
+						l936:
+							{
+								position938, tokenIndex938, depth938 := position, tokenIndex, depth
+								if buffer[position] != rune('z') {
+									goto l939
+								}
+								position++
+								goto l938
+							l939:
+								position, tokenIndex, depth = position938, tokenIndex938, depth938
+								if buffer[position] != rune('Z') {
+									goto l928
+								}
+								position++
 							}
-							position++
+						l938:
+							{
+								position940, tokenIndex940, depth940 := position, tokenIndex, depth
+								if buffer[position] != rune('o') {
+									goto l941
+								}
+								position++
+								goto l940
+							l941:
+								position, tokenIndex, depth = position940, tokenIndex940, depth940
+								if buffer[position] != rune('O') {
+									goto l928
+								}
+								position++
+							}
+						l940:
+							{
+								position942, tokenIndex942, depth942 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l943
+								}
+								position++
+								goto l942
+							l943:
+								position, tokenIndex, depth = position942, tokenIndex942, depth942
+								if buffer[position] != rune('N') {
+									goto l928
+								}
+								position++
+							}
+						l942:
+							{
+								position944, tokenIndex944, depth944 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l945
+								}
+								position++
+								goto l944
+							l945:
+								position, tokenIndex, depth = position944, tokenIndex944, depth944
+								if buffer[position] != rune('E') {
+									goto l928
+								}
+								position++
+							}
+						l944:
 							if !rules[ruleskip]() {
-								goto l923
+								goto l928
 							}
 							depth--
-							add(ruleSHA384, position924)
+							add(ruleTIMEZONE, position929)
 						}
-						goto l778
-					l923:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l928:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position932 := position
+							position947 := position
 							depth++
 							{
-								position933, tokenIndex933, depth933 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l934
-								}
-								position++
-								goto l933
-							l934:
-								position, tokenIndex, depth = position933, tokenIndex933, depth933
-								if buffer[position] != rune('I') {
-									goto l931
-								}
-								position++
-							}
-						l933:
-							{
-								position935, tokenIndex935, depth935 := position, tokenIndex, depth
+								position948, tokenIndex948, depth948 := position, tokenIndex, depth
 								if buffer[position] != rune('s') {
-									goto l936
+									goto l949
 								}
 								position++
-								goto l935
-							l936:
-								position, tokenIndex, depth = position935, tokenIndex935, depth935
+								goto l948
+							l949:
+								position, tokenIndex, depth = position948, tokenIndex948, depth948
 								if buffer[position] != rune('S') {
-									goto l931
-								}
-								position++
-							}
-						l935:
-							{
-								position937, tokenIndex937, depth937 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l938
-								}
-								position++
-								goto l937
-							l938:
-								position, tokenIndex, depth = position937, tokenIndex937, depth937
-								if buffer[position] != rune('I') {
-									goto l931
-								}
-								position++
-							}
-						l937:
-							{
-								position939, tokenIndex939, depth939 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l940
-								}
-								position++
-								goto l939
-							l940:
-								position, tokenIndex, depth = position939, tokenIndex939, depth939
-								if buffer[position] != rune('R') {
-									goto l931
-								}
-								position++
-							}
-						l939:
-							{
-								position941, tokenIndex941, depth941 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l942
-								}
-								position++
-								goto l941
-							l942:
-								position, tokenIndex, depth = position941, tokenIndex941, depth941
-								if buffer[position] != rune('I') {
-									goto l931
-								}
-								position++
-							}
-						l941:
-							if !rules[ruleskip]() {
-								goto l931
-							}
-							depth--
-							add(ruleISIRI, position932)
-						}
-						goto l778
-					l931:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
-						{
-							position944 := position
-							depth++
-							{
-								position945, tokenIndex945, depth945 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
 									goto l946
 								}
 								position++
-								goto l945
-							l946:
-								position, tokenIndex, depth = position945, tokenIndex945, depth945
-								if buffer[position] != rune('I') {
-									goto l943
+							}
+						l948:
+							{
+								position950, tokenIndex950, depth950 := position, tokenIndex, depth
+								if buffer[position] != rune('h') {
+									goto l951
+								}
+								position++
+								goto l950
+							l951:
+								position, tokenIndex, depth = position950, tokenIndex950, depth950
+								if buffer[position] != rune('H') {
+									goto l946
 								}
 								position++
 							}
-						l945:
+						l950:
 							{
-								position947, tokenIndex947, depth947 := position, tokenIndex, depth
+								position952, tokenIndex952, depth952 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l953
+								}
+								position++
+								goto l952
+							l953:
+								position, tokenIndex, depth = position952, tokenIndex952, depth952
+								if buffer[position] != rune('A') {
+									goto l946
+								}
+								position++
+							}
+						l952:
+							if buffer[position] != rune('1') {
+								goto l946
+							}
+							position++
+							if !rules[ruleskip]() {
+								goto l946
+							}
+							depth--
+							add(ruleSHA1, position947)
+						}
+						goto l817
+					l946:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position955 := position
+							depth++
+							{
+								position956, tokenIndex956, depth956 := position, tokenIndex, depth
 								if buffer[position] != rune('s') {
-									goto l948
+									goto l957
 								}
 								position++
-								goto l947
-							l948:
-								position, tokenIndex, depth = position947, tokenIndex947, depth947
+								goto l956
+							l957:
+								position, tokenIndex, depth = position956, tokenIndex956, depth956
 								if buffer[position] != rune('S') {
-									goto l943
-								}
-								position++
-							}
-						l947:
-							{
-								position949, tokenIndex949, depth949 := position, tokenIndex, depth
-								if buffer[position] != rune('u') {
-									goto l950
-								}
-								position++
-								goto l949
-							l950:
-								position, tokenIndex, depth = position949, tokenIndex949, depth949
-								if buffer[position] != rune('U') {
-									goto l943
-								}
-								position++
-							}
-						l949:
-							{
-								position951, tokenIndex951, depth951 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l952
-								}
-								position++
-								goto l951
-							l952:
-								position, tokenIndex, depth = position951, tokenIndex951, depth951
-								if buffer[position] != rune('R') {
-									goto l943
-								}
-								position++
-							}
-						l951:
-							{
-								position953, tokenIndex953, depth953 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
 									goto l954
 								}
 								position++
-								goto l953
-							l954:
-								position, tokenIndex, depth = position953, tokenIndex953, depth953
-								if buffer[position] != rune('I') {
-									goto l943
+							}
+						l956:
+							{
+								position958, tokenIndex958, depth958 := position, tokenIndex, depth
+								if buffer[position] != rune('h') {
+									goto l959
+								}
+								position++
+								goto l958
+							l959:
+								position, tokenIndex, depth = position958, tokenIndex958, depth958
+								if buffer[position] != rune('H') {
+									goto l954
 								}
 								position++
 							}
-						l953:
+						l958:
+							{
+								position960, tokenIndex960, depth960 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l961
+								}
+								position++
+								goto l960
+							l961:
+								position, tokenIndex, depth = position960, tokenIndex960, depth960
+								if buffer[position] != rune('A') {
+									goto l954
+								}
+								position++
+							}
+						l960:
+							if buffer[position] != rune('2') {
+								goto l954
+							}
+							position++
+							if buffer[position] != rune('5') {
+								goto l954
+							}
+							position++
+							if buffer[position] != rune('6') {
+								goto l954
+							}
+							position++
 							if !rules[ruleskip]() {
-								goto l943
+								goto l954
 							}
 							depth--
-							add(ruleISURI, position944)
+							add(ruleSHA256, position955)
 						}
-						goto l778
-					l943:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l954:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position956 := position
+							position963 := position
 							depth++
 							{
-								position957, tokenIndex957, depth957 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l958
-								}
-								position++
-								goto l957
-							l958:
-								position, tokenIndex, depth = position957, tokenIndex957, depth957
-								if buffer[position] != rune('I') {
-									goto l955
-								}
-								position++
-							}
-						l957:
-							{
-								position959, tokenIndex959, depth959 := position, tokenIndex, depth
+								position964, tokenIndex964, depth964 := position, tokenIndex, depth
 								if buffer[position] != rune('s') {
-									goto l960
+									goto l965
 								}
 								position++
-								goto l959
-							l960:
-								position, tokenIndex, depth = position959, tokenIndex959, depth959
+								goto l964
+							l965:
+								position, tokenIndex, depth = position964, tokenIndex964, depth964
 								if buffer[position] != rune('S') {
-									goto l955
-								}
-								position++
-							}
-						l959:
-							{
-								position961, tokenIndex961, depth961 := position, tokenIndex, depth
-								if buffer[position] != rune('b') {
 									goto l962
 								}
 								position++
-								goto l961
-							l962:
-								position, tokenIndex, depth = position961, tokenIndex961, depth961
-								if buffer[position] != rune('B') {
-									goto l955
+							}
+						l964:
+							{
+								position966, tokenIndex966, depth966 := position, tokenIndex, depth
+								if buffer[position] != rune('h') {
+									goto l967
+								}
+								position++
+								goto l966
+							l967:
+								position, tokenIndex, depth = position966, tokenIndex966, depth966
+								if buffer[position] != rune('H') {
+									goto l962
 								}
 								position++
 							}
-						l961:
+						l966:
 							{
-								position963, tokenIndex963, depth963 := position, tokenIndex, depth
-								if buffer[position] != rune('l') {
-									goto l964
-								}
-								position++
-								goto l963
-							l964:
-								position, tokenIndex, depth = position963, tokenIndex963, depth963
-								if buffer[position] != rune('L') {
-									goto l955
-								}
-								position++
-							}
-						l963:
-							{
-								position965, tokenIndex965, depth965 := position, tokenIndex, depth
+								position968, tokenIndex968, depth968 := position, tokenIndex, depth
 								if buffer[position] != rune('a') {
-									goto l966
+									goto l969
 								}
 								position++
-								goto l965
-							l966:
-								position, tokenIndex, depth = position965, tokenIndex965, depth965
+								goto l968
+							l969:
+								position, tokenIndex, depth = position968, tokenIndex968, depth968
 								if buffer[position] != rune('A') {
-									goto l955
+									goto l962
 								}
 								position++
 							}
-						l965:
-							{
-								position967, tokenIndex967, depth967 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l968
-								}
-								position++
-								goto l967
-							l968:
-								position, tokenIndex, depth = position967, tokenIndex967, depth967
-								if buffer[position] != rune('N') {
-									goto l955
-								}
-								position++
+						l968:
+							if buffer[position] != rune('3') {
+								goto l962
 							}
-						l967:
+							position++
+							if buffer[position] != rune('8') {
+								goto l962
+							}
+							position++
+							if buffer[position] != rune('4') {
+								goto l962
+							}
+							position++
+							if !rules[ruleskip]() {
+								goto l962
+							}
+							depth--
+							add(ruleSHA384, position963)
+						}
+						goto l817
+					l962:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position971 := position
+							depth++
 							{
-								position969, tokenIndex969, depth969 := position, tokenIndex, depth
-								if buffer[position] != rune('k') {
+								position972, tokenIndex972, depth972 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l973
+								}
+								position++
+								goto l972
+							l973:
+								position, tokenIndex, depth = position972, tokenIndex972, depth972
+								if buffer[position] != rune('I') {
 									goto l970
 								}
 								position++
-								goto l969
-							l970:
-								position, tokenIndex, depth = position969, tokenIndex969, depth969
-								if buffer[position] != rune('K') {
-									goto l955
+							}
+						l972:
+							{
+								position974, tokenIndex974, depth974 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l975
+								}
+								position++
+								goto l974
+							l975:
+								position, tokenIndex, depth = position974, tokenIndex974, depth974
+								if buffer[position] != rune('S') {
+									goto l970
 								}
 								position++
 							}
-						l969:
+						l974:
+							{
+								position976, tokenIndex976, depth976 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l977
+								}
+								position++
+								goto l976
+							l977:
+								position, tokenIndex, depth = position976, tokenIndex976, depth976
+								if buffer[position] != rune('I') {
+									goto l970
+								}
+								position++
+							}
+						l976:
+							{
+								position978, tokenIndex978, depth978 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l979
+								}
+								position++
+								goto l978
+							l979:
+								position, tokenIndex, depth = position978, tokenIndex978, depth978
+								if buffer[position] != rune('R') {
+									goto l970
+								}
+								position++
+							}
+						l978:
+							{
+								position980, tokenIndex980, depth980 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l981
+								}
+								position++
+								goto l980
+							l981:
+								position, tokenIndex, depth = position980, tokenIndex980, depth980
+								if buffer[position] != rune('I') {
+									goto l970
+								}
+								position++
+							}
+						l980:
 							if !rules[ruleskip]() {
-								goto l955
+								goto l970
 							}
 							depth--
-							add(ruleISBLANK, position956)
+							add(ruleISIRI, position971)
 						}
-						goto l778
-					l955:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l970:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
-							position972 := position
+							position983 := position
 							depth++
 							{
-								position973, tokenIndex973, depth973 := position, tokenIndex, depth
+								position984, tokenIndex984, depth984 := position, tokenIndex, depth
 								if buffer[position] != rune('i') {
-									goto l974
+									goto l985
 								}
 								position++
-								goto l973
-							l974:
-								position, tokenIndex, depth = position973, tokenIndex973, depth973
+								goto l984
+							l985:
+								position, tokenIndex, depth = position984, tokenIndex984, depth984
 								if buffer[position] != rune('I') {
-									goto l971
-								}
-								position++
-							}
-						l973:
-							{
-								position975, tokenIndex975, depth975 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l976
-								}
-								position++
-								goto l975
-							l976:
-								position, tokenIndex, depth = position975, tokenIndex975, depth975
-								if buffer[position] != rune('S') {
-									goto l971
-								}
-								position++
-							}
-						l975:
-							{
-								position977, tokenIndex977, depth977 := position, tokenIndex, depth
-								if buffer[position] != rune('l') {
-									goto l978
-								}
-								position++
-								goto l977
-							l978:
-								position, tokenIndex, depth = position977, tokenIndex977, depth977
-								if buffer[position] != rune('L') {
-									goto l971
-								}
-								position++
-							}
-						l977:
-							{
-								position979, tokenIndex979, depth979 := position, tokenIndex, depth
-								if buffer[position] != rune('i') {
-									goto l980
-								}
-								position++
-								goto l979
-							l980:
-								position, tokenIndex, depth = position979, tokenIndex979, depth979
-								if buffer[position] != rune('I') {
-									goto l971
-								}
-								position++
-							}
-						l979:
-							{
-								position981, tokenIndex981, depth981 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
 									goto l982
 								}
 								position++
-								goto l981
-							l982:
-								position, tokenIndex, depth = position981, tokenIndex981, depth981
-								if buffer[position] != rune('T') {
-									goto l971
+							}
+						l984:
+							{
+								position986, tokenIndex986, depth986 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l987
+								}
+								position++
+								goto l986
+							l987:
+								position, tokenIndex, depth = position986, tokenIndex986, depth986
+								if buffer[position] != rune('S') {
+									goto l982
 								}
 								position++
 							}
-						l981:
+						l986:
 							{
-								position983, tokenIndex983, depth983 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l984
+								position988, tokenIndex988, depth988 := position, tokenIndex, depth
+								if buffer[position] != rune('u') {
+									goto l989
 								}
 								position++
-								goto l983
-							l984:
-								position, tokenIndex, depth = position983, tokenIndex983, depth983
-								if buffer[position] != rune('E') {
-									goto l971
+								goto l988
+							l989:
+								position, tokenIndex, depth = position988, tokenIndex988, depth988
+								if buffer[position] != rune('U') {
+									goto l982
 								}
 								position++
 							}
-						l983:
+						l988:
 							{
-								position985, tokenIndex985, depth985 := position, tokenIndex, depth
+								position990, tokenIndex990, depth990 := position, tokenIndex, depth
 								if buffer[position] != rune('r') {
-									goto l986
+									goto l991
 								}
 								position++
-								goto l985
-							l986:
-								position, tokenIndex, depth = position985, tokenIndex985, depth985
+								goto l990
+							l991:
+								position, tokenIndex, depth = position990, tokenIndex990, depth990
 								if buffer[position] != rune('R') {
-									goto l971
+									goto l982
 								}
 								position++
 							}
-						l985:
+						l990:
 							{
-								position987, tokenIndex987, depth987 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l988
+								position992, tokenIndex992, depth992 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l993
 								}
 								position++
-								goto l987
-							l988:
-								position, tokenIndex, depth = position987, tokenIndex987, depth987
-								if buffer[position] != rune('A') {
-									goto l971
-								}
-								position++
-							}
-						l987:
-							{
-								position989, tokenIndex989, depth989 := position, tokenIndex, depth
-								if buffer[position] != rune('l') {
-									goto l990
-								}
-								position++
-								goto l989
-							l990:
-								position, tokenIndex, depth = position989, tokenIndex989, depth989
-								if buffer[position] != rune('L') {
-									goto l971
+								goto l992
+							l993:
+								position, tokenIndex, depth = position992, tokenIndex992, depth992
+								if buffer[position] != rune('I') {
+									goto l982
 								}
 								position++
 							}
-						l989:
+						l992:
 							if !rules[ruleskip]() {
-								goto l971
+								goto l982
 							}
 							depth--
-							add(ruleISLITERAL, position972)
+							add(ruleISURI, position983)
 						}
-						goto l778
-					l971:
-						position, tokenIndex, depth = position778, tokenIndex778, depth778
+						goto l817
+					l982:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position995 := position
+							depth++
+							{
+								position996, tokenIndex996, depth996 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l997
+								}
+								position++
+								goto l996
+							l997:
+								position, tokenIndex, depth = position996, tokenIndex996, depth996
+								if buffer[position] != rune('I') {
+									goto l994
+								}
+								position++
+							}
+						l996:
+							{
+								position998, tokenIndex998, depth998 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l999
+								}
+								position++
+								goto l998
+							l999:
+								position, tokenIndex, depth = position998, tokenIndex998, depth998
+								if buffer[position] != rune('S') {
+									goto l994
+								}
+								position++
+							}
+						l998:
+							{
+								position1000, tokenIndex1000, depth1000 := position, tokenIndex, depth
+								if buffer[position] != rune('b') {
+									goto l1001
+								}
+								position++
+								goto l1000
+							l1001:
+								position, tokenIndex, depth = position1000, tokenIndex1000, depth1000
+								if buffer[position] != rune('B') {
+									goto l994
+								}
+								position++
+							}
+						l1000:
+							{
+								position1002, tokenIndex1002, depth1002 := position, tokenIndex, depth
+								if buffer[position] != rune('l') {
+									goto l1003
+								}
+								position++
+								goto l1002
+							l1003:
+								position, tokenIndex, depth = position1002, tokenIndex1002, depth1002
+								if buffer[position] != rune('L') {
+									goto l994
+								}
+								position++
+							}
+						l1002:
+							{
+								position1004, tokenIndex1004, depth1004 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l1005
+								}
+								position++
+								goto l1004
+							l1005:
+								position, tokenIndex, depth = position1004, tokenIndex1004, depth1004
+								if buffer[position] != rune('A') {
+									goto l994
+								}
+								position++
+							}
+						l1004:
+							{
+								position1006, tokenIndex1006, depth1006 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l1007
+								}
+								position++
+								goto l1006
+							l1007:
+								position, tokenIndex, depth = position1006, tokenIndex1006, depth1006
+								if buffer[position] != rune('N') {
+									goto l994
+								}
+								position++
+							}
+						l1006:
+							{
+								position1008, tokenIndex1008, depth1008 := position, tokenIndex, depth
+								if buffer[position] != rune('k') {
+									goto l1009
+								}
+								position++
+								goto l1008
+							l1009:
+								position, tokenIndex, depth = position1008, tokenIndex1008, depth1008
+								if buffer[position] != rune('K') {
+									goto l994
+								}
+								position++
+							}
+						l1008:
+							if !rules[ruleskip]() {
+								goto l994
+							}
+							depth--
+							add(ruleISBLANK, position995)
+						}
+						goto l817
+					l994:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
+						{
+							position1011 := position
+							depth++
+							{
+								position1012, tokenIndex1012, depth1012 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l1013
+								}
+								position++
+								goto l1012
+							l1013:
+								position, tokenIndex, depth = position1012, tokenIndex1012, depth1012
+								if buffer[position] != rune('I') {
+									goto l1010
+								}
+								position++
+							}
+						l1012:
+							{
+								position1014, tokenIndex1014, depth1014 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1015
+								}
+								position++
+								goto l1014
+							l1015:
+								position, tokenIndex, depth = position1014, tokenIndex1014, depth1014
+								if buffer[position] != rune('S') {
+									goto l1010
+								}
+								position++
+							}
+						l1014:
+							{
+								position1016, tokenIndex1016, depth1016 := position, tokenIndex, depth
+								if buffer[position] != rune('l') {
+									goto l1017
+								}
+								position++
+								goto l1016
+							l1017:
+								position, tokenIndex, depth = position1016, tokenIndex1016, depth1016
+								if buffer[position] != rune('L') {
+									goto l1010
+								}
+								position++
+							}
+						l1016:
+							{
+								position1018, tokenIndex1018, depth1018 := position, tokenIndex, depth
+								if buffer[position] != rune('i') {
+									goto l1019
+								}
+								position++
+								goto l1018
+							l1019:
+								position, tokenIndex, depth = position1018, tokenIndex1018, depth1018
+								if buffer[position] != rune('I') {
+									goto l1010
+								}
+								position++
+							}
+						l1018:
+							{
+								position1020, tokenIndex1020, depth1020 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1021
+								}
+								position++
+								goto l1020
+							l1021:
+								position, tokenIndex, depth = position1020, tokenIndex1020, depth1020
+								if buffer[position] != rune('T') {
+									goto l1010
+								}
+								position++
+							}
+						l1020:
+							{
+								position1022, tokenIndex1022, depth1022 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l1023
+								}
+								position++
+								goto l1022
+							l1023:
+								position, tokenIndex, depth = position1022, tokenIndex1022, depth1022
+								if buffer[position] != rune('E') {
+									goto l1010
+								}
+								position++
+							}
+						l1022:
+							{
+								position1024, tokenIndex1024, depth1024 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1025
+								}
+								position++
+								goto l1024
+							l1025:
+								position, tokenIndex, depth = position1024, tokenIndex1024, depth1024
+								if buffer[position] != rune('R') {
+									goto l1010
+								}
+								position++
+							}
+						l1024:
+							{
+								position1026, tokenIndex1026, depth1026 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l1027
+								}
+								position++
+								goto l1026
+							l1027:
+								position, tokenIndex, depth = position1026, tokenIndex1026, depth1026
+								if buffer[position] != rune('A') {
+									goto l1010
+								}
+								position++
+							}
+						l1026:
+							{
+								position1028, tokenIndex1028, depth1028 := position, tokenIndex, depth
+								if buffer[position] != rune('l') {
+									goto l1029
+								}
+								position++
+								goto l1028
+							l1029:
+								position, tokenIndex, depth = position1028, tokenIndex1028, depth1028
+								if buffer[position] != rune('L') {
+									goto l1010
+								}
+								position++
+							}
+						l1028:
+							if !rules[ruleskip]() {
+								goto l1010
+							}
+							depth--
+							add(ruleISLITERAL, position1011)
+						}
+						goto l817
+					l1010:
+						position, tokenIndex, depth = position817, tokenIndex817, depth817
 						{
 							switch buffer[position] {
 							case 'I', 'i':
 								{
-									position992 := position
+									position1031 := position
 									depth++
 									{
-										position993, tokenIndex993, depth993 := position, tokenIndex, depth
+										position1032, tokenIndex1032, depth1032 := position, tokenIndex, depth
 										if buffer[position] != rune('i') {
-											goto l994
+											goto l1033
 										}
 										position++
-										goto l993
-									l994:
-										position, tokenIndex, depth = position993, tokenIndex993, depth993
+										goto l1032
+									l1033:
+										position, tokenIndex, depth = position1032, tokenIndex1032, depth1032
 										if buffer[position] != rune('I') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
-								l993:
+								l1032:
 									{
-										position995, tokenIndex995, depth995 := position, tokenIndex, depth
+										position1034, tokenIndex1034, depth1034 := position, tokenIndex, depth
 										if buffer[position] != rune('s') {
-											goto l996
+											goto l1035
 										}
 										position++
-										goto l995
-									l996:
-										position, tokenIndex, depth = position995, tokenIndex995, depth995
+										goto l1034
+									l1035:
+										position, tokenIndex, depth = position1034, tokenIndex1034, depth1034
 										if buffer[position] != rune('S') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
-								l995:
+								l1034:
 									{
-										position997, tokenIndex997, depth997 := position, tokenIndex, depth
+										position1036, tokenIndex1036, depth1036 := position, tokenIndex, depth
 										if buffer[position] != rune('n') {
-											goto l998
+											goto l1037
 										}
 										position++
-										goto l997
-									l998:
-										position, tokenIndex, depth = position997, tokenIndex997, depth997
+										goto l1036
+									l1037:
+										position, tokenIndex, depth = position1036, tokenIndex1036, depth1036
 										if buffer[position] != rune('N') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
-								l997:
+								l1036:
 									{
-										position999, tokenIndex999, depth999 := position, tokenIndex, depth
+										position1038, tokenIndex1038, depth1038 := position, tokenIndex, depth
 										if buffer[position] != rune('u') {
-											goto l1000
+											goto l1039
 										}
 										position++
-										goto l999
-									l1000:
-										position, tokenIndex, depth = position999, tokenIndex999, depth999
+										goto l1038
+									l1039:
+										position, tokenIndex, depth = position1038, tokenIndex1038, depth1038
 										if buffer[position] != rune('U') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
-								l999:
-									{
-										position1001, tokenIndex1001, depth1001 := position, tokenIndex, depth
-										if buffer[position] != rune('m') {
-											goto l1002
-										}
-										position++
-										goto l1001
-									l1002:
-										position, tokenIndex, depth = position1001, tokenIndex1001, depth1001
-										if buffer[position] != rune('M') {
-											goto l777
-										}
-										position++
-									}
-								l1001:
-									{
-										position1003, tokenIndex1003, depth1003 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1004
-										}
-										position++
-										goto l1003
-									l1004:
-										position, tokenIndex, depth = position1003, tokenIndex1003, depth1003
-										if buffer[position] != rune('E') {
-											goto l777
-										}
-										position++
-									}
-								l1003:
-									{
-										position1005, tokenIndex1005, depth1005 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
-											goto l1006
-										}
-										position++
-										goto l1005
-									l1006:
-										position, tokenIndex, depth = position1005, tokenIndex1005, depth1005
-										if buffer[position] != rune('R') {
-											goto l777
-										}
-										position++
-									}
-								l1005:
-									{
-										position1007, tokenIndex1007, depth1007 := position, tokenIndex, depth
-										if buffer[position] != rune('i') {
-											goto l1008
-										}
-										position++
-										goto l1007
-									l1008:
-										position, tokenIndex, depth = position1007, tokenIndex1007, depth1007
-										if buffer[position] != rune('I') {
-											goto l777
-										}
-										position++
-									}
-								l1007:
-									{
-										position1009, tokenIndex1009, depth1009 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
-											goto l1010
-										}
-										position++
-										goto l1009
-									l1010:
-										position, tokenIndex, depth = position1009, tokenIndex1009, depth1009
-										if buffer[position] != rune('C') {
-											goto l777
-										}
-										position++
-									}
-								l1009:
-									if !rules[ruleskip]() {
-										goto l777
-									}
-									depth--
-									add(ruleISNUMERIC, position992)
-								}
-								break
-							case 'S', 's':
-								{
-									position1011 := position
-									depth++
-									{
-										position1012, tokenIndex1012, depth1012 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1013
-										}
-										position++
-										goto l1012
-									l1013:
-										position, tokenIndex, depth = position1012, tokenIndex1012, depth1012
-										if buffer[position] != rune('S') {
-											goto l777
-										}
-										position++
-									}
-								l1012:
-									{
-										position1014, tokenIndex1014, depth1014 := position, tokenIndex, depth
-										if buffer[position] != rune('h') {
-											goto l1015
-										}
-										position++
-										goto l1014
-									l1015:
-										position, tokenIndex, depth = position1014, tokenIndex1014, depth1014
-										if buffer[position] != rune('H') {
-											goto l777
-										}
-										position++
-									}
-								l1014:
-									{
-										position1016, tokenIndex1016, depth1016 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1017
-										}
-										position++
-										goto l1016
-									l1017:
-										position, tokenIndex, depth = position1016, tokenIndex1016, depth1016
-										if buffer[position] != rune('A') {
-											goto l777
-										}
-										position++
-									}
-								l1016:
-									if buffer[position] != rune('5') {
-										goto l777
-									}
-									position++
-									if buffer[position] != rune('1') {
-										goto l777
-									}
-									position++
-									if buffer[position] != rune('2') {
-										goto l777
-									}
-									position++
-									if !rules[ruleskip]() {
-										goto l777
-									}
-									depth--
-									add(ruleSHA512, position1011)
-								}
-								break
-							case 'M', 'm':
-								{
-									position1018 := position
-									depth++
-									{
-										position1019, tokenIndex1019, depth1019 := position, tokenIndex, depth
-										if buffer[position] != rune('m') {
-											goto l1020
-										}
-										position++
-										goto l1019
-									l1020:
-										position, tokenIndex, depth = position1019, tokenIndex1019, depth1019
-										if buffer[position] != rune('M') {
-											goto l777
-										}
-										position++
-									}
-								l1019:
-									{
-										position1021, tokenIndex1021, depth1021 := position, tokenIndex, depth
-										if buffer[position] != rune('d') {
-											goto l1022
-										}
-										position++
-										goto l1021
-									l1022:
-										position, tokenIndex, depth = position1021, tokenIndex1021, depth1021
-										if buffer[position] != rune('D') {
-											goto l777
-										}
-										position++
-									}
-								l1021:
-									if !rules[ruleskip]() {
-										goto l777
-									}
-									depth--
-									add(ruleMD5, position1018)
-								}
-								break
-							case 'T', 't':
-								{
-									position1023 := position
-									depth++
-									{
-										position1024, tokenIndex1024, depth1024 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1025
-										}
-										position++
-										goto l1024
-									l1025:
-										position, tokenIndex, depth = position1024, tokenIndex1024, depth1024
-										if buffer[position] != rune('T') {
-											goto l777
-										}
-										position++
-									}
-								l1024:
-									{
-										position1026, tokenIndex1026, depth1026 := position, tokenIndex, depth
-										if buffer[position] != rune('z') {
-											goto l1027
-										}
-										position++
-										goto l1026
-									l1027:
-										position, tokenIndex, depth = position1026, tokenIndex1026, depth1026
-										if buffer[position] != rune('Z') {
-											goto l777
-										}
-										position++
-									}
-								l1026:
-									if !rules[ruleskip]() {
-										goto l777
-									}
-									depth--
-									add(ruleTZ, position1023)
-								}
-								break
-							case 'H', 'h':
-								{
-									position1028 := position
-									depth++
-									{
-										position1029, tokenIndex1029, depth1029 := position, tokenIndex, depth
-										if buffer[position] != rune('h') {
-											goto l1030
-										}
-										position++
-										goto l1029
-									l1030:
-										position, tokenIndex, depth = position1029, tokenIndex1029, depth1029
-										if buffer[position] != rune('H') {
-											goto l777
-										}
-										position++
-									}
-								l1029:
-									{
-										position1031, tokenIndex1031, depth1031 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l1032
-										}
-										position++
-										goto l1031
-									l1032:
-										position, tokenIndex, depth = position1031, tokenIndex1031, depth1031
-										if buffer[position] != rune('O') {
-											goto l777
-										}
-										position++
-									}
-								l1031:
-									{
-										position1033, tokenIndex1033, depth1033 := position, tokenIndex, depth
-										if buffer[position] != rune('u') {
-											goto l1034
-										}
-										position++
-										goto l1033
-									l1034:
-										position, tokenIndex, depth = position1033, tokenIndex1033, depth1033
-										if buffer[position] != rune('U') {
-											goto l777
-										}
-										position++
-									}
-								l1033:
-									{
-										position1035, tokenIndex1035, depth1035 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
-											goto l1036
-										}
-										position++
-										goto l1035
-									l1036:
-										position, tokenIndex, depth = position1035, tokenIndex1035, depth1035
-										if buffer[position] != rune('R') {
-											goto l777
-										}
-										position++
-									}
-								l1035:
-									{
-										position1037, tokenIndex1037, depth1037 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1038
-										}
-										position++
-										goto l1037
-									l1038:
-										position, tokenIndex, depth = position1037, tokenIndex1037, depth1037
-										if buffer[position] != rune('S') {
-											goto l777
-										}
-										position++
-									}
-								l1037:
-									if !rules[ruleskip]() {
-										goto l777
-									}
-									depth--
-									add(ruleHOURS, position1028)
-								}
-								break
-							case 'D', 'd':
-								{
-									position1039 := position
-									depth++
+								l1038:
 									{
 										position1040, tokenIndex1040, depth1040 := position, tokenIndex, depth
-										if buffer[position] != rune('d') {
+										if buffer[position] != rune('m') {
 											goto l1041
 										}
 										position++
 										goto l1040
 									l1041:
 										position, tokenIndex, depth = position1040, tokenIndex1040, depth1040
-										if buffer[position] != rune('D') {
-											goto l777
+										if buffer[position] != rune('M') {
+											goto l816
 										}
 										position++
 									}
 								l1040:
 									{
 										position1042, tokenIndex1042, depth1042 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
+										if buffer[position] != rune('e') {
 											goto l1043
 										}
 										position++
 										goto l1042
 									l1043:
 										position, tokenIndex, depth = position1042, tokenIndex1042, depth1042
-										if buffer[position] != rune('A') {
-											goto l777
+										if buffer[position] != rune('E') {
+											goto l816
 										}
 										position++
 									}
 								l1042:
 									{
 										position1044, tokenIndex1044, depth1044 := position, tokenIndex, depth
-										if buffer[position] != rune('y') {
+										if buffer[position] != rune('r') {
 											goto l1045
 										}
 										position++
 										goto l1044
 									l1045:
 										position, tokenIndex, depth = position1044, tokenIndex1044, depth1044
-										if buffer[position] != rune('Y') {
-											goto l777
+										if buffer[position] != rune('R') {
+											goto l816
 										}
 										position++
 									}
 								l1044:
+									{
+										position1046, tokenIndex1046, depth1046 := position, tokenIndex, depth
+										if buffer[position] != rune('i') {
+											goto l1047
+										}
+										position++
+										goto l1046
+									l1047:
+										position, tokenIndex, depth = position1046, tokenIndex1046, depth1046
+										if buffer[position] != rune('I') {
+											goto l816
+										}
+										position++
+									}
+								l1046:
+									{
+										position1048, tokenIndex1048, depth1048 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1049
+										}
+										position++
+										goto l1048
+									l1049:
+										position, tokenIndex, depth = position1048, tokenIndex1048, depth1048
+										if buffer[position] != rune('C') {
+											goto l816
+										}
+										position++
+									}
+								l1048:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleDAY, position1039)
+									add(ruleISNUMERIC, position1031)
 								}
 								break
-							case 'Y', 'y':
+							case 'S', 's':
 								{
-									position1046 := position
+									position1050 := position
 									depth++
 									{
-										position1047, tokenIndex1047, depth1047 := position, tokenIndex, depth
-										if buffer[position] != rune('y') {
-											goto l1048
-										}
-										position++
-										goto l1047
-									l1048:
-										position, tokenIndex, depth = position1047, tokenIndex1047, depth1047
-										if buffer[position] != rune('Y') {
-											goto l777
-										}
-										position++
-									}
-								l1047:
-									{
-										position1049, tokenIndex1049, depth1049 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1050
-										}
-										position++
-										goto l1049
-									l1050:
-										position, tokenIndex, depth = position1049, tokenIndex1049, depth1049
-										if buffer[position] != rune('E') {
-											goto l777
-										}
-										position++
-									}
-								l1049:
-									{
 										position1051, tokenIndex1051, depth1051 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
+										if buffer[position] != rune('s') {
 											goto l1052
 										}
 										position++
 										goto l1051
 									l1052:
 										position, tokenIndex, depth = position1051, tokenIndex1051, depth1051
-										if buffer[position] != rune('A') {
-											goto l777
+										if buffer[position] != rune('S') {
+											goto l816
 										}
 										position++
 									}
 								l1051:
 									{
 										position1053, tokenIndex1053, depth1053 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
+										if buffer[position] != rune('h') {
 											goto l1054
 										}
 										position++
 										goto l1053
 									l1054:
 										position, tokenIndex, depth = position1053, tokenIndex1053, depth1053
-										if buffer[position] != rune('R') {
-											goto l777
+										if buffer[position] != rune('H') {
+											goto l816
 										}
 										position++
 									}
 								l1053:
+									{
+										position1055, tokenIndex1055, depth1055 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1056
+										}
+										position++
+										goto l1055
+									l1056:
+										position, tokenIndex, depth = position1055, tokenIndex1055, depth1055
+										if buffer[position] != rune('A') {
+											goto l816
+										}
+										position++
+									}
+								l1055:
+									if buffer[position] != rune('5') {
+										goto l816
+									}
+									position++
+									if buffer[position] != rune('1') {
+										goto l816
+									}
+									position++
+									if buffer[position] != rune('2') {
+										goto l816
+									}
+									position++
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleYEAR, position1046)
+									add(ruleSHA512, position1050)
 								}
 								break
-							case 'E', 'e':
+							case 'M', 'm':
 								{
-									position1055 := position
+									position1057 := position
 									depth++
 									{
-										position1056, tokenIndex1056, depth1056 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1057
-										}
-										position++
-										goto l1056
-									l1057:
-										position, tokenIndex, depth = position1056, tokenIndex1056, depth1056
-										if buffer[position] != rune('E') {
-											goto l777
-										}
-										position++
-									}
-								l1056:
-									{
 										position1058, tokenIndex1058, depth1058 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
+										if buffer[position] != rune('m') {
 											goto l1059
 										}
 										position++
 										goto l1058
 									l1059:
 										position, tokenIndex, depth = position1058, tokenIndex1058, depth1058
-										if buffer[position] != rune('N') {
-											goto l777
+										if buffer[position] != rune('M') {
+											goto l816
 										}
 										position++
 									}
 								l1058:
 									{
 										position1060, tokenIndex1060, depth1060 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
+										if buffer[position] != rune('d') {
 											goto l1061
 										}
 										position++
 										goto l1060
 									l1061:
 										position, tokenIndex, depth = position1060, tokenIndex1060, depth1060
-										if buffer[position] != rune('C') {
-											goto l777
+										if buffer[position] != rune('D') {
+											goto l816
 										}
 										position++
 									}
 								l1060:
+									if !rules[ruleskip]() {
+										goto l816
+									}
+									depth--
+									add(ruleMD5, position1057)
+								}
+								break
+							case 'T', 't':
+								{
+									position1062 := position
+									depth++
 									{
-										position1062, tokenIndex1062, depth1062 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l1063
+										position1063, tokenIndex1063, depth1063 := position, tokenIndex, depth
+										if buffer[position] != rune('t') {
+											goto l1064
 										}
 										position++
-										goto l1062
-									l1063:
-										position, tokenIndex, depth = position1062, tokenIndex1062, depth1062
-										if buffer[position] != rune('O') {
-											goto l777
+										goto l1063
+									l1064:
+										position, tokenIndex, depth = position1063, tokenIndex1063, depth1063
+										if buffer[position] != rune('T') {
+											goto l816
 										}
 										position++
 									}
-								l1062:
+								l1063:
 									{
-										position1064, tokenIndex1064, depth1064 := position, tokenIndex, depth
-										if buffer[position] != rune('d') {
-											goto l1065
+										position1065, tokenIndex1065, depth1065 := position, tokenIndex, depth
+										if buffer[position] != rune('z') {
+											goto l1066
 										}
 										position++
-										goto l1064
-									l1065:
-										position, tokenIndex, depth = position1064, tokenIndex1064, depth1064
-										if buffer[position] != rune('D') {
-											goto l777
-										}
-										position++
-									}
-								l1064:
-									{
-										position1066, tokenIndex1066, depth1066 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1067
-										}
-										position++
-										goto l1066
-									l1067:
-										position, tokenIndex, depth = position1066, tokenIndex1066, depth1066
-										if buffer[position] != rune('E') {
-											goto l777
+										goto l1065
+									l1066:
+										position, tokenIndex, depth = position1065, tokenIndex1065, depth1065
+										if buffer[position] != rune('Z') {
+											goto l816
 										}
 										position++
 									}
-								l1066:
-									if buffer[position] != rune('_') {
-										goto l777
+								l1065:
+									if !rules[ruleskip]() {
+										goto l816
 									}
-									position++
+									depth--
+									add(ruleTZ, position1062)
+								}
+								break
+							case 'H', 'h':
+								{
+									position1067 := position
+									depth++
 									{
 										position1068, tokenIndex1068, depth1068 := position, tokenIndex, depth
-										if buffer[position] != rune('f') {
+										if buffer[position] != rune('h') {
 											goto l1069
 										}
 										position++
 										goto l1068
 									l1069:
 										position, tokenIndex, depth = position1068, tokenIndex1068, depth1068
-										if buffer[position] != rune('F') {
-											goto l777
+										if buffer[position] != rune('H') {
+											goto l816
 										}
 										position++
 									}
@@ -8910,299 +8928,299 @@ func (p *Sparql) Init() {
 									l1071:
 										position, tokenIndex, depth = position1070, tokenIndex1070, depth1070
 										if buffer[position] != rune('O') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
 								l1070:
 									{
 										position1072, tokenIndex1072, depth1072 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
+										if buffer[position] != rune('u') {
 											goto l1073
 										}
 										position++
 										goto l1072
 									l1073:
 										position, tokenIndex, depth = position1072, tokenIndex1072, depth1072
-										if buffer[position] != rune('R') {
-											goto l777
+										if buffer[position] != rune('U') {
+											goto l816
 										}
 										position++
 									}
 								l1072:
-									if buffer[position] != rune('_') {
-										goto l777
-									}
-									position++
 									{
 										position1074, tokenIndex1074, depth1074 := position, tokenIndex, depth
-										if buffer[position] != rune('u') {
+										if buffer[position] != rune('r') {
 											goto l1075
 										}
 										position++
 										goto l1074
 									l1075:
 										position, tokenIndex, depth = position1074, tokenIndex1074, depth1074
-										if buffer[position] != rune('U') {
-											goto l777
+										if buffer[position] != rune('R') {
+											goto l816
 										}
 										position++
 									}
 								l1074:
 									{
 										position1076, tokenIndex1076, depth1076 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
+										if buffer[position] != rune('s') {
 											goto l1077
 										}
 										position++
 										goto l1076
 									l1077:
 										position, tokenIndex, depth = position1076, tokenIndex1076, depth1076
-										if buffer[position] != rune('R') {
-											goto l777
+										if buffer[position] != rune('S') {
+											goto l816
 										}
 										position++
 									}
 								l1076:
-									{
-										position1078, tokenIndex1078, depth1078 := position, tokenIndex, depth
-										if buffer[position] != rune('i') {
-											goto l1079
-										}
-										position++
-										goto l1078
-									l1079:
-										position, tokenIndex, depth = position1078, tokenIndex1078, depth1078
-										if buffer[position] != rune('I') {
-											goto l777
-										}
-										position++
-									}
-								l1078:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleENCODEFORURI, position1055)
+									add(ruleHOURS, position1067)
 								}
 								break
-							case 'L', 'l':
+							case 'D', 'd':
 								{
-									position1080 := position
+									position1078 := position
 									depth++
 									{
+										position1079, tokenIndex1079, depth1079 := position, tokenIndex, depth
+										if buffer[position] != rune('d') {
+											goto l1080
+										}
+										position++
+										goto l1079
+									l1080:
+										position, tokenIndex, depth = position1079, tokenIndex1079, depth1079
+										if buffer[position] != rune('D') {
+											goto l816
+										}
+										position++
+									}
+								l1079:
+									{
 										position1081, tokenIndex1081, depth1081 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
+										if buffer[position] != rune('a') {
 											goto l1082
 										}
 										position++
 										goto l1081
 									l1082:
 										position, tokenIndex, depth = position1081, tokenIndex1081, depth1081
-										if buffer[position] != rune('L') {
-											goto l777
+										if buffer[position] != rune('A') {
+											goto l816
 										}
 										position++
 									}
 								l1081:
 									{
 										position1083, tokenIndex1083, depth1083 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
+										if buffer[position] != rune('y') {
 											goto l1084
 										}
 										position++
 										goto l1083
 									l1084:
 										position, tokenIndex, depth = position1083, tokenIndex1083, depth1083
-										if buffer[position] != rune('C') {
-											goto l777
+										if buffer[position] != rune('Y') {
+											goto l816
 										}
 										position++
 									}
 								l1083:
-									{
-										position1085, tokenIndex1085, depth1085 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1086
-										}
-										position++
-										goto l1085
-									l1086:
-										position, tokenIndex, depth = position1085, tokenIndex1085, depth1085
-										if buffer[position] != rune('A') {
-											goto l777
-										}
-										position++
-									}
-								l1085:
-									{
-										position1087, tokenIndex1087, depth1087 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1088
-										}
-										position++
-										goto l1087
-									l1088:
-										position, tokenIndex, depth = position1087, tokenIndex1087, depth1087
-										if buffer[position] != rune('S') {
-											goto l777
-										}
-										position++
-									}
-								l1087:
-									{
-										position1089, tokenIndex1089, depth1089 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1090
-										}
-										position++
-										goto l1089
-									l1090:
-										position, tokenIndex, depth = position1089, tokenIndex1089, depth1089
-										if buffer[position] != rune('E') {
-											goto l777
-										}
-										position++
-									}
-								l1089:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleLCASE, position1080)
+									add(ruleDAY, position1078)
 								}
 								break
-							case 'U', 'u':
+							case 'Y', 'y':
 								{
-									position1091 := position
+									position1085 := position
 									depth++
 									{
+										position1086, tokenIndex1086, depth1086 := position, tokenIndex, depth
+										if buffer[position] != rune('y') {
+											goto l1087
+										}
+										position++
+										goto l1086
+									l1087:
+										position, tokenIndex, depth = position1086, tokenIndex1086, depth1086
+										if buffer[position] != rune('Y') {
+											goto l816
+										}
+										position++
+									}
+								l1086:
+									{
+										position1088, tokenIndex1088, depth1088 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1089
+										}
+										position++
+										goto l1088
+									l1089:
+										position, tokenIndex, depth = position1088, tokenIndex1088, depth1088
+										if buffer[position] != rune('E') {
+											goto l816
+										}
+										position++
+									}
+								l1088:
+									{
+										position1090, tokenIndex1090, depth1090 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1091
+										}
+										position++
+										goto l1090
+									l1091:
+										position, tokenIndex, depth = position1090, tokenIndex1090, depth1090
+										if buffer[position] != rune('A') {
+											goto l816
+										}
+										position++
+									}
+								l1090:
+									{
 										position1092, tokenIndex1092, depth1092 := position, tokenIndex, depth
-										if buffer[position] != rune('u') {
+										if buffer[position] != rune('r') {
 											goto l1093
 										}
 										position++
 										goto l1092
 									l1093:
 										position, tokenIndex, depth = position1092, tokenIndex1092, depth1092
-										if buffer[position] != rune('U') {
-											goto l777
+										if buffer[position] != rune('R') {
+											goto l816
 										}
 										position++
 									}
 								l1092:
-									{
-										position1094, tokenIndex1094, depth1094 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
-											goto l1095
-										}
-										position++
-										goto l1094
-									l1095:
-										position, tokenIndex, depth = position1094, tokenIndex1094, depth1094
-										if buffer[position] != rune('C') {
-											goto l777
-										}
-										position++
-									}
-								l1094:
-									{
-										position1096, tokenIndex1096, depth1096 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1097
-										}
-										position++
-										goto l1096
-									l1097:
-										position, tokenIndex, depth = position1096, tokenIndex1096, depth1096
-										if buffer[position] != rune('A') {
-											goto l777
-										}
-										position++
-									}
-								l1096:
-									{
-										position1098, tokenIndex1098, depth1098 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1099
-										}
-										position++
-										goto l1098
-									l1099:
-										position, tokenIndex, depth = position1098, tokenIndex1098, depth1098
-										if buffer[position] != rune('S') {
-											goto l777
-										}
-										position++
-									}
-								l1098:
-									{
-										position1100, tokenIndex1100, depth1100 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1101
-										}
-										position++
-										goto l1100
-									l1101:
-										position, tokenIndex, depth = position1100, tokenIndex1100, depth1100
-										if buffer[position] != rune('E') {
-											goto l777
-										}
-										position++
-									}
-								l1100:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleUCASE, position1091)
+									add(ruleYEAR, position1085)
 								}
 								break
-							case 'F', 'f':
+							case 'E', 'e':
 								{
-									position1102 := position
+									position1094 := position
 									depth++
 									{
+										position1095, tokenIndex1095, depth1095 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1096
+										}
+										position++
+										goto l1095
+									l1096:
+										position, tokenIndex, depth = position1095, tokenIndex1095, depth1095
+										if buffer[position] != rune('E') {
+											goto l816
+										}
+										position++
+									}
+								l1095:
+									{
+										position1097, tokenIndex1097, depth1097 := position, tokenIndex, depth
+										if buffer[position] != rune('n') {
+											goto l1098
+										}
+										position++
+										goto l1097
+									l1098:
+										position, tokenIndex, depth = position1097, tokenIndex1097, depth1097
+										if buffer[position] != rune('N') {
+											goto l816
+										}
+										position++
+									}
+								l1097:
+									{
+										position1099, tokenIndex1099, depth1099 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1100
+										}
+										position++
+										goto l1099
+									l1100:
+										position, tokenIndex, depth = position1099, tokenIndex1099, depth1099
+										if buffer[position] != rune('C') {
+											goto l816
+										}
+										position++
+									}
+								l1099:
+									{
+										position1101, tokenIndex1101, depth1101 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1102
+										}
+										position++
+										goto l1101
+									l1102:
+										position, tokenIndex, depth = position1101, tokenIndex1101, depth1101
+										if buffer[position] != rune('O') {
+											goto l816
+										}
+										position++
+									}
+								l1101:
+									{
 										position1103, tokenIndex1103, depth1103 := position, tokenIndex, depth
-										if buffer[position] != rune('f') {
+										if buffer[position] != rune('d') {
 											goto l1104
 										}
 										position++
 										goto l1103
 									l1104:
 										position, tokenIndex, depth = position1103, tokenIndex1103, depth1103
-										if buffer[position] != rune('F') {
-											goto l777
+										if buffer[position] != rune('D') {
+											goto l816
 										}
 										position++
 									}
 								l1103:
 									{
 										position1105, tokenIndex1105, depth1105 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
+										if buffer[position] != rune('e') {
 											goto l1106
 										}
 										position++
 										goto l1105
 									l1106:
 										position, tokenIndex, depth = position1105, tokenIndex1105, depth1105
-										if buffer[position] != rune('L') {
-											goto l777
+										if buffer[position] != rune('E') {
+											goto l816
 										}
 										position++
 									}
 								l1105:
+									if buffer[position] != rune('_') {
+										goto l816
+									}
+									position++
 									{
 										position1107, tokenIndex1107, depth1107 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
+										if buffer[position] != rune('f') {
 											goto l1108
 										}
 										position++
 										goto l1107
 									l1108:
 										position, tokenIndex, depth = position1107, tokenIndex1107, depth1107
-										if buffer[position] != rune('O') {
-											goto l777
+										if buffer[position] != rune('F') {
+											goto l816
 										}
 										position++
 									}
@@ -9217,7 +9235,7 @@ func (p *Sparql) Init() {
 									l1110:
 										position, tokenIndex, depth = position1109, tokenIndex1109, depth1109
 										if buffer[position] != rune('O') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
@@ -9232,2205 +9250,2191 @@ func (p *Sparql) Init() {
 									l1112:
 										position, tokenIndex, depth = position1111, tokenIndex1111, depth1111
 										if buffer[position] != rune('R') {
-											goto l777
+											goto l816
 										}
 										position++
 									}
 								l1111:
+									if buffer[position] != rune('_') {
+										goto l816
+									}
+									position++
+									{
+										position1113, tokenIndex1113, depth1113 := position, tokenIndex, depth
+										if buffer[position] != rune('u') {
+											goto l1114
+										}
+										position++
+										goto l1113
+									l1114:
+										position, tokenIndex, depth = position1113, tokenIndex1113, depth1113
+										if buffer[position] != rune('U') {
+											goto l816
+										}
+										position++
+									}
+								l1113:
+									{
+										position1115, tokenIndex1115, depth1115 := position, tokenIndex, depth
+										if buffer[position] != rune('r') {
+											goto l1116
+										}
+										position++
+										goto l1115
+									l1116:
+										position, tokenIndex, depth = position1115, tokenIndex1115, depth1115
+										if buffer[position] != rune('R') {
+											goto l816
+										}
+										position++
+									}
+								l1115:
+									{
+										position1117, tokenIndex1117, depth1117 := position, tokenIndex, depth
+										if buffer[position] != rune('i') {
+											goto l1118
+										}
+										position++
+										goto l1117
+									l1118:
+										position, tokenIndex, depth = position1117, tokenIndex1117, depth1117
+										if buffer[position] != rune('I') {
+											goto l816
+										}
+										position++
+									}
+								l1117:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleFLOOR, position1102)
+									add(ruleENCODEFORURI, position1094)
 								}
 								break
-							case 'R', 'r':
+							case 'L', 'l':
 								{
-									position1113 := position
+									position1119 := position
 									depth++
 									{
-										position1114, tokenIndex1114, depth1114 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
-											goto l1115
-										}
-										position++
-										goto l1114
-									l1115:
-										position, tokenIndex, depth = position1114, tokenIndex1114, depth1114
-										if buffer[position] != rune('R') {
-											goto l777
-										}
-										position++
-									}
-								l1114:
-									{
-										position1116, tokenIndex1116, depth1116 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l1117
-										}
-										position++
-										goto l1116
-									l1117:
-										position, tokenIndex, depth = position1116, tokenIndex1116, depth1116
-										if buffer[position] != rune('O') {
-											goto l777
-										}
-										position++
-									}
-								l1116:
-									{
-										position1118, tokenIndex1118, depth1118 := position, tokenIndex, depth
-										if buffer[position] != rune('u') {
-											goto l1119
-										}
-										position++
-										goto l1118
-									l1119:
-										position, tokenIndex, depth = position1118, tokenIndex1118, depth1118
-										if buffer[position] != rune('U') {
-											goto l777
-										}
-										position++
-									}
-								l1118:
-									{
 										position1120, tokenIndex1120, depth1120 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
+										if buffer[position] != rune('l') {
 											goto l1121
 										}
 										position++
 										goto l1120
 									l1121:
 										position, tokenIndex, depth = position1120, tokenIndex1120, depth1120
-										if buffer[position] != rune('N') {
-											goto l777
+										if buffer[position] != rune('L') {
+											goto l816
 										}
 										position++
 									}
 								l1120:
 									{
 										position1122, tokenIndex1122, depth1122 := position, tokenIndex, depth
-										if buffer[position] != rune('d') {
+										if buffer[position] != rune('c') {
 											goto l1123
 										}
 										position++
 										goto l1122
 									l1123:
 										position, tokenIndex, depth = position1122, tokenIndex1122, depth1122
-										if buffer[position] != rune('D') {
-											goto l777
+										if buffer[position] != rune('C') {
+											goto l816
 										}
 										position++
 									}
 								l1122:
+									{
+										position1124, tokenIndex1124, depth1124 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1125
+										}
+										position++
+										goto l1124
+									l1125:
+										position, tokenIndex, depth = position1124, tokenIndex1124, depth1124
+										if buffer[position] != rune('A') {
+											goto l816
+										}
+										position++
+									}
+								l1124:
+									{
+										position1126, tokenIndex1126, depth1126 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1127
+										}
+										position++
+										goto l1126
+									l1127:
+										position, tokenIndex, depth = position1126, tokenIndex1126, depth1126
+										if buffer[position] != rune('S') {
+											goto l816
+										}
+										position++
+									}
+								l1126:
+									{
+										position1128, tokenIndex1128, depth1128 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1129
+										}
+										position++
+										goto l1128
+									l1129:
+										position, tokenIndex, depth = position1128, tokenIndex1128, depth1128
+										if buffer[position] != rune('E') {
+											goto l816
+										}
+										position++
+									}
+								l1128:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleROUND, position1113)
+									add(ruleLCASE, position1119)
 								}
 								break
-							case 'C', 'c':
+							case 'U', 'u':
 								{
-									position1124 := position
+									position1130 := position
 									depth++
 									{
-										position1125, tokenIndex1125, depth1125 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
-											goto l1126
-										}
-										position++
-										goto l1125
-									l1126:
-										position, tokenIndex, depth = position1125, tokenIndex1125, depth1125
-										if buffer[position] != rune('C') {
-											goto l777
-										}
-										position++
-									}
-								l1125:
-									{
-										position1127, tokenIndex1127, depth1127 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1128
-										}
-										position++
-										goto l1127
-									l1128:
-										position, tokenIndex, depth = position1127, tokenIndex1127, depth1127
-										if buffer[position] != rune('E') {
-											goto l777
-										}
-										position++
-									}
-								l1127:
-									{
-										position1129, tokenIndex1129, depth1129 := position, tokenIndex, depth
-										if buffer[position] != rune('i') {
-											goto l1130
-										}
-										position++
-										goto l1129
-									l1130:
-										position, tokenIndex, depth = position1129, tokenIndex1129, depth1129
-										if buffer[position] != rune('I') {
-											goto l777
-										}
-										position++
-									}
-								l1129:
-									{
 										position1131, tokenIndex1131, depth1131 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
+										if buffer[position] != rune('u') {
 											goto l1132
 										}
 										position++
 										goto l1131
 									l1132:
 										position, tokenIndex, depth = position1131, tokenIndex1131, depth1131
-										if buffer[position] != rune('L') {
-											goto l777
+										if buffer[position] != rune('U') {
+											goto l816
 										}
 										position++
 									}
 								l1131:
+									{
+										position1133, tokenIndex1133, depth1133 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1134
+										}
+										position++
+										goto l1133
+									l1134:
+										position, tokenIndex, depth = position1133, tokenIndex1133, depth1133
+										if buffer[position] != rune('C') {
+											goto l816
+										}
+										position++
+									}
+								l1133:
+									{
+										position1135, tokenIndex1135, depth1135 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1136
+										}
+										position++
+										goto l1135
+									l1136:
+										position, tokenIndex, depth = position1135, tokenIndex1135, depth1135
+										if buffer[position] != rune('A') {
+											goto l816
+										}
+										position++
+									}
+								l1135:
+									{
+										position1137, tokenIndex1137, depth1137 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1138
+										}
+										position++
+										goto l1137
+									l1138:
+										position, tokenIndex, depth = position1137, tokenIndex1137, depth1137
+										if buffer[position] != rune('S') {
+											goto l816
+										}
+										position++
+									}
+								l1137:
+									{
+										position1139, tokenIndex1139, depth1139 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1140
+										}
+										position++
+										goto l1139
+									l1140:
+										position, tokenIndex, depth = position1139, tokenIndex1139, depth1139
+										if buffer[position] != rune('E') {
+											goto l816
+										}
+										position++
+									}
+								l1139:
 									if !rules[ruleskip]() {
-										goto l777
+										goto l816
 									}
 									depth--
-									add(ruleCEIL, position1124)
+									add(ruleUCASE, position1130)
 								}
 								break
-							default:
+							case 'F', 'f':
 								{
-									position1133 := position
+									position1141 := position
 									depth++
 									{
-										position1134, tokenIndex1134, depth1134 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1135
+										position1142, tokenIndex1142, depth1142 := position, tokenIndex, depth
+										if buffer[position] != rune('f') {
+											goto l1143
 										}
 										position++
-										goto l1134
-									l1135:
-										position, tokenIndex, depth = position1134, tokenIndex1134, depth1134
-										if buffer[position] != rune('A') {
-											goto l777
+										goto l1142
+									l1143:
+										position, tokenIndex, depth = position1142, tokenIndex1142, depth1142
+										if buffer[position] != rune('F') {
+											goto l816
 										}
 										position++
 									}
-								l1134:
+								l1142:
 									{
-										position1136, tokenIndex1136, depth1136 := position, tokenIndex, depth
-										if buffer[position] != rune('b') {
-											goto l1137
+										position1144, tokenIndex1144, depth1144 := position, tokenIndex, depth
+										if buffer[position] != rune('l') {
+											goto l1145
 										}
 										position++
-										goto l1136
-									l1137:
-										position, tokenIndex, depth = position1136, tokenIndex1136, depth1136
-										if buffer[position] != rune('B') {
-											goto l777
+										goto l1144
+									l1145:
+										position, tokenIndex, depth = position1144, tokenIndex1144, depth1144
+										if buffer[position] != rune('L') {
+											goto l816
 										}
 										position++
 									}
-								l1136:
+								l1144:
 									{
-										position1138, tokenIndex1138, depth1138 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1139
+										position1146, tokenIndex1146, depth1146 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1147
 										}
 										position++
-										goto l1138
-									l1139:
-										position, tokenIndex, depth = position1138, tokenIndex1138, depth1138
-										if buffer[position] != rune('S') {
-											goto l777
+										goto l1146
+									l1147:
+										position, tokenIndex, depth = position1146, tokenIndex1146, depth1146
+										if buffer[position] != rune('O') {
+											goto l816
 										}
 										position++
 									}
-								l1138:
-									if !rules[ruleskip]() {
-										goto l777
-									}
-									depth--
-									add(ruleABS, position1133)
-								}
-								break
-							}
-						}
-
-					}
-				l778:
-					if !rules[ruleLPAREN]() {
-						goto l777
-					}
-					if !rules[ruleexpression]() {
-						goto l777
-					}
-					if !rules[ruleRPAREN]() {
-						goto l777
-					}
-					goto l776
-				l777:
-					position, tokenIndex, depth = position776, tokenIndex776, depth776
-					{
-						position1141, tokenIndex1141, depth1141 := position, tokenIndex, depth
-						{
-							position1143 := position
-							depth++
-							{
-								position1144, tokenIndex1144, depth1144 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1145
-								}
-								position++
-								goto l1144
-							l1145:
-								position, tokenIndex, depth = position1144, tokenIndex1144, depth1144
-								if buffer[position] != rune('S') {
-									goto l1142
-								}
-								position++
-							}
-						l1144:
-							{
-								position1146, tokenIndex1146, depth1146 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1147
-								}
-								position++
-								goto l1146
-							l1147:
-								position, tokenIndex, depth = position1146, tokenIndex1146, depth1146
-								if buffer[position] != rune('T') {
-									goto l1142
-								}
-								position++
-							}
-						l1146:
-							{
-								position1148, tokenIndex1148, depth1148 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1149
-								}
-								position++
-								goto l1148
-							l1149:
-								position, tokenIndex, depth = position1148, tokenIndex1148, depth1148
-								if buffer[position] != rune('R') {
-									goto l1142
-								}
-								position++
-							}
-						l1148:
-							{
-								position1150, tokenIndex1150, depth1150 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1151
-								}
-								position++
-								goto l1150
-							l1151:
-								position, tokenIndex, depth = position1150, tokenIndex1150, depth1150
-								if buffer[position] != rune('S') {
-									goto l1142
-								}
-								position++
-							}
-						l1150:
-							{
-								position1152, tokenIndex1152, depth1152 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1153
-								}
-								position++
-								goto l1152
-							l1153:
-								position, tokenIndex, depth = position1152, tokenIndex1152, depth1152
-								if buffer[position] != rune('T') {
-									goto l1142
-								}
-								position++
-							}
-						l1152:
-							{
-								position1154, tokenIndex1154, depth1154 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l1155
-								}
-								position++
-								goto l1154
-							l1155:
-								position, tokenIndex, depth = position1154, tokenIndex1154, depth1154
-								if buffer[position] != rune('A') {
-									goto l1142
-								}
-								position++
-							}
-						l1154:
-							{
-								position1156, tokenIndex1156, depth1156 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1157
-								}
-								position++
-								goto l1156
-							l1157:
-								position, tokenIndex, depth = position1156, tokenIndex1156, depth1156
-								if buffer[position] != rune('R') {
-									goto l1142
-								}
-								position++
-							}
-						l1156:
-							{
-								position1158, tokenIndex1158, depth1158 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1159
-								}
-								position++
-								goto l1158
-							l1159:
-								position, tokenIndex, depth = position1158, tokenIndex1158, depth1158
-								if buffer[position] != rune('T') {
-									goto l1142
-								}
-								position++
-							}
-						l1158:
-							{
-								position1160, tokenIndex1160, depth1160 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1161
-								}
-								position++
-								goto l1160
-							l1161:
-								position, tokenIndex, depth = position1160, tokenIndex1160, depth1160
-								if buffer[position] != rune('S') {
-									goto l1142
-								}
-								position++
-							}
-						l1160:
-							if !rules[ruleskip]() {
-								goto l1142
-							}
-							depth--
-							add(ruleSTRSTARTS, position1143)
-						}
-						goto l1141
-					l1142:
-						position, tokenIndex, depth = position1141, tokenIndex1141, depth1141
-						{
-							position1163 := position
-							depth++
-							{
-								position1164, tokenIndex1164, depth1164 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1165
-								}
-								position++
-								goto l1164
-							l1165:
-								position, tokenIndex, depth = position1164, tokenIndex1164, depth1164
-								if buffer[position] != rune('S') {
-									goto l1162
-								}
-								position++
-							}
-						l1164:
-							{
-								position1166, tokenIndex1166, depth1166 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1167
-								}
-								position++
-								goto l1166
-							l1167:
-								position, tokenIndex, depth = position1166, tokenIndex1166, depth1166
-								if buffer[position] != rune('T') {
-									goto l1162
-								}
-								position++
-							}
-						l1166:
-							{
-								position1168, tokenIndex1168, depth1168 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1169
-								}
-								position++
-								goto l1168
-							l1169:
-								position, tokenIndex, depth = position1168, tokenIndex1168, depth1168
-								if buffer[position] != rune('R') {
-									goto l1162
-								}
-								position++
-							}
-						l1168:
-							{
-								position1170, tokenIndex1170, depth1170 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l1171
-								}
-								position++
-								goto l1170
-							l1171:
-								position, tokenIndex, depth = position1170, tokenIndex1170, depth1170
-								if buffer[position] != rune('E') {
-									goto l1162
-								}
-								position++
-							}
-						l1170:
-							{
-								position1172, tokenIndex1172, depth1172 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l1173
-								}
-								position++
-								goto l1172
-							l1173:
-								position, tokenIndex, depth = position1172, tokenIndex1172, depth1172
-								if buffer[position] != rune('N') {
-									goto l1162
-								}
-								position++
-							}
-						l1172:
-							{
-								position1174, tokenIndex1174, depth1174 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l1175
-								}
-								position++
-								goto l1174
-							l1175:
-								position, tokenIndex, depth = position1174, tokenIndex1174, depth1174
-								if buffer[position] != rune('D') {
-									goto l1162
-								}
-								position++
-							}
-						l1174:
-							{
-								position1176, tokenIndex1176, depth1176 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1177
-								}
-								position++
-								goto l1176
-							l1177:
-								position, tokenIndex, depth = position1176, tokenIndex1176, depth1176
-								if buffer[position] != rune('S') {
-									goto l1162
-								}
-								position++
-							}
-						l1176:
-							if !rules[ruleskip]() {
-								goto l1162
-							}
-							depth--
-							add(ruleSTRENDS, position1163)
-						}
-						goto l1141
-					l1162:
-						position, tokenIndex, depth = position1141, tokenIndex1141, depth1141
-						{
-							position1179 := position
-							depth++
-							{
-								position1180, tokenIndex1180, depth1180 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1181
-								}
-								position++
-								goto l1180
-							l1181:
-								position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
-								if buffer[position] != rune('S') {
-									goto l1178
-								}
-								position++
-							}
-						l1180:
-							{
-								position1182, tokenIndex1182, depth1182 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1183
-								}
-								position++
-								goto l1182
-							l1183:
-								position, tokenIndex, depth = position1182, tokenIndex1182, depth1182
-								if buffer[position] != rune('T') {
-									goto l1178
-								}
-								position++
-							}
-						l1182:
-							{
-								position1184, tokenIndex1184, depth1184 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1185
-								}
-								position++
-								goto l1184
-							l1185:
-								position, tokenIndex, depth = position1184, tokenIndex1184, depth1184
-								if buffer[position] != rune('R') {
-									goto l1178
-								}
-								position++
-							}
-						l1184:
-							{
-								position1186, tokenIndex1186, depth1186 := position, tokenIndex, depth
-								if buffer[position] != rune('b') {
-									goto l1187
-								}
-								position++
-								goto l1186
-							l1187:
-								position, tokenIndex, depth = position1186, tokenIndex1186, depth1186
-								if buffer[position] != rune('B') {
-									goto l1178
-								}
-								position++
-							}
-						l1186:
-							{
-								position1188, tokenIndex1188, depth1188 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l1189
-								}
-								position++
-								goto l1188
-							l1189:
-								position, tokenIndex, depth = position1188, tokenIndex1188, depth1188
-								if buffer[position] != rune('E') {
-									goto l1178
-								}
-								position++
-							}
-						l1188:
-							{
-								position1190, tokenIndex1190, depth1190 := position, tokenIndex, depth
-								if buffer[position] != rune('f') {
-									goto l1191
-								}
-								position++
-								goto l1190
-							l1191:
-								position, tokenIndex, depth = position1190, tokenIndex1190, depth1190
-								if buffer[position] != rune('F') {
-									goto l1178
-								}
-								position++
-							}
-						l1190:
-							{
-								position1192, tokenIndex1192, depth1192 := position, tokenIndex, depth
-								if buffer[position] != rune('o') {
-									goto l1193
-								}
-								position++
-								goto l1192
-							l1193:
-								position, tokenIndex, depth = position1192, tokenIndex1192, depth1192
-								if buffer[position] != rune('O') {
-									goto l1178
-								}
-								position++
-							}
-						l1192:
-							{
-								position1194, tokenIndex1194, depth1194 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1195
-								}
-								position++
-								goto l1194
-							l1195:
-								position, tokenIndex, depth = position1194, tokenIndex1194, depth1194
-								if buffer[position] != rune('R') {
-									goto l1178
-								}
-								position++
-							}
-						l1194:
-							{
-								position1196, tokenIndex1196, depth1196 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l1197
-								}
-								position++
-								goto l1196
-							l1197:
-								position, tokenIndex, depth = position1196, tokenIndex1196, depth1196
-								if buffer[position] != rune('E') {
-									goto l1178
-								}
-								position++
-							}
-						l1196:
-							if !rules[ruleskip]() {
-								goto l1178
-							}
-							depth--
-							add(ruleSTRBEFORE, position1179)
-						}
-						goto l1141
-					l1178:
-						position, tokenIndex, depth = position1141, tokenIndex1141, depth1141
-						{
-							position1199 := position
-							depth++
-							{
-								position1200, tokenIndex1200, depth1200 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1201
-								}
-								position++
-								goto l1200
-							l1201:
-								position, tokenIndex, depth = position1200, tokenIndex1200, depth1200
-								if buffer[position] != rune('S') {
-									goto l1198
-								}
-								position++
-							}
-						l1200:
-							{
-								position1202, tokenIndex1202, depth1202 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1203
-								}
-								position++
-								goto l1202
-							l1203:
-								position, tokenIndex, depth = position1202, tokenIndex1202, depth1202
-								if buffer[position] != rune('T') {
-									goto l1198
-								}
-								position++
-							}
-						l1202:
-							{
-								position1204, tokenIndex1204, depth1204 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1205
-								}
-								position++
-								goto l1204
-							l1205:
-								position, tokenIndex, depth = position1204, tokenIndex1204, depth1204
-								if buffer[position] != rune('R') {
-									goto l1198
-								}
-								position++
-							}
-						l1204:
-							{
-								position1206, tokenIndex1206, depth1206 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l1207
-								}
-								position++
-								goto l1206
-							l1207:
-								position, tokenIndex, depth = position1206, tokenIndex1206, depth1206
-								if buffer[position] != rune('A') {
-									goto l1198
-								}
-								position++
-							}
-						l1206:
-							{
-								position1208, tokenIndex1208, depth1208 := position, tokenIndex, depth
-								if buffer[position] != rune('f') {
-									goto l1209
-								}
-								position++
-								goto l1208
-							l1209:
-								position, tokenIndex, depth = position1208, tokenIndex1208, depth1208
-								if buffer[position] != rune('F') {
-									goto l1198
-								}
-								position++
-							}
-						l1208:
-							{
-								position1210, tokenIndex1210, depth1210 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1211
-								}
-								position++
-								goto l1210
-							l1211:
-								position, tokenIndex, depth = position1210, tokenIndex1210, depth1210
-								if buffer[position] != rune('T') {
-									goto l1198
-								}
-								position++
-							}
-						l1210:
-							{
-								position1212, tokenIndex1212, depth1212 := position, tokenIndex, depth
-								if buffer[position] != rune('e') {
-									goto l1213
-								}
-								position++
-								goto l1212
-							l1213:
-								position, tokenIndex, depth = position1212, tokenIndex1212, depth1212
-								if buffer[position] != rune('E') {
-									goto l1198
-								}
-								position++
-							}
-						l1212:
-							{
-								position1214, tokenIndex1214, depth1214 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1215
-								}
-								position++
-								goto l1214
-							l1215:
-								position, tokenIndex, depth = position1214, tokenIndex1214, depth1214
-								if buffer[position] != rune('R') {
-									goto l1198
-								}
-								position++
-							}
-						l1214:
-							if !rules[ruleskip]() {
-								goto l1198
-							}
-							depth--
-							add(ruleSTRAFTER, position1199)
-						}
-						goto l1141
-					l1198:
-						position, tokenIndex, depth = position1141, tokenIndex1141, depth1141
-						{
-							position1217 := position
-							depth++
-							{
-								position1218, tokenIndex1218, depth1218 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1219
-								}
-								position++
-								goto l1218
-							l1219:
-								position, tokenIndex, depth = position1218, tokenIndex1218, depth1218
-								if buffer[position] != rune('S') {
-									goto l1216
-								}
-								position++
-							}
-						l1218:
-							{
-								position1220, tokenIndex1220, depth1220 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1221
-								}
-								position++
-								goto l1220
-							l1221:
-								position, tokenIndex, depth = position1220, tokenIndex1220, depth1220
-								if buffer[position] != rune('T') {
-									goto l1216
-								}
-								position++
-							}
-						l1220:
-							{
-								position1222, tokenIndex1222, depth1222 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1223
-								}
-								position++
-								goto l1222
-							l1223:
-								position, tokenIndex, depth = position1222, tokenIndex1222, depth1222
-								if buffer[position] != rune('R') {
-									goto l1216
-								}
-								position++
-							}
-						l1222:
-							{
-								position1224, tokenIndex1224, depth1224 := position, tokenIndex, depth
-								if buffer[position] != rune('l') {
-									goto l1225
-								}
-								position++
-								goto l1224
-							l1225:
-								position, tokenIndex, depth = position1224, tokenIndex1224, depth1224
-								if buffer[position] != rune('L') {
-									goto l1216
-								}
-								position++
-							}
-						l1224:
-							{
-								position1226, tokenIndex1226, depth1226 := position, tokenIndex, depth
-								if buffer[position] != rune('a') {
-									goto l1227
-								}
-								position++
-								goto l1226
-							l1227:
-								position, tokenIndex, depth = position1226, tokenIndex1226, depth1226
-								if buffer[position] != rune('A') {
-									goto l1216
-								}
-								position++
-							}
-						l1226:
-							{
-								position1228, tokenIndex1228, depth1228 := position, tokenIndex, depth
-								if buffer[position] != rune('n') {
-									goto l1229
-								}
-								position++
-								goto l1228
-							l1229:
-								position, tokenIndex, depth = position1228, tokenIndex1228, depth1228
-								if buffer[position] != rune('N') {
-									goto l1216
-								}
-								position++
-							}
-						l1228:
-							{
-								position1230, tokenIndex1230, depth1230 := position, tokenIndex, depth
-								if buffer[position] != rune('g') {
-									goto l1231
-								}
-								position++
-								goto l1230
-							l1231:
-								position, tokenIndex, depth = position1230, tokenIndex1230, depth1230
-								if buffer[position] != rune('G') {
-									goto l1216
-								}
-								position++
-							}
-						l1230:
-							if !rules[ruleskip]() {
-								goto l1216
-							}
-							depth--
-							add(ruleSTRLANG, position1217)
-						}
-						goto l1141
-					l1216:
-						position, tokenIndex, depth = position1141, tokenIndex1141, depth1141
-						{
-							position1233 := position
-							depth++
-							{
-								position1234, tokenIndex1234, depth1234 := position, tokenIndex, depth
-								if buffer[position] != rune('s') {
-									goto l1235
-								}
-								position++
-								goto l1234
-							l1235:
-								position, tokenIndex, depth = position1234, tokenIndex1234, depth1234
-								if buffer[position] != rune('S') {
-									goto l1232
-								}
-								position++
-							}
-						l1234:
-							{
-								position1236, tokenIndex1236, depth1236 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1237
-								}
-								position++
-								goto l1236
-							l1237:
-								position, tokenIndex, depth = position1236, tokenIndex1236, depth1236
-								if buffer[position] != rune('T') {
-									goto l1232
-								}
-								position++
-							}
-						l1236:
-							{
-								position1238, tokenIndex1238, depth1238 := position, tokenIndex, depth
-								if buffer[position] != rune('r') {
-									goto l1239
-								}
-								position++
-								goto l1238
-							l1239:
-								position, tokenIndex, depth = position1238, tokenIndex1238, depth1238
-								if buffer[position] != rune('R') {
-									goto l1232
-								}
-								position++
-							}
-						l1238:
-							{
-								position1240, tokenIndex1240, depth1240 := position, tokenIndex, depth
-								if buffer[position] != rune('d') {
-									goto l1241
-								}
-								position++
-								goto l1240
-							l1241:
-								position, tokenIndex, depth = position1240, tokenIndex1240, depth1240
-								if buffer[position] != rune('D') {
-									goto l1232
-								}
-								position++
-							}
-						l1240:
-							{
-								position1242, tokenIndex1242, depth1242 := position, tokenIndex, depth
-								if buffer[position] != rune('t') {
-									goto l1243
-								}
-								position++
-								goto l1242
-							l1243:
-								position, tokenIndex, depth = position1242, tokenIndex1242, depth1242
-								if buffer[position] != rune('T') {
-									goto l1232
-								}
-								position++
-							}
-						l1242:
-							if !rules[ruleskip]() {
-								goto l1232
-							}
-							depth--
-							add(ruleSTRDT, position1233)
-						}
-						goto l1141
-					l1232:
-						position, tokenIndex, depth = position1141, tokenIndex1141, depth1141
-						{
-							switch buffer[position] {
-							case 'S', 's':
-								{
-									position1245 := position
-									depth++
+								l1146:
 									{
-										position1246, tokenIndex1246, depth1246 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1247
+										position1148, tokenIndex1148, depth1148 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1149
 										}
 										position++
-										goto l1246
-									l1247:
-										position, tokenIndex, depth = position1246, tokenIndex1246, depth1246
-										if buffer[position] != rune('S') {
-											goto l1140
-										}
-										position++
-									}
-								l1246:
-									{
-										position1248, tokenIndex1248, depth1248 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1249
-										}
-										position++
-										goto l1248
-									l1249:
-										position, tokenIndex, depth = position1248, tokenIndex1248, depth1248
-										if buffer[position] != rune('A') {
-											goto l1140
+										goto l1148
+									l1149:
+										position, tokenIndex, depth = position1148, tokenIndex1148, depth1148
+										if buffer[position] != rune('O') {
+											goto l816
 										}
 										position++
 									}
-								l1248:
+								l1148:
 									{
-										position1250, tokenIndex1250, depth1250 := position, tokenIndex, depth
-										if buffer[position] != rune('m') {
-											goto l1251
-										}
-										position++
-										goto l1250
-									l1251:
-										position, tokenIndex, depth = position1250, tokenIndex1250, depth1250
-										if buffer[position] != rune('M') {
-											goto l1140
-										}
-										position++
-									}
-								l1250:
-									{
-										position1252, tokenIndex1252, depth1252 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1253
-										}
-										position++
-										goto l1252
-									l1253:
-										position, tokenIndex, depth = position1252, tokenIndex1252, depth1252
-										if buffer[position] != rune('E') {
-											goto l1140
-										}
-										position++
-									}
-								l1252:
-									{
-										position1254, tokenIndex1254, depth1254 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1255
-										}
-										position++
-										goto l1254
-									l1255:
-										position, tokenIndex, depth = position1254, tokenIndex1254, depth1254
-										if buffer[position] != rune('T') {
-											goto l1140
-										}
-										position++
-									}
-								l1254:
-									{
-										position1256, tokenIndex1256, depth1256 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1257
-										}
-										position++
-										goto l1256
-									l1257:
-										position, tokenIndex, depth = position1256, tokenIndex1256, depth1256
-										if buffer[position] != rune('E') {
-											goto l1140
-										}
-										position++
-									}
-								l1256:
-									{
-										position1258, tokenIndex1258, depth1258 := position, tokenIndex, depth
+										position1150, tokenIndex1150, depth1150 := position, tokenIndex, depth
 										if buffer[position] != rune('r') {
-											goto l1259
+											goto l1151
 										}
 										position++
-										goto l1258
-									l1259:
-										position, tokenIndex, depth = position1258, tokenIndex1258, depth1258
+										goto l1150
+									l1151:
+										position, tokenIndex, depth = position1150, tokenIndex1150, depth1150
 										if buffer[position] != rune('R') {
-											goto l1140
+											goto l816
 										}
 										position++
 									}
-								l1258:
-									{
-										position1260, tokenIndex1260, depth1260 := position, tokenIndex, depth
-										if buffer[position] != rune('m') {
-											goto l1261
-										}
-										position++
-										goto l1260
-									l1261:
-										position, tokenIndex, depth = position1260, tokenIndex1260, depth1260
-										if buffer[position] != rune('M') {
-											goto l1140
-										}
-										position++
-									}
-								l1260:
+								l1150:
 									if !rules[ruleskip]() {
-										goto l1140
+										goto l816
 									}
 									depth--
-									add(ruleSAMETERM, position1245)
+									add(ruleFLOOR, position1141)
+								}
+								break
+							case 'R', 'r':
+								{
+									position1152 := position
+									depth++
+									{
+										position1153, tokenIndex1153, depth1153 := position, tokenIndex, depth
+										if buffer[position] != rune('r') {
+											goto l1154
+										}
+										position++
+										goto l1153
+									l1154:
+										position, tokenIndex, depth = position1153, tokenIndex1153, depth1153
+										if buffer[position] != rune('R') {
+											goto l816
+										}
+										position++
+									}
+								l1153:
+									{
+										position1155, tokenIndex1155, depth1155 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1156
+										}
+										position++
+										goto l1155
+									l1156:
+										position, tokenIndex, depth = position1155, tokenIndex1155, depth1155
+										if buffer[position] != rune('O') {
+											goto l816
+										}
+										position++
+									}
+								l1155:
+									{
+										position1157, tokenIndex1157, depth1157 := position, tokenIndex, depth
+										if buffer[position] != rune('u') {
+											goto l1158
+										}
+										position++
+										goto l1157
+									l1158:
+										position, tokenIndex, depth = position1157, tokenIndex1157, depth1157
+										if buffer[position] != rune('U') {
+											goto l816
+										}
+										position++
+									}
+								l1157:
+									{
+										position1159, tokenIndex1159, depth1159 := position, tokenIndex, depth
+										if buffer[position] != rune('n') {
+											goto l1160
+										}
+										position++
+										goto l1159
+									l1160:
+										position, tokenIndex, depth = position1159, tokenIndex1159, depth1159
+										if buffer[position] != rune('N') {
+											goto l816
+										}
+										position++
+									}
+								l1159:
+									{
+										position1161, tokenIndex1161, depth1161 := position, tokenIndex, depth
+										if buffer[position] != rune('d') {
+											goto l1162
+										}
+										position++
+										goto l1161
+									l1162:
+										position, tokenIndex, depth = position1161, tokenIndex1161, depth1161
+										if buffer[position] != rune('D') {
+											goto l816
+										}
+										position++
+									}
+								l1161:
+									if !rules[ruleskip]() {
+										goto l816
+									}
+									depth--
+									add(ruleROUND, position1152)
 								}
 								break
 							case 'C', 'c':
 								{
-									position1262 := position
+									position1163 := position
 									depth++
 									{
-										position1263, tokenIndex1263, depth1263 := position, tokenIndex, depth
+										position1164, tokenIndex1164, depth1164 := position, tokenIndex, depth
 										if buffer[position] != rune('c') {
-											goto l1264
+											goto l1165
 										}
 										position++
-										goto l1263
-									l1264:
-										position, tokenIndex, depth = position1263, tokenIndex1263, depth1263
+										goto l1164
+									l1165:
+										position, tokenIndex, depth = position1164, tokenIndex1164, depth1164
 										if buffer[position] != rune('C') {
-											goto l1140
+											goto l816
 										}
 										position++
 									}
-								l1263:
+								l1164:
 									{
-										position1265, tokenIndex1265, depth1265 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l1266
+										position1166, tokenIndex1166, depth1166 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1167
 										}
 										position++
-										goto l1265
-									l1266:
-										position, tokenIndex, depth = position1265, tokenIndex1265, depth1265
-										if buffer[position] != rune('O') {
-											goto l1140
+										goto l1166
+									l1167:
+										position, tokenIndex, depth = position1166, tokenIndex1166, depth1166
+										if buffer[position] != rune('E') {
+											goto l816
 										}
 										position++
 									}
-								l1265:
+								l1166:
 									{
-										position1267, tokenIndex1267, depth1267 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
-											goto l1268
-										}
-										position++
-										goto l1267
-									l1268:
-										position, tokenIndex, depth = position1267, tokenIndex1267, depth1267
-										if buffer[position] != rune('N') {
-											goto l1140
-										}
-										position++
-									}
-								l1267:
-									{
-										position1269, tokenIndex1269, depth1269 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1270
-										}
-										position++
-										goto l1269
-									l1270:
-										position, tokenIndex, depth = position1269, tokenIndex1269, depth1269
-										if buffer[position] != rune('T') {
-											goto l1140
-										}
-										position++
-									}
-								l1269:
-									{
-										position1271, tokenIndex1271, depth1271 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1272
-										}
-										position++
-										goto l1271
-									l1272:
-										position, tokenIndex, depth = position1271, tokenIndex1271, depth1271
-										if buffer[position] != rune('A') {
-											goto l1140
-										}
-										position++
-									}
-								l1271:
-									{
-										position1273, tokenIndex1273, depth1273 := position, tokenIndex, depth
+										position1168, tokenIndex1168, depth1168 := position, tokenIndex, depth
 										if buffer[position] != rune('i') {
-											goto l1274
+											goto l1169
 										}
 										position++
-										goto l1273
-									l1274:
-										position, tokenIndex, depth = position1273, tokenIndex1273, depth1273
+										goto l1168
+									l1169:
+										position, tokenIndex, depth = position1168, tokenIndex1168, depth1168
 										if buffer[position] != rune('I') {
-											goto l1140
+											goto l816
 										}
 										position++
 									}
-								l1273:
+								l1168:
 									{
-										position1275, tokenIndex1275, depth1275 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
-											goto l1276
+										position1170, tokenIndex1170, depth1170 := position, tokenIndex, depth
+										if buffer[position] != rune('l') {
+											goto l1171
 										}
 										position++
-										goto l1275
-									l1276:
-										position, tokenIndex, depth = position1275, tokenIndex1275, depth1275
-										if buffer[position] != rune('N') {
-											goto l1140
-										}
-										position++
-									}
-								l1275:
-									{
-										position1277, tokenIndex1277, depth1277 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1278
-										}
-										position++
-										goto l1277
-									l1278:
-										position, tokenIndex, depth = position1277, tokenIndex1277, depth1277
-										if buffer[position] != rune('S') {
-											goto l1140
+										goto l1170
+									l1171:
+										position, tokenIndex, depth = position1170, tokenIndex1170, depth1170
+										if buffer[position] != rune('L') {
+											goto l816
 										}
 										position++
 									}
-								l1277:
+								l1170:
 									if !rules[ruleskip]() {
-										goto l1140
+										goto l816
 									}
 									depth--
-									add(ruleCONTAINS, position1262)
+									add(ruleCEIL, position1163)
 								}
 								break
 							default:
 								{
-									position1279 := position
+									position1172 := position
 									depth++
 									{
-										position1280, tokenIndex1280, depth1280 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
-											goto l1281
-										}
-										position++
-										goto l1280
-									l1281:
-										position, tokenIndex, depth = position1280, tokenIndex1280, depth1280
-										if buffer[position] != rune('L') {
-											goto l1140
-										}
-										position++
-									}
-								l1280:
-									{
-										position1282, tokenIndex1282, depth1282 := position, tokenIndex, depth
+										position1173, tokenIndex1173, depth1173 := position, tokenIndex, depth
 										if buffer[position] != rune('a') {
-											goto l1283
+											goto l1174
 										}
 										position++
-										goto l1282
-									l1283:
-										position, tokenIndex, depth = position1282, tokenIndex1282, depth1282
+										goto l1173
+									l1174:
+										position, tokenIndex, depth = position1173, tokenIndex1173, depth1173
 										if buffer[position] != rune('A') {
-											goto l1140
+											goto l816
 										}
 										position++
 									}
-								l1282:
+								l1173:
 									{
-										position1284, tokenIndex1284, depth1284 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
-											goto l1285
+										position1175, tokenIndex1175, depth1175 := position, tokenIndex, depth
+										if buffer[position] != rune('b') {
+											goto l1176
 										}
 										position++
-										goto l1284
-									l1285:
-										position, tokenIndex, depth = position1284, tokenIndex1284, depth1284
-										if buffer[position] != rune('N') {
-											goto l1140
+										goto l1175
+									l1176:
+										position, tokenIndex, depth = position1175, tokenIndex1175, depth1175
+										if buffer[position] != rune('B') {
+											goto l816
 										}
 										position++
 									}
-								l1284:
+								l1175:
 									{
-										position1286, tokenIndex1286, depth1286 := position, tokenIndex, depth
-										if buffer[position] != rune('g') {
-											goto l1287
-										}
-										position++
-										goto l1286
-									l1287:
-										position, tokenIndex, depth = position1286, tokenIndex1286, depth1286
-										if buffer[position] != rune('G') {
-											goto l1140
-										}
-										position++
-									}
-								l1286:
-									{
-										position1288, tokenIndex1288, depth1288 := position, tokenIndex, depth
-										if buffer[position] != rune('m') {
-											goto l1289
-										}
-										position++
-										goto l1288
-									l1289:
-										position, tokenIndex, depth = position1288, tokenIndex1288, depth1288
-										if buffer[position] != rune('M') {
-											goto l1140
-										}
-										position++
-									}
-								l1288:
-									{
-										position1290, tokenIndex1290, depth1290 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1291
-										}
-										position++
-										goto l1290
-									l1291:
-										position, tokenIndex, depth = position1290, tokenIndex1290, depth1290
-										if buffer[position] != rune('A') {
-											goto l1140
-										}
-										position++
-									}
-								l1290:
-									{
-										position1292, tokenIndex1292, depth1292 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1293
-										}
-										position++
-										goto l1292
-									l1293:
-										position, tokenIndex, depth = position1292, tokenIndex1292, depth1292
-										if buffer[position] != rune('T') {
-											goto l1140
-										}
-										position++
-									}
-								l1292:
-									{
-										position1294, tokenIndex1294, depth1294 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
-											goto l1295
-										}
-										position++
-										goto l1294
-									l1295:
-										position, tokenIndex, depth = position1294, tokenIndex1294, depth1294
-										if buffer[position] != rune('C') {
-											goto l1140
-										}
-										position++
-									}
-								l1294:
-									{
-										position1296, tokenIndex1296, depth1296 := position, tokenIndex, depth
-										if buffer[position] != rune('h') {
-											goto l1297
-										}
-										position++
-										goto l1296
-									l1297:
-										position, tokenIndex, depth = position1296, tokenIndex1296, depth1296
-										if buffer[position] != rune('H') {
-											goto l1140
-										}
-										position++
-									}
-								l1296:
-									{
-										position1298, tokenIndex1298, depth1298 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1299
-										}
-										position++
-										goto l1298
-									l1299:
-										position, tokenIndex, depth = position1298, tokenIndex1298, depth1298
-										if buffer[position] != rune('E') {
-											goto l1140
-										}
-										position++
-									}
-								l1298:
-									{
-										position1300, tokenIndex1300, depth1300 := position, tokenIndex, depth
+										position1177, tokenIndex1177, depth1177 := position, tokenIndex, depth
 										if buffer[position] != rune('s') {
-											goto l1301
+											goto l1178
 										}
 										position++
-										goto l1300
-									l1301:
-										position, tokenIndex, depth = position1300, tokenIndex1300, depth1300
+										goto l1177
+									l1178:
+										position, tokenIndex, depth = position1177, tokenIndex1177, depth1177
 										if buffer[position] != rune('S') {
-											goto l1140
+											goto l816
 										}
 										position++
 									}
-								l1300:
+								l1177:
 									if !rules[ruleskip]() {
-										goto l1140
+										goto l816
 									}
 									depth--
-									add(ruleLANGMATCHES, position1279)
+									add(ruleABS, position1172)
 								}
 								break
 							}
 						}
 
 					}
-				l1141:
+				l817:
 					if !rules[ruleLPAREN]() {
-						goto l1140
+						goto l816
 					}
 					if !rules[ruleexpression]() {
-						goto l1140
+						goto l816
+					}
+					if !rules[ruleRPAREN]() {
+						goto l816
+					}
+					goto l815
+				l816:
+					position, tokenIndex, depth = position815, tokenIndex815, depth815
+					{
+						position1180, tokenIndex1180, depth1180 := position, tokenIndex, depth
+						{
+							position1182 := position
+							depth++
+							{
+								position1183, tokenIndex1183, depth1183 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1184
+								}
+								position++
+								goto l1183
+							l1184:
+								position, tokenIndex, depth = position1183, tokenIndex1183, depth1183
+								if buffer[position] != rune('S') {
+									goto l1181
+								}
+								position++
+							}
+						l1183:
+							{
+								position1185, tokenIndex1185, depth1185 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1186
+								}
+								position++
+								goto l1185
+							l1186:
+								position, tokenIndex, depth = position1185, tokenIndex1185, depth1185
+								if buffer[position] != rune('T') {
+									goto l1181
+								}
+								position++
+							}
+						l1185:
+							{
+								position1187, tokenIndex1187, depth1187 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1188
+								}
+								position++
+								goto l1187
+							l1188:
+								position, tokenIndex, depth = position1187, tokenIndex1187, depth1187
+								if buffer[position] != rune('R') {
+									goto l1181
+								}
+								position++
+							}
+						l1187:
+							{
+								position1189, tokenIndex1189, depth1189 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1190
+								}
+								position++
+								goto l1189
+							l1190:
+								position, tokenIndex, depth = position1189, tokenIndex1189, depth1189
+								if buffer[position] != rune('S') {
+									goto l1181
+								}
+								position++
+							}
+						l1189:
+							{
+								position1191, tokenIndex1191, depth1191 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1192
+								}
+								position++
+								goto l1191
+							l1192:
+								position, tokenIndex, depth = position1191, tokenIndex1191, depth1191
+								if buffer[position] != rune('T') {
+									goto l1181
+								}
+								position++
+							}
+						l1191:
+							{
+								position1193, tokenIndex1193, depth1193 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l1194
+								}
+								position++
+								goto l1193
+							l1194:
+								position, tokenIndex, depth = position1193, tokenIndex1193, depth1193
+								if buffer[position] != rune('A') {
+									goto l1181
+								}
+								position++
+							}
+						l1193:
+							{
+								position1195, tokenIndex1195, depth1195 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1196
+								}
+								position++
+								goto l1195
+							l1196:
+								position, tokenIndex, depth = position1195, tokenIndex1195, depth1195
+								if buffer[position] != rune('R') {
+									goto l1181
+								}
+								position++
+							}
+						l1195:
+							{
+								position1197, tokenIndex1197, depth1197 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1198
+								}
+								position++
+								goto l1197
+							l1198:
+								position, tokenIndex, depth = position1197, tokenIndex1197, depth1197
+								if buffer[position] != rune('T') {
+									goto l1181
+								}
+								position++
+							}
+						l1197:
+							{
+								position1199, tokenIndex1199, depth1199 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1200
+								}
+								position++
+								goto l1199
+							l1200:
+								position, tokenIndex, depth = position1199, tokenIndex1199, depth1199
+								if buffer[position] != rune('S') {
+									goto l1181
+								}
+								position++
+							}
+						l1199:
+							if !rules[ruleskip]() {
+								goto l1181
+							}
+							depth--
+							add(ruleSTRSTARTS, position1182)
+						}
+						goto l1180
+					l1181:
+						position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
+						{
+							position1202 := position
+							depth++
+							{
+								position1203, tokenIndex1203, depth1203 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1204
+								}
+								position++
+								goto l1203
+							l1204:
+								position, tokenIndex, depth = position1203, tokenIndex1203, depth1203
+								if buffer[position] != rune('S') {
+									goto l1201
+								}
+								position++
+							}
+						l1203:
+							{
+								position1205, tokenIndex1205, depth1205 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1206
+								}
+								position++
+								goto l1205
+							l1206:
+								position, tokenIndex, depth = position1205, tokenIndex1205, depth1205
+								if buffer[position] != rune('T') {
+									goto l1201
+								}
+								position++
+							}
+						l1205:
+							{
+								position1207, tokenIndex1207, depth1207 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1208
+								}
+								position++
+								goto l1207
+							l1208:
+								position, tokenIndex, depth = position1207, tokenIndex1207, depth1207
+								if buffer[position] != rune('R') {
+									goto l1201
+								}
+								position++
+							}
+						l1207:
+							{
+								position1209, tokenIndex1209, depth1209 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l1210
+								}
+								position++
+								goto l1209
+							l1210:
+								position, tokenIndex, depth = position1209, tokenIndex1209, depth1209
+								if buffer[position] != rune('E') {
+									goto l1201
+								}
+								position++
+							}
+						l1209:
+							{
+								position1211, tokenIndex1211, depth1211 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l1212
+								}
+								position++
+								goto l1211
+							l1212:
+								position, tokenIndex, depth = position1211, tokenIndex1211, depth1211
+								if buffer[position] != rune('N') {
+									goto l1201
+								}
+								position++
+							}
+						l1211:
+							{
+								position1213, tokenIndex1213, depth1213 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l1214
+								}
+								position++
+								goto l1213
+							l1214:
+								position, tokenIndex, depth = position1213, tokenIndex1213, depth1213
+								if buffer[position] != rune('D') {
+									goto l1201
+								}
+								position++
+							}
+						l1213:
+							{
+								position1215, tokenIndex1215, depth1215 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1216
+								}
+								position++
+								goto l1215
+							l1216:
+								position, tokenIndex, depth = position1215, tokenIndex1215, depth1215
+								if buffer[position] != rune('S') {
+									goto l1201
+								}
+								position++
+							}
+						l1215:
+							if !rules[ruleskip]() {
+								goto l1201
+							}
+							depth--
+							add(ruleSTRENDS, position1202)
+						}
+						goto l1180
+					l1201:
+						position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
+						{
+							position1218 := position
+							depth++
+							{
+								position1219, tokenIndex1219, depth1219 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1220
+								}
+								position++
+								goto l1219
+							l1220:
+								position, tokenIndex, depth = position1219, tokenIndex1219, depth1219
+								if buffer[position] != rune('S') {
+									goto l1217
+								}
+								position++
+							}
+						l1219:
+							{
+								position1221, tokenIndex1221, depth1221 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1222
+								}
+								position++
+								goto l1221
+							l1222:
+								position, tokenIndex, depth = position1221, tokenIndex1221, depth1221
+								if buffer[position] != rune('T') {
+									goto l1217
+								}
+								position++
+							}
+						l1221:
+							{
+								position1223, tokenIndex1223, depth1223 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1224
+								}
+								position++
+								goto l1223
+							l1224:
+								position, tokenIndex, depth = position1223, tokenIndex1223, depth1223
+								if buffer[position] != rune('R') {
+									goto l1217
+								}
+								position++
+							}
+						l1223:
+							{
+								position1225, tokenIndex1225, depth1225 := position, tokenIndex, depth
+								if buffer[position] != rune('b') {
+									goto l1226
+								}
+								position++
+								goto l1225
+							l1226:
+								position, tokenIndex, depth = position1225, tokenIndex1225, depth1225
+								if buffer[position] != rune('B') {
+									goto l1217
+								}
+								position++
+							}
+						l1225:
+							{
+								position1227, tokenIndex1227, depth1227 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l1228
+								}
+								position++
+								goto l1227
+							l1228:
+								position, tokenIndex, depth = position1227, tokenIndex1227, depth1227
+								if buffer[position] != rune('E') {
+									goto l1217
+								}
+								position++
+							}
+						l1227:
+							{
+								position1229, tokenIndex1229, depth1229 := position, tokenIndex, depth
+								if buffer[position] != rune('f') {
+									goto l1230
+								}
+								position++
+								goto l1229
+							l1230:
+								position, tokenIndex, depth = position1229, tokenIndex1229, depth1229
+								if buffer[position] != rune('F') {
+									goto l1217
+								}
+								position++
+							}
+						l1229:
+							{
+								position1231, tokenIndex1231, depth1231 := position, tokenIndex, depth
+								if buffer[position] != rune('o') {
+									goto l1232
+								}
+								position++
+								goto l1231
+							l1232:
+								position, tokenIndex, depth = position1231, tokenIndex1231, depth1231
+								if buffer[position] != rune('O') {
+									goto l1217
+								}
+								position++
+							}
+						l1231:
+							{
+								position1233, tokenIndex1233, depth1233 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1234
+								}
+								position++
+								goto l1233
+							l1234:
+								position, tokenIndex, depth = position1233, tokenIndex1233, depth1233
+								if buffer[position] != rune('R') {
+									goto l1217
+								}
+								position++
+							}
+						l1233:
+							{
+								position1235, tokenIndex1235, depth1235 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l1236
+								}
+								position++
+								goto l1235
+							l1236:
+								position, tokenIndex, depth = position1235, tokenIndex1235, depth1235
+								if buffer[position] != rune('E') {
+									goto l1217
+								}
+								position++
+							}
+						l1235:
+							if !rules[ruleskip]() {
+								goto l1217
+							}
+							depth--
+							add(ruleSTRBEFORE, position1218)
+						}
+						goto l1180
+					l1217:
+						position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
+						{
+							position1238 := position
+							depth++
+							{
+								position1239, tokenIndex1239, depth1239 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1240
+								}
+								position++
+								goto l1239
+							l1240:
+								position, tokenIndex, depth = position1239, tokenIndex1239, depth1239
+								if buffer[position] != rune('S') {
+									goto l1237
+								}
+								position++
+							}
+						l1239:
+							{
+								position1241, tokenIndex1241, depth1241 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1242
+								}
+								position++
+								goto l1241
+							l1242:
+								position, tokenIndex, depth = position1241, tokenIndex1241, depth1241
+								if buffer[position] != rune('T') {
+									goto l1237
+								}
+								position++
+							}
+						l1241:
+							{
+								position1243, tokenIndex1243, depth1243 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1244
+								}
+								position++
+								goto l1243
+							l1244:
+								position, tokenIndex, depth = position1243, tokenIndex1243, depth1243
+								if buffer[position] != rune('R') {
+									goto l1237
+								}
+								position++
+							}
+						l1243:
+							{
+								position1245, tokenIndex1245, depth1245 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l1246
+								}
+								position++
+								goto l1245
+							l1246:
+								position, tokenIndex, depth = position1245, tokenIndex1245, depth1245
+								if buffer[position] != rune('A') {
+									goto l1237
+								}
+								position++
+							}
+						l1245:
+							{
+								position1247, tokenIndex1247, depth1247 := position, tokenIndex, depth
+								if buffer[position] != rune('f') {
+									goto l1248
+								}
+								position++
+								goto l1247
+							l1248:
+								position, tokenIndex, depth = position1247, tokenIndex1247, depth1247
+								if buffer[position] != rune('F') {
+									goto l1237
+								}
+								position++
+							}
+						l1247:
+							{
+								position1249, tokenIndex1249, depth1249 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1250
+								}
+								position++
+								goto l1249
+							l1250:
+								position, tokenIndex, depth = position1249, tokenIndex1249, depth1249
+								if buffer[position] != rune('T') {
+									goto l1237
+								}
+								position++
+							}
+						l1249:
+							{
+								position1251, tokenIndex1251, depth1251 := position, tokenIndex, depth
+								if buffer[position] != rune('e') {
+									goto l1252
+								}
+								position++
+								goto l1251
+							l1252:
+								position, tokenIndex, depth = position1251, tokenIndex1251, depth1251
+								if buffer[position] != rune('E') {
+									goto l1237
+								}
+								position++
+							}
+						l1251:
+							{
+								position1253, tokenIndex1253, depth1253 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1254
+								}
+								position++
+								goto l1253
+							l1254:
+								position, tokenIndex, depth = position1253, tokenIndex1253, depth1253
+								if buffer[position] != rune('R') {
+									goto l1237
+								}
+								position++
+							}
+						l1253:
+							if !rules[ruleskip]() {
+								goto l1237
+							}
+							depth--
+							add(ruleSTRAFTER, position1238)
+						}
+						goto l1180
+					l1237:
+						position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
+						{
+							position1256 := position
+							depth++
+							{
+								position1257, tokenIndex1257, depth1257 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1258
+								}
+								position++
+								goto l1257
+							l1258:
+								position, tokenIndex, depth = position1257, tokenIndex1257, depth1257
+								if buffer[position] != rune('S') {
+									goto l1255
+								}
+								position++
+							}
+						l1257:
+							{
+								position1259, tokenIndex1259, depth1259 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1260
+								}
+								position++
+								goto l1259
+							l1260:
+								position, tokenIndex, depth = position1259, tokenIndex1259, depth1259
+								if buffer[position] != rune('T') {
+									goto l1255
+								}
+								position++
+							}
+						l1259:
+							{
+								position1261, tokenIndex1261, depth1261 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1262
+								}
+								position++
+								goto l1261
+							l1262:
+								position, tokenIndex, depth = position1261, tokenIndex1261, depth1261
+								if buffer[position] != rune('R') {
+									goto l1255
+								}
+								position++
+							}
+						l1261:
+							{
+								position1263, tokenIndex1263, depth1263 := position, tokenIndex, depth
+								if buffer[position] != rune('l') {
+									goto l1264
+								}
+								position++
+								goto l1263
+							l1264:
+								position, tokenIndex, depth = position1263, tokenIndex1263, depth1263
+								if buffer[position] != rune('L') {
+									goto l1255
+								}
+								position++
+							}
+						l1263:
+							{
+								position1265, tokenIndex1265, depth1265 := position, tokenIndex, depth
+								if buffer[position] != rune('a') {
+									goto l1266
+								}
+								position++
+								goto l1265
+							l1266:
+								position, tokenIndex, depth = position1265, tokenIndex1265, depth1265
+								if buffer[position] != rune('A') {
+									goto l1255
+								}
+								position++
+							}
+						l1265:
+							{
+								position1267, tokenIndex1267, depth1267 := position, tokenIndex, depth
+								if buffer[position] != rune('n') {
+									goto l1268
+								}
+								position++
+								goto l1267
+							l1268:
+								position, tokenIndex, depth = position1267, tokenIndex1267, depth1267
+								if buffer[position] != rune('N') {
+									goto l1255
+								}
+								position++
+							}
+						l1267:
+							{
+								position1269, tokenIndex1269, depth1269 := position, tokenIndex, depth
+								if buffer[position] != rune('g') {
+									goto l1270
+								}
+								position++
+								goto l1269
+							l1270:
+								position, tokenIndex, depth = position1269, tokenIndex1269, depth1269
+								if buffer[position] != rune('G') {
+									goto l1255
+								}
+								position++
+							}
+						l1269:
+							if !rules[ruleskip]() {
+								goto l1255
+							}
+							depth--
+							add(ruleSTRLANG, position1256)
+						}
+						goto l1180
+					l1255:
+						position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
+						{
+							position1272 := position
+							depth++
+							{
+								position1273, tokenIndex1273, depth1273 := position, tokenIndex, depth
+								if buffer[position] != rune('s') {
+									goto l1274
+								}
+								position++
+								goto l1273
+							l1274:
+								position, tokenIndex, depth = position1273, tokenIndex1273, depth1273
+								if buffer[position] != rune('S') {
+									goto l1271
+								}
+								position++
+							}
+						l1273:
+							{
+								position1275, tokenIndex1275, depth1275 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1276
+								}
+								position++
+								goto l1275
+							l1276:
+								position, tokenIndex, depth = position1275, tokenIndex1275, depth1275
+								if buffer[position] != rune('T') {
+									goto l1271
+								}
+								position++
+							}
+						l1275:
+							{
+								position1277, tokenIndex1277, depth1277 := position, tokenIndex, depth
+								if buffer[position] != rune('r') {
+									goto l1278
+								}
+								position++
+								goto l1277
+							l1278:
+								position, tokenIndex, depth = position1277, tokenIndex1277, depth1277
+								if buffer[position] != rune('R') {
+									goto l1271
+								}
+								position++
+							}
+						l1277:
+							{
+								position1279, tokenIndex1279, depth1279 := position, tokenIndex, depth
+								if buffer[position] != rune('d') {
+									goto l1280
+								}
+								position++
+								goto l1279
+							l1280:
+								position, tokenIndex, depth = position1279, tokenIndex1279, depth1279
+								if buffer[position] != rune('D') {
+									goto l1271
+								}
+								position++
+							}
+						l1279:
+							{
+								position1281, tokenIndex1281, depth1281 := position, tokenIndex, depth
+								if buffer[position] != rune('t') {
+									goto l1282
+								}
+								position++
+								goto l1281
+							l1282:
+								position, tokenIndex, depth = position1281, tokenIndex1281, depth1281
+								if buffer[position] != rune('T') {
+									goto l1271
+								}
+								position++
+							}
+						l1281:
+							if !rules[ruleskip]() {
+								goto l1271
+							}
+							depth--
+							add(ruleSTRDT, position1272)
+						}
+						goto l1180
+					l1271:
+						position, tokenIndex, depth = position1180, tokenIndex1180, depth1180
+						{
+							switch buffer[position] {
+							case 'S', 's':
+								{
+									position1284 := position
+									depth++
+									{
+										position1285, tokenIndex1285, depth1285 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1286
+										}
+										position++
+										goto l1285
+									l1286:
+										position, tokenIndex, depth = position1285, tokenIndex1285, depth1285
+										if buffer[position] != rune('S') {
+											goto l1179
+										}
+										position++
+									}
+								l1285:
+									{
+										position1287, tokenIndex1287, depth1287 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1288
+										}
+										position++
+										goto l1287
+									l1288:
+										position, tokenIndex, depth = position1287, tokenIndex1287, depth1287
+										if buffer[position] != rune('A') {
+											goto l1179
+										}
+										position++
+									}
+								l1287:
+									{
+										position1289, tokenIndex1289, depth1289 := position, tokenIndex, depth
+										if buffer[position] != rune('m') {
+											goto l1290
+										}
+										position++
+										goto l1289
+									l1290:
+										position, tokenIndex, depth = position1289, tokenIndex1289, depth1289
+										if buffer[position] != rune('M') {
+											goto l1179
+										}
+										position++
+									}
+								l1289:
+									{
+										position1291, tokenIndex1291, depth1291 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1292
+										}
+										position++
+										goto l1291
+									l1292:
+										position, tokenIndex, depth = position1291, tokenIndex1291, depth1291
+										if buffer[position] != rune('E') {
+											goto l1179
+										}
+										position++
+									}
+								l1291:
+									{
+										position1293, tokenIndex1293, depth1293 := position, tokenIndex, depth
+										if buffer[position] != rune('t') {
+											goto l1294
+										}
+										position++
+										goto l1293
+									l1294:
+										position, tokenIndex, depth = position1293, tokenIndex1293, depth1293
+										if buffer[position] != rune('T') {
+											goto l1179
+										}
+										position++
+									}
+								l1293:
+									{
+										position1295, tokenIndex1295, depth1295 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1296
+										}
+										position++
+										goto l1295
+									l1296:
+										position, tokenIndex, depth = position1295, tokenIndex1295, depth1295
+										if buffer[position] != rune('E') {
+											goto l1179
+										}
+										position++
+									}
+								l1295:
+									{
+										position1297, tokenIndex1297, depth1297 := position, tokenIndex, depth
+										if buffer[position] != rune('r') {
+											goto l1298
+										}
+										position++
+										goto l1297
+									l1298:
+										position, tokenIndex, depth = position1297, tokenIndex1297, depth1297
+										if buffer[position] != rune('R') {
+											goto l1179
+										}
+										position++
+									}
+								l1297:
+									{
+										position1299, tokenIndex1299, depth1299 := position, tokenIndex, depth
+										if buffer[position] != rune('m') {
+											goto l1300
+										}
+										position++
+										goto l1299
+									l1300:
+										position, tokenIndex, depth = position1299, tokenIndex1299, depth1299
+										if buffer[position] != rune('M') {
+											goto l1179
+										}
+										position++
+									}
+								l1299:
+									if !rules[ruleskip]() {
+										goto l1179
+									}
+									depth--
+									add(ruleSAMETERM, position1284)
+								}
+								break
+							case 'C', 'c':
+								{
+									position1301 := position
+									depth++
+									{
+										position1302, tokenIndex1302, depth1302 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1303
+										}
+										position++
+										goto l1302
+									l1303:
+										position, tokenIndex, depth = position1302, tokenIndex1302, depth1302
+										if buffer[position] != rune('C') {
+											goto l1179
+										}
+										position++
+									}
+								l1302:
+									{
+										position1304, tokenIndex1304, depth1304 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1305
+										}
+										position++
+										goto l1304
+									l1305:
+										position, tokenIndex, depth = position1304, tokenIndex1304, depth1304
+										if buffer[position] != rune('O') {
+											goto l1179
+										}
+										position++
+									}
+								l1304:
+									{
+										position1306, tokenIndex1306, depth1306 := position, tokenIndex, depth
+										if buffer[position] != rune('n') {
+											goto l1307
+										}
+										position++
+										goto l1306
+									l1307:
+										position, tokenIndex, depth = position1306, tokenIndex1306, depth1306
+										if buffer[position] != rune('N') {
+											goto l1179
+										}
+										position++
+									}
+								l1306:
+									{
+										position1308, tokenIndex1308, depth1308 := position, tokenIndex, depth
+										if buffer[position] != rune('t') {
+											goto l1309
+										}
+										position++
+										goto l1308
+									l1309:
+										position, tokenIndex, depth = position1308, tokenIndex1308, depth1308
+										if buffer[position] != rune('T') {
+											goto l1179
+										}
+										position++
+									}
+								l1308:
+									{
+										position1310, tokenIndex1310, depth1310 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1311
+										}
+										position++
+										goto l1310
+									l1311:
+										position, tokenIndex, depth = position1310, tokenIndex1310, depth1310
+										if buffer[position] != rune('A') {
+											goto l1179
+										}
+										position++
+									}
+								l1310:
+									{
+										position1312, tokenIndex1312, depth1312 := position, tokenIndex, depth
+										if buffer[position] != rune('i') {
+											goto l1313
+										}
+										position++
+										goto l1312
+									l1313:
+										position, tokenIndex, depth = position1312, tokenIndex1312, depth1312
+										if buffer[position] != rune('I') {
+											goto l1179
+										}
+										position++
+									}
+								l1312:
+									{
+										position1314, tokenIndex1314, depth1314 := position, tokenIndex, depth
+										if buffer[position] != rune('n') {
+											goto l1315
+										}
+										position++
+										goto l1314
+									l1315:
+										position, tokenIndex, depth = position1314, tokenIndex1314, depth1314
+										if buffer[position] != rune('N') {
+											goto l1179
+										}
+										position++
+									}
+								l1314:
+									{
+										position1316, tokenIndex1316, depth1316 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1317
+										}
+										position++
+										goto l1316
+									l1317:
+										position, tokenIndex, depth = position1316, tokenIndex1316, depth1316
+										if buffer[position] != rune('S') {
+											goto l1179
+										}
+										position++
+									}
+								l1316:
+									if !rules[ruleskip]() {
+										goto l1179
+									}
+									depth--
+									add(ruleCONTAINS, position1301)
+								}
+								break
+							default:
+								{
+									position1318 := position
+									depth++
+									{
+										position1319, tokenIndex1319, depth1319 := position, tokenIndex, depth
+										if buffer[position] != rune('l') {
+											goto l1320
+										}
+										position++
+										goto l1319
+									l1320:
+										position, tokenIndex, depth = position1319, tokenIndex1319, depth1319
+										if buffer[position] != rune('L') {
+											goto l1179
+										}
+										position++
+									}
+								l1319:
+									{
+										position1321, tokenIndex1321, depth1321 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1322
+										}
+										position++
+										goto l1321
+									l1322:
+										position, tokenIndex, depth = position1321, tokenIndex1321, depth1321
+										if buffer[position] != rune('A') {
+											goto l1179
+										}
+										position++
+									}
+								l1321:
+									{
+										position1323, tokenIndex1323, depth1323 := position, tokenIndex, depth
+										if buffer[position] != rune('n') {
+											goto l1324
+										}
+										position++
+										goto l1323
+									l1324:
+										position, tokenIndex, depth = position1323, tokenIndex1323, depth1323
+										if buffer[position] != rune('N') {
+											goto l1179
+										}
+										position++
+									}
+								l1323:
+									{
+										position1325, tokenIndex1325, depth1325 := position, tokenIndex, depth
+										if buffer[position] != rune('g') {
+											goto l1326
+										}
+										position++
+										goto l1325
+									l1326:
+										position, tokenIndex, depth = position1325, tokenIndex1325, depth1325
+										if buffer[position] != rune('G') {
+											goto l1179
+										}
+										position++
+									}
+								l1325:
+									{
+										position1327, tokenIndex1327, depth1327 := position, tokenIndex, depth
+										if buffer[position] != rune('m') {
+											goto l1328
+										}
+										position++
+										goto l1327
+									l1328:
+										position, tokenIndex, depth = position1327, tokenIndex1327, depth1327
+										if buffer[position] != rune('M') {
+											goto l1179
+										}
+										position++
+									}
+								l1327:
+									{
+										position1329, tokenIndex1329, depth1329 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1330
+										}
+										position++
+										goto l1329
+									l1330:
+										position, tokenIndex, depth = position1329, tokenIndex1329, depth1329
+										if buffer[position] != rune('A') {
+											goto l1179
+										}
+										position++
+									}
+								l1329:
+									{
+										position1331, tokenIndex1331, depth1331 := position, tokenIndex, depth
+										if buffer[position] != rune('t') {
+											goto l1332
+										}
+										position++
+										goto l1331
+									l1332:
+										position, tokenIndex, depth = position1331, tokenIndex1331, depth1331
+										if buffer[position] != rune('T') {
+											goto l1179
+										}
+										position++
+									}
+								l1331:
+									{
+										position1333, tokenIndex1333, depth1333 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1334
+										}
+										position++
+										goto l1333
+									l1334:
+										position, tokenIndex, depth = position1333, tokenIndex1333, depth1333
+										if buffer[position] != rune('C') {
+											goto l1179
+										}
+										position++
+									}
+								l1333:
+									{
+										position1335, tokenIndex1335, depth1335 := position, tokenIndex, depth
+										if buffer[position] != rune('h') {
+											goto l1336
+										}
+										position++
+										goto l1335
+									l1336:
+										position, tokenIndex, depth = position1335, tokenIndex1335, depth1335
+										if buffer[position] != rune('H') {
+											goto l1179
+										}
+										position++
+									}
+								l1335:
+									{
+										position1337, tokenIndex1337, depth1337 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1338
+										}
+										position++
+										goto l1337
+									l1338:
+										position, tokenIndex, depth = position1337, tokenIndex1337, depth1337
+										if buffer[position] != rune('E') {
+											goto l1179
+										}
+										position++
+									}
+								l1337:
+									{
+										position1339, tokenIndex1339, depth1339 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1340
+										}
+										position++
+										goto l1339
+									l1340:
+										position, tokenIndex, depth = position1339, tokenIndex1339, depth1339
+										if buffer[position] != rune('S') {
+											goto l1179
+										}
+										position++
+									}
+								l1339:
+									if !rules[ruleskip]() {
+										goto l1179
+									}
+									depth--
+									add(ruleLANGMATCHES, position1318)
+								}
+								break
+							}
+						}
+
+					}
+				l1180:
+					if !rules[ruleLPAREN]() {
+						goto l1179
+					}
+					if !rules[ruleexpression]() {
+						goto l1179
 					}
 					if !rules[ruleCOMMA]() {
-						goto l1140
+						goto l1179
 					}
 					if !rules[ruleexpression]() {
-						goto l1140
+						goto l1179
 					}
 					if !rules[ruleRPAREN]() {
-						goto l1140
+						goto l1179
 					}
-					goto l776
-				l1140:
-					position, tokenIndex, depth = position776, tokenIndex776, depth776
+					goto l815
+				l1179:
+					position, tokenIndex, depth = position815, tokenIndex815, depth815
 					{
-						position1303 := position
+						position1342 := position
 						depth++
 						{
-							position1304, tokenIndex1304, depth1304 := position, tokenIndex, depth
+							position1343, tokenIndex1343, depth1343 := position, tokenIndex, depth
 							if buffer[position] != rune('b') {
-								goto l1305
+								goto l1344
 							}
 							position++
-							goto l1304
-						l1305:
-							position, tokenIndex, depth = position1304, tokenIndex1304, depth1304
+							goto l1343
+						l1344:
+							position, tokenIndex, depth = position1343, tokenIndex1343, depth1343
 							if buffer[position] != rune('B') {
-								goto l1302
+								goto l1341
 							}
 							position++
 						}
-					l1304:
+					l1343:
 						{
-							position1306, tokenIndex1306, depth1306 := position, tokenIndex, depth
+							position1345, tokenIndex1345, depth1345 := position, tokenIndex, depth
 							if buffer[position] != rune('o') {
-								goto l1307
+								goto l1346
 							}
 							position++
-							goto l1306
-						l1307:
-							position, tokenIndex, depth = position1306, tokenIndex1306, depth1306
+							goto l1345
+						l1346:
+							position, tokenIndex, depth = position1345, tokenIndex1345, depth1345
 							if buffer[position] != rune('O') {
-								goto l1302
+								goto l1341
 							}
 							position++
 						}
-					l1306:
+					l1345:
 						{
-							position1308, tokenIndex1308, depth1308 := position, tokenIndex, depth
+							position1347, tokenIndex1347, depth1347 := position, tokenIndex, depth
 							if buffer[position] != rune('u') {
-								goto l1309
+								goto l1348
 							}
 							position++
-							goto l1308
-						l1309:
-							position, tokenIndex, depth = position1308, tokenIndex1308, depth1308
+							goto l1347
+						l1348:
+							position, tokenIndex, depth = position1347, tokenIndex1347, depth1347
 							if buffer[position] != rune('U') {
-								goto l1302
+								goto l1341
 							}
 							position++
 						}
-					l1308:
+					l1347:
 						{
-							position1310, tokenIndex1310, depth1310 := position, tokenIndex, depth
+							position1349, tokenIndex1349, depth1349 := position, tokenIndex, depth
 							if buffer[position] != rune('n') {
-								goto l1311
+								goto l1350
 							}
 							position++
-							goto l1310
-						l1311:
-							position, tokenIndex, depth = position1310, tokenIndex1310, depth1310
+							goto l1349
+						l1350:
+							position, tokenIndex, depth = position1349, tokenIndex1349, depth1349
 							if buffer[position] != rune('N') {
-								goto l1302
+								goto l1341
 							}
 							position++
 						}
-					l1310:
+					l1349:
 						{
-							position1312, tokenIndex1312, depth1312 := position, tokenIndex, depth
+							position1351, tokenIndex1351, depth1351 := position, tokenIndex, depth
 							if buffer[position] != rune('d') {
-								goto l1313
+								goto l1352
 							}
 							position++
-							goto l1312
-						l1313:
-							position, tokenIndex, depth = position1312, tokenIndex1312, depth1312
+							goto l1351
+						l1352:
+							position, tokenIndex, depth = position1351, tokenIndex1351, depth1351
 							if buffer[position] != rune('D') {
-								goto l1302
+								goto l1341
 							}
 							position++
 						}
-					l1312:
+					l1351:
 						if !rules[ruleskip]() {
-							goto l1302
+							goto l1341
 						}
 						depth--
-						add(ruleBOUND, position1303)
+						add(ruleBOUND, position1342)
 					}
 					if !rules[ruleLPAREN]() {
-						goto l1302
+						goto l1341
 					}
 					if !rules[rulevar]() {
-						goto l1302
+						goto l1341
 					}
 					if !rules[ruleRPAREN]() {
-						goto l1302
+						goto l1341
 					}
-					goto l776
-				l1302:
-					position, tokenIndex, depth = position776, tokenIndex776, depth776
+					goto l815
+				l1341:
+					position, tokenIndex, depth = position815, tokenIndex815, depth815
 					{
 						switch buffer[position] {
 						case 'S', 's':
 							{
-								position1316 := position
+								position1355 := position
 								depth++
 								{
-									position1317, tokenIndex1317, depth1317 := position, tokenIndex, depth
+									position1356, tokenIndex1356, depth1356 := position, tokenIndex, depth
 									if buffer[position] != rune('s') {
-										goto l1318
+										goto l1357
 									}
 									position++
-									goto l1317
-								l1318:
-									position, tokenIndex, depth = position1317, tokenIndex1317, depth1317
+									goto l1356
+								l1357:
+									position, tokenIndex, depth = position1356, tokenIndex1356, depth1356
 									if buffer[position] != rune('S') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1317:
+							l1356:
 								{
-									position1319, tokenIndex1319, depth1319 := position, tokenIndex, depth
+									position1358, tokenIndex1358, depth1358 := position, tokenIndex, depth
 									if buffer[position] != rune('t') {
-										goto l1320
+										goto l1359
 									}
 									position++
-									goto l1319
-								l1320:
-									position, tokenIndex, depth = position1319, tokenIndex1319, depth1319
+									goto l1358
+								l1359:
+									position, tokenIndex, depth = position1358, tokenIndex1358, depth1358
 									if buffer[position] != rune('T') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1319:
+							l1358:
 								{
-									position1321, tokenIndex1321, depth1321 := position, tokenIndex, depth
+									position1360, tokenIndex1360, depth1360 := position, tokenIndex, depth
 									if buffer[position] != rune('r') {
-										goto l1322
+										goto l1361
 									}
 									position++
-									goto l1321
-								l1322:
-									position, tokenIndex, depth = position1321, tokenIndex1321, depth1321
+									goto l1360
+								l1361:
+									position, tokenIndex, depth = position1360, tokenIndex1360, depth1360
 									if buffer[position] != rune('R') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1321:
+							l1360:
 								{
-									position1323, tokenIndex1323, depth1323 := position, tokenIndex, depth
+									position1362, tokenIndex1362, depth1362 := position, tokenIndex, depth
 									if buffer[position] != rune('u') {
-										goto l1324
+										goto l1363
 									}
 									position++
-									goto l1323
-								l1324:
-									position, tokenIndex, depth = position1323, tokenIndex1323, depth1323
+									goto l1362
+								l1363:
+									position, tokenIndex, depth = position1362, tokenIndex1362, depth1362
 									if buffer[position] != rune('U') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1323:
+							l1362:
 								{
-									position1325, tokenIndex1325, depth1325 := position, tokenIndex, depth
+									position1364, tokenIndex1364, depth1364 := position, tokenIndex, depth
 									if buffer[position] != rune('u') {
-										goto l1326
+										goto l1365
 									}
 									position++
-									goto l1325
-								l1326:
-									position, tokenIndex, depth = position1325, tokenIndex1325, depth1325
+									goto l1364
+								l1365:
+									position, tokenIndex, depth = position1364, tokenIndex1364, depth1364
 									if buffer[position] != rune('U') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1325:
+							l1364:
 								{
-									position1327, tokenIndex1327, depth1327 := position, tokenIndex, depth
+									position1366, tokenIndex1366, depth1366 := position, tokenIndex, depth
 									if buffer[position] != rune('i') {
-										goto l1328
+										goto l1367
 									}
 									position++
-									goto l1327
-								l1328:
-									position, tokenIndex, depth = position1327, tokenIndex1327, depth1327
+									goto l1366
+								l1367:
+									position, tokenIndex, depth = position1366, tokenIndex1366, depth1366
 									if buffer[position] != rune('I') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1327:
+							l1366:
 								{
-									position1329, tokenIndex1329, depth1329 := position, tokenIndex, depth
+									position1368, tokenIndex1368, depth1368 := position, tokenIndex, depth
 									if buffer[position] != rune('d') {
-										goto l1330
+										goto l1369
 									}
 									position++
-									goto l1329
-								l1330:
-									position, tokenIndex, depth = position1329, tokenIndex1329, depth1329
+									goto l1368
+								l1369:
+									position, tokenIndex, depth = position1368, tokenIndex1368, depth1368
 									if buffer[position] != rune('D') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1329:
+							l1368:
 								if !rules[ruleskip]() {
-									goto l1314
+									goto l1353
 								}
 								depth--
-								add(ruleSTRUUID, position1316)
+								add(ruleSTRUUID, position1355)
 							}
 							break
 						case 'U', 'u':
 							{
-								position1331 := position
+								position1370 := position
 								depth++
 								{
-									position1332, tokenIndex1332, depth1332 := position, tokenIndex, depth
+									position1371, tokenIndex1371, depth1371 := position, tokenIndex, depth
 									if buffer[position] != rune('u') {
-										goto l1333
+										goto l1372
 									}
 									position++
-									goto l1332
-								l1333:
-									position, tokenIndex, depth = position1332, tokenIndex1332, depth1332
+									goto l1371
+								l1372:
+									position, tokenIndex, depth = position1371, tokenIndex1371, depth1371
 									if buffer[position] != rune('U') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1332:
+							l1371:
 								{
-									position1334, tokenIndex1334, depth1334 := position, tokenIndex, depth
+									position1373, tokenIndex1373, depth1373 := position, tokenIndex, depth
 									if buffer[position] != rune('u') {
-										goto l1335
+										goto l1374
 									}
 									position++
-									goto l1334
-								l1335:
-									position, tokenIndex, depth = position1334, tokenIndex1334, depth1334
+									goto l1373
+								l1374:
+									position, tokenIndex, depth = position1373, tokenIndex1373, depth1373
 									if buffer[position] != rune('U') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1334:
+							l1373:
 								{
-									position1336, tokenIndex1336, depth1336 := position, tokenIndex, depth
+									position1375, tokenIndex1375, depth1375 := position, tokenIndex, depth
 									if buffer[position] != rune('i') {
-										goto l1337
+										goto l1376
 									}
 									position++
-									goto l1336
-								l1337:
-									position, tokenIndex, depth = position1336, tokenIndex1336, depth1336
+									goto l1375
+								l1376:
+									position, tokenIndex, depth = position1375, tokenIndex1375, depth1375
 									if buffer[position] != rune('I') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1336:
+							l1375:
 								{
-									position1338, tokenIndex1338, depth1338 := position, tokenIndex, depth
+									position1377, tokenIndex1377, depth1377 := position, tokenIndex, depth
 									if buffer[position] != rune('d') {
-										goto l1339
+										goto l1378
 									}
 									position++
-									goto l1338
-								l1339:
-									position, tokenIndex, depth = position1338, tokenIndex1338, depth1338
+									goto l1377
+								l1378:
+									position, tokenIndex, depth = position1377, tokenIndex1377, depth1377
 									if buffer[position] != rune('D') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1338:
+							l1377:
 								if !rules[ruleskip]() {
-									goto l1314
+									goto l1353
 								}
 								depth--
-								add(ruleUUID, position1331)
+								add(ruleUUID, position1370)
 							}
 							break
 						case 'N', 'n':
 							{
-								position1340 := position
+								position1379 := position
 								depth++
 								{
-									position1341, tokenIndex1341, depth1341 := position, tokenIndex, depth
+									position1380, tokenIndex1380, depth1380 := position, tokenIndex, depth
 									if buffer[position] != rune('n') {
-										goto l1342
+										goto l1381
 									}
 									position++
-									goto l1341
-								l1342:
-									position, tokenIndex, depth = position1341, tokenIndex1341, depth1341
+									goto l1380
+								l1381:
+									position, tokenIndex, depth = position1380, tokenIndex1380, depth1380
 									if buffer[position] != rune('N') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1341:
+							l1380:
 								{
-									position1343, tokenIndex1343, depth1343 := position, tokenIndex, depth
+									position1382, tokenIndex1382, depth1382 := position, tokenIndex, depth
 									if buffer[position] != rune('o') {
-										goto l1344
+										goto l1383
 									}
 									position++
-									goto l1343
-								l1344:
-									position, tokenIndex, depth = position1343, tokenIndex1343, depth1343
+									goto l1382
+								l1383:
+									position, tokenIndex, depth = position1382, tokenIndex1382, depth1382
 									if buffer[position] != rune('O') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1343:
+							l1382:
 								{
-									position1345, tokenIndex1345, depth1345 := position, tokenIndex, depth
+									position1384, tokenIndex1384, depth1384 := position, tokenIndex, depth
 									if buffer[position] != rune('w') {
-										goto l1346
+										goto l1385
 									}
 									position++
-									goto l1345
-								l1346:
-									position, tokenIndex, depth = position1345, tokenIndex1345, depth1345
+									goto l1384
+								l1385:
+									position, tokenIndex, depth = position1384, tokenIndex1384, depth1384
 									if buffer[position] != rune('W') {
-										goto l1314
+										goto l1353
 									}
 									position++
 								}
-							l1345:
+							l1384:
 								if !rules[ruleskip]() {
-									goto l1314
+									goto l1353
 								}
 								depth--
-								add(ruleNOW, position1340)
+								add(ruleNOW, position1379)
 							}
 							break
 						default:
 							{
-								position1347 := position
+								position1386 := position
 								depth++
 								{
-									position1348, tokenIndex1348, depth1348 := position, tokenIndex, depth
+									position1387, tokenIndex1387, depth1387 := position, tokenIndex, depth
 									if buffer[position] != rune('r') {
-										goto l1349
+										goto l1388
 									}
 									position++
-									goto l1348
-								l1349:
-									position, tokenIndex, depth = position1348, tokenIndex1348, depth1348
+									goto l1387
+								l1388:
+									position, tokenIndex, depth = position1387, tokenIndex1387, depth1387
 									if buffer[position] != rune('R') {
-										goto l1314
-									}
-									position++
-								}
-							l1348:
-								{
-									position1350, tokenIndex1350, depth1350 := position, tokenIndex, depth
-									if buffer[position] != rune('a') {
-										goto l1351
-									}
-									position++
-									goto l1350
-								l1351:
-									position, tokenIndex, depth = position1350, tokenIndex1350, depth1350
-									if buffer[position] != rune('A') {
-										goto l1314
-									}
-									position++
-								}
-							l1350:
-								{
-									position1352, tokenIndex1352, depth1352 := position, tokenIndex, depth
-									if buffer[position] != rune('n') {
 										goto l1353
 									}
 									position++
-									goto l1352
-								l1353:
-									position, tokenIndex, depth = position1352, tokenIndex1352, depth1352
-									if buffer[position] != rune('N') {
-										goto l1314
-									}
-									position++
 								}
-							l1352:
+							l1387:
 								{
-									position1354, tokenIndex1354, depth1354 := position, tokenIndex, depth
-									if buffer[position] != rune('d') {
-										goto l1355
+									position1389, tokenIndex1389, depth1389 := position, tokenIndex, depth
+									if buffer[position] != rune('a') {
+										goto l1390
 									}
 									position++
-									goto l1354
-								l1355:
-									position, tokenIndex, depth = position1354, tokenIndex1354, depth1354
-									if buffer[position] != rune('D') {
-										goto l1314
+									goto l1389
+								l1390:
+									position, tokenIndex, depth = position1389, tokenIndex1389, depth1389
+									if buffer[position] != rune('A') {
+										goto l1353
 									}
 									position++
 								}
-							l1354:
+							l1389:
+								{
+									position1391, tokenIndex1391, depth1391 := position, tokenIndex, depth
+									if buffer[position] != rune('n') {
+										goto l1392
+									}
+									position++
+									goto l1391
+								l1392:
+									position, tokenIndex, depth = position1391, tokenIndex1391, depth1391
+									if buffer[position] != rune('N') {
+										goto l1353
+									}
+									position++
+								}
+							l1391:
+								{
+									position1393, tokenIndex1393, depth1393 := position, tokenIndex, depth
+									if buffer[position] != rune('d') {
+										goto l1394
+									}
+									position++
+									goto l1393
+								l1394:
+									position, tokenIndex, depth = position1393, tokenIndex1393, depth1393
+									if buffer[position] != rune('D') {
+										goto l1353
+									}
+									position++
+								}
+							l1393:
 								if !rules[ruleskip]() {
-									goto l1314
+									goto l1353
 								}
 								depth--
-								add(ruleRAND, position1347)
+								add(ruleRAND, position1386)
 							}
 							break
 						}
 					}
 
 					if !rules[rulenil]() {
-						goto l1314
+						goto l1353
 					}
-					goto l776
-				l1314:
-					position, tokenIndex, depth = position776, tokenIndex776, depth776
+					goto l815
+				l1353:
+					position, tokenIndex, depth = position815, tokenIndex815, depth815
 					{
 						switch buffer[position] {
 						case 'E', 'N', 'e', 'n':
-							{
-								position1357, tokenIndex1357, depth1357 := position, tokenIndex, depth
-								{
-									position1359 := position
-									depth++
-									{
-										position1360, tokenIndex1360, depth1360 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1361
-										}
-										position++
-										goto l1360
-									l1361:
-										position, tokenIndex, depth = position1360, tokenIndex1360, depth1360
-										if buffer[position] != rune('E') {
-											goto l1358
-										}
-										position++
-									}
-								l1360:
-									{
-										position1362, tokenIndex1362, depth1362 := position, tokenIndex, depth
-										if buffer[position] != rune('x') {
-											goto l1363
-										}
-										position++
-										goto l1362
-									l1363:
-										position, tokenIndex, depth = position1362, tokenIndex1362, depth1362
-										if buffer[position] != rune('X') {
-											goto l1358
-										}
-										position++
-									}
-								l1362:
-									{
-										position1364, tokenIndex1364, depth1364 := position, tokenIndex, depth
-										if buffer[position] != rune('i') {
-											goto l1365
-										}
-										position++
-										goto l1364
-									l1365:
-										position, tokenIndex, depth = position1364, tokenIndex1364, depth1364
-										if buffer[position] != rune('I') {
-											goto l1358
-										}
-										position++
-									}
-								l1364:
-									{
-										position1366, tokenIndex1366, depth1366 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1367
-										}
-										position++
-										goto l1366
-									l1367:
-										position, tokenIndex, depth = position1366, tokenIndex1366, depth1366
-										if buffer[position] != rune('S') {
-											goto l1358
-										}
-										position++
-									}
-								l1366:
-									{
-										position1368, tokenIndex1368, depth1368 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1369
-										}
-										position++
-										goto l1368
-									l1369:
-										position, tokenIndex, depth = position1368, tokenIndex1368, depth1368
-										if buffer[position] != rune('T') {
-											goto l1358
-										}
-										position++
-									}
-								l1368:
-									{
-										position1370, tokenIndex1370, depth1370 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1371
-										}
-										position++
-										goto l1370
-									l1371:
-										position, tokenIndex, depth = position1370, tokenIndex1370, depth1370
-										if buffer[position] != rune('S') {
-											goto l1358
-										}
-										position++
-									}
-								l1370:
-									if !rules[ruleskip]() {
-										goto l1358
-									}
-									depth--
-									add(ruleEXISTS, position1359)
-								}
-								goto l1357
-							l1358:
-								position, tokenIndex, depth = position1357, tokenIndex1357, depth1357
-								{
-									position1372 := position
-									depth++
-									{
-										position1373, tokenIndex1373, depth1373 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
-											goto l1374
-										}
-										position++
-										goto l1373
-									l1374:
-										position, tokenIndex, depth = position1373, tokenIndex1373, depth1373
-										if buffer[position] != rune('N') {
-											goto l774
-										}
-										position++
-									}
-								l1373:
-									{
-										position1375, tokenIndex1375, depth1375 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
-											goto l1376
-										}
-										position++
-										goto l1375
-									l1376:
-										position, tokenIndex, depth = position1375, tokenIndex1375, depth1375
-										if buffer[position] != rune('O') {
-											goto l774
-										}
-										position++
-									}
-								l1375:
-									{
-										position1377, tokenIndex1377, depth1377 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1378
-										}
-										position++
-										goto l1377
-									l1378:
-										position, tokenIndex, depth = position1377, tokenIndex1377, depth1377
-										if buffer[position] != rune('T') {
-											goto l774
-										}
-										position++
-									}
-								l1377:
-									if buffer[position] != rune(' ') {
-										goto l774
-									}
-									position++
-									{
-										position1379, tokenIndex1379, depth1379 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1380
-										}
-										position++
-										goto l1379
-									l1380:
-										position, tokenIndex, depth = position1379, tokenIndex1379, depth1379
-										if buffer[position] != rune('E') {
-											goto l774
-										}
-										position++
-									}
-								l1379:
-									{
-										position1381, tokenIndex1381, depth1381 := position, tokenIndex, depth
-										if buffer[position] != rune('x') {
-											goto l1382
-										}
-										position++
-										goto l1381
-									l1382:
-										position, tokenIndex, depth = position1381, tokenIndex1381, depth1381
-										if buffer[position] != rune('X') {
-											goto l774
-										}
-										position++
-									}
-								l1381:
-									{
-										position1383, tokenIndex1383, depth1383 := position, tokenIndex, depth
-										if buffer[position] != rune('i') {
-											goto l1384
-										}
-										position++
-										goto l1383
-									l1384:
-										position, tokenIndex, depth = position1383, tokenIndex1383, depth1383
-										if buffer[position] != rune('I') {
-											goto l774
-										}
-										position++
-									}
-								l1383:
-									{
-										position1385, tokenIndex1385, depth1385 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1386
-										}
-										position++
-										goto l1385
-									l1386:
-										position, tokenIndex, depth = position1385, tokenIndex1385, depth1385
-										if buffer[position] != rune('S') {
-											goto l774
-										}
-										position++
-									}
-								l1385:
-									{
-										position1387, tokenIndex1387, depth1387 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1388
-										}
-										position++
-										goto l1387
-									l1388:
-										position, tokenIndex, depth = position1387, tokenIndex1387, depth1387
-										if buffer[position] != rune('T') {
-											goto l774
-										}
-										position++
-									}
-								l1387:
-									{
-										position1389, tokenIndex1389, depth1389 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1390
-										}
-										position++
-										goto l1389
-									l1390:
-										position, tokenIndex, depth = position1389, tokenIndex1389, depth1389
-										if buffer[position] != rune('S') {
-											goto l774
-										}
-										position++
-									}
-								l1389:
-									if !rules[ruleskip]() {
-										goto l774
-									}
-									depth--
-									add(ruleNOTEXIST, position1372)
-								}
-							}
-						l1357:
-							if !rules[rulegroupGraphPattern]() {
-								goto l774
-							}
-							break
-						case 'I', 'i':
-							{
-								position1391 := position
-								depth++
-								{
-									position1392, tokenIndex1392, depth1392 := position, tokenIndex, depth
-									if buffer[position] != rune('i') {
-										goto l1393
-									}
-									position++
-									goto l1392
-								l1393:
-									position, tokenIndex, depth = position1392, tokenIndex1392, depth1392
-									if buffer[position] != rune('I') {
-										goto l774
-									}
-									position++
-								}
-							l1392:
-								{
-									position1394, tokenIndex1394, depth1394 := position, tokenIndex, depth
-									if buffer[position] != rune('f') {
-										goto l1395
-									}
-									position++
-									goto l1394
-								l1395:
-									position, tokenIndex, depth = position1394, tokenIndex1394, depth1394
-									if buffer[position] != rune('F') {
-										goto l774
-									}
-									position++
-								}
-							l1394:
-								if !rules[ruleskip]() {
-									goto l774
-								}
-								depth--
-								add(ruleIF, position1391)
-							}
-							if !rules[ruleLPAREN]() {
-								goto l774
-							}
-							if !rules[ruleexpression]() {
-								goto l774
-							}
-							if !rules[ruleCOMMA]() {
-								goto l774
-							}
-							if !rules[ruleexpression]() {
-								goto l774
-							}
-							if !rules[ruleCOMMA]() {
-								goto l774
-							}
-							if !rules[ruleexpression]() {
-								goto l774
-							}
-							if !rules[ruleRPAREN]() {
-								goto l774
-							}
-							break
-						case 'C', 'c':
 							{
 								position1396, tokenIndex1396, depth1396 := position, tokenIndex, depth
 								{
@@ -11438,14 +11442,14 @@ func (p *Sparql) Init() {
 									depth++
 									{
 										position1399, tokenIndex1399, depth1399 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
+										if buffer[position] != rune('e') {
 											goto l1400
 										}
 										position++
 										goto l1399
 									l1400:
 										position, tokenIndex, depth = position1399, tokenIndex1399, depth1399
-										if buffer[position] != rune('C') {
+										if buffer[position] != rune('E') {
 											goto l1397
 										}
 										position++
@@ -11453,14 +11457,14 @@ func (p *Sparql) Init() {
 								l1399:
 									{
 										position1401, tokenIndex1401, depth1401 := position, tokenIndex, depth
-										if buffer[position] != rune('o') {
+										if buffer[position] != rune('x') {
 											goto l1402
 										}
 										position++
 										goto l1401
 									l1402:
 										position, tokenIndex, depth = position1401, tokenIndex1401, depth1401
-										if buffer[position] != rune('O') {
+										if buffer[position] != rune('X') {
 											goto l1397
 										}
 										position++
@@ -11468,14 +11472,14 @@ func (p *Sparql) Init() {
 								l1401:
 									{
 										position1403, tokenIndex1403, depth1403 := position, tokenIndex, depth
-										if buffer[position] != rune('n') {
+										if buffer[position] != rune('i') {
 											goto l1404
 										}
 										position++
 										goto l1403
 									l1404:
 										position, tokenIndex, depth = position1403, tokenIndex1403, depth1403
-										if buffer[position] != rune('N') {
+										if buffer[position] != rune('I') {
 											goto l1397
 										}
 										position++
@@ -11483,14 +11487,14 @@ func (p *Sparql) Init() {
 								l1403:
 									{
 										position1405, tokenIndex1405, depth1405 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
+										if buffer[position] != rune('s') {
 											goto l1406
 										}
 										position++
 										goto l1405
 									l1406:
 										position, tokenIndex, depth = position1405, tokenIndex1405, depth1405
-										if buffer[position] != rune('C') {
+										if buffer[position] != rune('S') {
 											goto l1397
 										}
 										position++
@@ -11498,14 +11502,14 @@ func (p *Sparql) Init() {
 								l1405:
 									{
 										position1407, tokenIndex1407, depth1407 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
+										if buffer[position] != rune('t') {
 											goto l1408
 										}
 										position++
 										goto l1407
 									l1408:
 										position, tokenIndex, depth = position1407, tokenIndex1407, depth1407
-										if buffer[position] != rune('A') {
+										if buffer[position] != rune('T') {
 											goto l1397
 										}
 										position++
@@ -11513,14 +11517,14 @@ func (p *Sparql) Init() {
 								l1407:
 									{
 										position1409, tokenIndex1409, depth1409 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
+										if buffer[position] != rune('s') {
 											goto l1410
 										}
 										position++
 										goto l1409
 									l1410:
 										position, tokenIndex, depth = position1409, tokenIndex1409, depth1409
-										if buffer[position] != rune('T') {
+										if buffer[position] != rune('S') {
 											goto l1397
 										}
 										position++
@@ -11530,7 +11534,7 @@ func (p *Sparql) Init() {
 										goto l1397
 									}
 									depth--
-									add(ruleCONCAT, position1398)
+									add(ruleEXISTS, position1398)
 								}
 								goto l1396
 							l1397:
@@ -11540,15 +11544,15 @@ func (p *Sparql) Init() {
 									depth++
 									{
 										position1412, tokenIndex1412, depth1412 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
+										if buffer[position] != rune('n') {
 											goto l1413
 										}
 										position++
 										goto l1412
 									l1413:
 										position, tokenIndex, depth = position1412, tokenIndex1412, depth1412
-										if buffer[position] != rune('C') {
-											goto l774
+										if buffer[position] != rune('N') {
+											goto l813
 										}
 										position++
 									}
@@ -11563,2511 +11567,3738 @@ func (p *Sparql) Init() {
 									l1415:
 										position, tokenIndex, depth = position1414, tokenIndex1414, depth1414
 										if buffer[position] != rune('O') {
-											goto l774
+											goto l813
 										}
 										position++
 									}
 								l1414:
 									{
 										position1416, tokenIndex1416, depth1416 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
+										if buffer[position] != rune('t') {
 											goto l1417
 										}
 										position++
 										goto l1416
 									l1417:
 										position, tokenIndex, depth = position1416, tokenIndex1416, depth1416
-										if buffer[position] != rune('A') {
-											goto l774
+										if buffer[position] != rune('T') {
+											goto l813
 										}
 										position++
 									}
 								l1416:
+									if buffer[position] != rune(' ') {
+										goto l813
+									}
+									position++
 									{
 										position1418, tokenIndex1418, depth1418 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
+										if buffer[position] != rune('e') {
 											goto l1419
 										}
 										position++
 										goto l1418
 									l1419:
 										position, tokenIndex, depth = position1418, tokenIndex1418, depth1418
-										if buffer[position] != rune('L') {
-											goto l774
+										if buffer[position] != rune('E') {
+											goto l813
 										}
 										position++
 									}
 								l1418:
 									{
 										position1420, tokenIndex1420, depth1420 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
+										if buffer[position] != rune('x') {
 											goto l1421
 										}
 										position++
 										goto l1420
 									l1421:
 										position, tokenIndex, depth = position1420, tokenIndex1420, depth1420
-										if buffer[position] != rune('E') {
-											goto l774
+										if buffer[position] != rune('X') {
+											goto l813
 										}
 										position++
 									}
 								l1420:
 									{
 										position1422, tokenIndex1422, depth1422 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
+										if buffer[position] != rune('i') {
 											goto l1423
 										}
 										position++
 										goto l1422
 									l1423:
 										position, tokenIndex, depth = position1422, tokenIndex1422, depth1422
-										if buffer[position] != rune('S') {
-											goto l774
+										if buffer[position] != rune('I') {
+											goto l813
 										}
 										position++
 									}
 								l1422:
 									{
 										position1424, tokenIndex1424, depth1424 := position, tokenIndex, depth
-										if buffer[position] != rune('c') {
+										if buffer[position] != rune('s') {
 											goto l1425
 										}
 										position++
 										goto l1424
 									l1425:
 										position, tokenIndex, depth = position1424, tokenIndex1424, depth1424
-										if buffer[position] != rune('C') {
-											goto l774
+										if buffer[position] != rune('S') {
+											goto l813
 										}
 										position++
 									}
 								l1424:
 									{
 										position1426, tokenIndex1426, depth1426 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
+										if buffer[position] != rune('t') {
 											goto l1427
 										}
 										position++
 										goto l1426
 									l1427:
 										position, tokenIndex, depth = position1426, tokenIndex1426, depth1426
-										if buffer[position] != rune('E') {
-											goto l774
+										if buffer[position] != rune('T') {
+											goto l813
 										}
 										position++
 									}
 								l1426:
+									{
+										position1428, tokenIndex1428, depth1428 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1429
+										}
+										position++
+										goto l1428
+									l1429:
+										position, tokenIndex, depth = position1428, tokenIndex1428, depth1428
+										if buffer[position] != rune('S') {
+											goto l813
+										}
+										position++
+									}
+								l1428:
 									if !rules[ruleskip]() {
-										goto l774
+										goto l813
 									}
 									depth--
-									add(ruleCOALESCE, position1411)
+									add(ruleNOTEXIST, position1411)
 								}
 							}
 						l1396:
-							if !rules[ruleargList]() {
-								goto l774
+							if !rules[rulegroupGraphPattern]() {
+								goto l813
 							}
 							break
-						case 'B', 'b':
+						case 'I', 'i':
 							{
-								position1428 := position
+								position1430 := position
 								depth++
 								{
-									position1429, tokenIndex1429, depth1429 := position, tokenIndex, depth
-									if buffer[position] != rune('b') {
-										goto l1430
-									}
-									position++
-									goto l1429
-								l1430:
-									position, tokenIndex, depth = position1429, tokenIndex1429, depth1429
-									if buffer[position] != rune('B') {
-										goto l774
-									}
-									position++
-								}
-							l1429:
-								{
 									position1431, tokenIndex1431, depth1431 := position, tokenIndex, depth
-									if buffer[position] != rune('n') {
+									if buffer[position] != rune('i') {
 										goto l1432
 									}
 									position++
 									goto l1431
 								l1432:
 									position, tokenIndex, depth = position1431, tokenIndex1431, depth1431
-									if buffer[position] != rune('N') {
-										goto l774
+									if buffer[position] != rune('I') {
+										goto l813
 									}
 									position++
 								}
 							l1431:
 								{
 									position1433, tokenIndex1433, depth1433 := position, tokenIndex, depth
-									if buffer[position] != rune('o') {
+									if buffer[position] != rune('f') {
 										goto l1434
 									}
 									position++
 									goto l1433
 								l1434:
 									position, tokenIndex, depth = position1433, tokenIndex1433, depth1433
-									if buffer[position] != rune('O') {
-										goto l774
+									if buffer[position] != rune('F') {
+										goto l813
 									}
 									position++
 								}
 							l1433:
-								{
-									position1435, tokenIndex1435, depth1435 := position, tokenIndex, depth
-									if buffer[position] != rune('d') {
-										goto l1436
-									}
-									position++
-									goto l1435
-								l1436:
-									position, tokenIndex, depth = position1435, tokenIndex1435, depth1435
-									if buffer[position] != rune('D') {
-										goto l774
-									}
-									position++
-								}
-							l1435:
-								{
-									position1437, tokenIndex1437, depth1437 := position, tokenIndex, depth
-									if buffer[position] != rune('e') {
-										goto l1438
-									}
-									position++
-									goto l1437
-								l1438:
-									position, tokenIndex, depth = position1437, tokenIndex1437, depth1437
-									if buffer[position] != rune('E') {
-										goto l774
-									}
-									position++
-								}
-							l1437:
 								if !rules[ruleskip]() {
-									goto l774
+									goto l813
 								}
 								depth--
-								add(ruleBNODE, position1428)
+								add(ruleIF, position1430)
 							}
-							{
-								position1439, tokenIndex1439, depth1439 := position, tokenIndex, depth
-								if !rules[ruleLPAREN]() {
-									goto l1440
-								}
-								if !rules[ruleexpression]() {
-									goto l1440
-								}
-								if !rules[ruleRPAREN]() {
-									goto l1440
-								}
-								goto l1439
-							l1440:
-								position, tokenIndex, depth = position1439, tokenIndex1439, depth1439
-								if !rules[rulenil]() {
-									goto l774
-								}
+							if !rules[ruleLPAREN]() {
+								goto l813
 							}
-						l1439:
+							if !rules[ruleexpression]() {
+								goto l813
+							}
+							if !rules[ruleCOMMA]() {
+								goto l813
+							}
+							if !rules[ruleexpression]() {
+								goto l813
+							}
+							if !rules[ruleCOMMA]() {
+								goto l813
+							}
+							if !rules[ruleexpression]() {
+								goto l813
+							}
+							if !rules[ruleRPAREN]() {
+								goto l813
+							}
 							break
-						default:
+						case 'C', 'c':
 							{
-								position1441, tokenIndex1441, depth1441 := position, tokenIndex, depth
+								position1435, tokenIndex1435, depth1435 := position, tokenIndex, depth
 								{
-									position1443 := position
+									position1437 := position
 									depth++
 									{
+										position1438, tokenIndex1438, depth1438 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1439
+										}
+										position++
+										goto l1438
+									l1439:
+										position, tokenIndex, depth = position1438, tokenIndex1438, depth1438
+										if buffer[position] != rune('C') {
+											goto l1436
+										}
+										position++
+									}
+								l1438:
+									{
+										position1440, tokenIndex1440, depth1440 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1441
+										}
+										position++
+										goto l1440
+									l1441:
+										position, tokenIndex, depth = position1440, tokenIndex1440, depth1440
+										if buffer[position] != rune('O') {
+											goto l1436
+										}
+										position++
+									}
+								l1440:
+									{
+										position1442, tokenIndex1442, depth1442 := position, tokenIndex, depth
+										if buffer[position] != rune('n') {
+											goto l1443
+										}
+										position++
+										goto l1442
+									l1443:
+										position, tokenIndex, depth = position1442, tokenIndex1442, depth1442
+										if buffer[position] != rune('N') {
+											goto l1436
+										}
+										position++
+									}
+								l1442:
+									{
 										position1444, tokenIndex1444, depth1444 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
+										if buffer[position] != rune('c') {
 											goto l1445
 										}
 										position++
 										goto l1444
 									l1445:
 										position, tokenIndex, depth = position1444, tokenIndex1444, depth1444
-										if buffer[position] != rune('S') {
-											goto l1442
+										if buffer[position] != rune('C') {
+											goto l1436
 										}
 										position++
 									}
 								l1444:
 									{
 										position1446, tokenIndex1446, depth1446 := position, tokenIndex, depth
-										if buffer[position] != rune('u') {
+										if buffer[position] != rune('a') {
 											goto l1447
 										}
 										position++
 										goto l1446
 									l1447:
 										position, tokenIndex, depth = position1446, tokenIndex1446, depth1446
-										if buffer[position] != rune('U') {
-											goto l1442
+										if buffer[position] != rune('A') {
+											goto l1436
 										}
 										position++
 									}
 								l1446:
 									{
 										position1448, tokenIndex1448, depth1448 := position, tokenIndex, depth
-										if buffer[position] != rune('b') {
+										if buffer[position] != rune('t') {
 											goto l1449
 										}
 										position++
 										goto l1448
 									l1449:
 										position, tokenIndex, depth = position1448, tokenIndex1448, depth1448
-										if buffer[position] != rune('B') {
-											goto l1442
+										if buffer[position] != rune('T') {
+											goto l1436
 										}
 										position++
 									}
 								l1448:
-									{
-										position1450, tokenIndex1450, depth1450 := position, tokenIndex, depth
-										if buffer[position] != rune('s') {
-											goto l1451
-										}
-										position++
-										goto l1450
-									l1451:
-										position, tokenIndex, depth = position1450, tokenIndex1450, depth1450
-										if buffer[position] != rune('S') {
-											goto l1442
-										}
-										position++
-									}
-								l1450:
-									{
-										position1452, tokenIndex1452, depth1452 := position, tokenIndex, depth
-										if buffer[position] != rune('t') {
-											goto l1453
-										}
-										position++
-										goto l1452
-									l1453:
-										position, tokenIndex, depth = position1452, tokenIndex1452, depth1452
-										if buffer[position] != rune('T') {
-											goto l1442
-										}
-										position++
-									}
-								l1452:
-									{
-										position1454, tokenIndex1454, depth1454 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
-											goto l1455
-										}
-										position++
-										goto l1454
-									l1455:
-										position, tokenIndex, depth = position1454, tokenIndex1454, depth1454
-										if buffer[position] != rune('R') {
-											goto l1442
-										}
-										position++
-									}
-								l1454:
 									if !rules[ruleskip]() {
-										goto l1442
+										goto l1436
 									}
 									depth--
-									add(ruleSUBSTR, position1443)
+									add(ruleCONCAT, position1437)
 								}
-								goto l1441
-							l1442:
-								position, tokenIndex, depth = position1441, tokenIndex1441, depth1441
+								goto l1435
+							l1436:
+								position, tokenIndex, depth = position1435, tokenIndex1435, depth1435
 								{
-									position1457 := position
+									position1450 := position
 									depth++
 									{
-										position1458, tokenIndex1458, depth1458 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
-											goto l1459
-										}
-										position++
-										goto l1458
-									l1459:
-										position, tokenIndex, depth = position1458, tokenIndex1458, depth1458
-										if buffer[position] != rune('R') {
-											goto l1456
-										}
-										position++
-									}
-								l1458:
-									{
-										position1460, tokenIndex1460, depth1460 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1461
-										}
-										position++
-										goto l1460
-									l1461:
-										position, tokenIndex, depth = position1460, tokenIndex1460, depth1460
-										if buffer[position] != rune('E') {
-											goto l1456
-										}
-										position++
-									}
-								l1460:
-									{
-										position1462, tokenIndex1462, depth1462 := position, tokenIndex, depth
-										if buffer[position] != rune('p') {
-											goto l1463
-										}
-										position++
-										goto l1462
-									l1463:
-										position, tokenIndex, depth = position1462, tokenIndex1462, depth1462
-										if buffer[position] != rune('P') {
-											goto l1456
-										}
-										position++
-									}
-								l1462:
-									{
-										position1464, tokenIndex1464, depth1464 := position, tokenIndex, depth
-										if buffer[position] != rune('l') {
-											goto l1465
-										}
-										position++
-										goto l1464
-									l1465:
-										position, tokenIndex, depth = position1464, tokenIndex1464, depth1464
-										if buffer[position] != rune('L') {
-											goto l1456
-										}
-										position++
-									}
-								l1464:
-									{
-										position1466, tokenIndex1466, depth1466 := position, tokenIndex, depth
-										if buffer[position] != rune('a') {
-											goto l1467
-										}
-										position++
-										goto l1466
-									l1467:
-										position, tokenIndex, depth = position1466, tokenIndex1466, depth1466
-										if buffer[position] != rune('A') {
-											goto l1456
-										}
-										position++
-									}
-								l1466:
-									{
-										position1468, tokenIndex1468, depth1468 := position, tokenIndex, depth
+										position1451, tokenIndex1451, depth1451 := position, tokenIndex, depth
 										if buffer[position] != rune('c') {
-											goto l1469
+											goto l1452
 										}
 										position++
-										goto l1468
-									l1469:
-										position, tokenIndex, depth = position1468, tokenIndex1468, depth1468
+										goto l1451
+									l1452:
+										position, tokenIndex, depth = position1451, tokenIndex1451, depth1451
 										if buffer[position] != rune('C') {
+											goto l813
+										}
+										position++
+									}
+								l1451:
+									{
+										position1453, tokenIndex1453, depth1453 := position, tokenIndex, depth
+										if buffer[position] != rune('o') {
+											goto l1454
+										}
+										position++
+										goto l1453
+									l1454:
+										position, tokenIndex, depth = position1453, tokenIndex1453, depth1453
+										if buffer[position] != rune('O') {
+											goto l813
+										}
+										position++
+									}
+								l1453:
+									{
+										position1455, tokenIndex1455, depth1455 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
 											goto l1456
 										}
 										position++
+										goto l1455
+									l1456:
+										position, tokenIndex, depth = position1455, tokenIndex1455, depth1455
+										if buffer[position] != rune('A') {
+											goto l813
+										}
+										position++
 									}
-								l1468:
+								l1455:
 									{
-										position1470, tokenIndex1470, depth1470 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1471
+										position1457, tokenIndex1457, depth1457 := position, tokenIndex, depth
+										if buffer[position] != rune('l') {
+											goto l1458
 										}
 										position++
-										goto l1470
-									l1471:
-										position, tokenIndex, depth = position1470, tokenIndex1470, depth1470
-										if buffer[position] != rune('E') {
-											goto l1456
+										goto l1457
+									l1458:
+										position, tokenIndex, depth = position1457, tokenIndex1457, depth1457
+										if buffer[position] != rune('L') {
+											goto l813
 										}
 										position++
 									}
-								l1470:
+								l1457:
+									{
+										position1459, tokenIndex1459, depth1459 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1460
+										}
+										position++
+										goto l1459
+									l1460:
+										position, tokenIndex, depth = position1459, tokenIndex1459, depth1459
+										if buffer[position] != rune('E') {
+											goto l813
+										}
+										position++
+									}
+								l1459:
+									{
+										position1461, tokenIndex1461, depth1461 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1462
+										}
+										position++
+										goto l1461
+									l1462:
+										position, tokenIndex, depth = position1461, tokenIndex1461, depth1461
+										if buffer[position] != rune('S') {
+											goto l813
+										}
+										position++
+									}
+								l1461:
+									{
+										position1463, tokenIndex1463, depth1463 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1464
+										}
+										position++
+										goto l1463
+									l1464:
+										position, tokenIndex, depth = position1463, tokenIndex1463, depth1463
+										if buffer[position] != rune('C') {
+											goto l813
+										}
+										position++
+									}
+								l1463:
+									{
+										position1465, tokenIndex1465, depth1465 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1466
+										}
+										position++
+										goto l1465
+									l1466:
+										position, tokenIndex, depth = position1465, tokenIndex1465, depth1465
+										if buffer[position] != rune('E') {
+											goto l813
+										}
+										position++
+									}
+								l1465:
 									if !rules[ruleskip]() {
-										goto l1456
+										goto l813
 									}
 									depth--
-									add(ruleREPLACE, position1457)
-								}
-								goto l1441
-							l1456:
-								position, tokenIndex, depth = position1441, tokenIndex1441, depth1441
-								{
-									position1472 := position
-									depth++
-									{
-										position1473, tokenIndex1473, depth1473 := position, tokenIndex, depth
-										if buffer[position] != rune('r') {
-											goto l1474
-										}
-										position++
-										goto l1473
-									l1474:
-										position, tokenIndex, depth = position1473, tokenIndex1473, depth1473
-										if buffer[position] != rune('R') {
-											goto l774
-										}
-										position++
-									}
-								l1473:
-									{
-										position1475, tokenIndex1475, depth1475 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1476
-										}
-										position++
-										goto l1475
-									l1476:
-										position, tokenIndex, depth = position1475, tokenIndex1475, depth1475
-										if buffer[position] != rune('E') {
-											goto l774
-										}
-										position++
-									}
-								l1475:
-									{
-										position1477, tokenIndex1477, depth1477 := position, tokenIndex, depth
-										if buffer[position] != rune('g') {
-											goto l1478
-										}
-										position++
-										goto l1477
-									l1478:
-										position, tokenIndex, depth = position1477, tokenIndex1477, depth1477
-										if buffer[position] != rune('G') {
-											goto l774
-										}
-										position++
-									}
-								l1477:
-									{
-										position1479, tokenIndex1479, depth1479 := position, tokenIndex, depth
-										if buffer[position] != rune('e') {
-											goto l1480
-										}
-										position++
-										goto l1479
-									l1480:
-										position, tokenIndex, depth = position1479, tokenIndex1479, depth1479
-										if buffer[position] != rune('E') {
-											goto l774
-										}
-										position++
-									}
-								l1479:
-									{
-										position1481, tokenIndex1481, depth1481 := position, tokenIndex, depth
-										if buffer[position] != rune('x') {
-											goto l1482
-										}
-										position++
-										goto l1481
-									l1482:
-										position, tokenIndex, depth = position1481, tokenIndex1481, depth1481
-										if buffer[position] != rune('X') {
-											goto l774
-										}
-										position++
-									}
-								l1481:
-									if !rules[ruleskip]() {
-										goto l774
-									}
-									depth--
-									add(ruleREGEX, position1472)
+									add(ruleCOALESCE, position1450)
 								}
 							}
-						l1441:
-							if !rules[ruleLPAREN]() {
-								goto l774
-							}
-							if !rules[ruleexpression]() {
-								goto l774
-							}
-							if !rules[ruleCOMMA]() {
-								goto l774
-							}
-							if !rules[ruleexpression]() {
-								goto l774
-							}
-							{
-								position1483, tokenIndex1483, depth1483 := position, tokenIndex, depth
-								if !rules[ruleCOMMA]() {
-									goto l1483
-								}
-								if !rules[ruleexpression]() {
-									goto l1483
-								}
-								goto l1484
-							l1483:
-								position, tokenIndex, depth = position1483, tokenIndex1483, depth1483
-							}
-						l1484:
-							if !rules[ruleRPAREN]() {
-								goto l774
+						l1435:
+							if !rules[ruleargList]() {
+								goto l813
 							}
 							break
-						}
-					}
-
-				}
-			l776:
-				depth--
-				add(rulebuiltinCall, position775)
-			}
-			return true
-		l774:
-			position, tokenIndex, depth = position774, tokenIndex774, depth774
-			return false
-		},
-		/* 66 pof <- <(((<([a-z] / [A-Z])*> ':' Action10) / (<([2-9] [0-9]*)> '/' Action11) / (<((&('+') '+') | (&('_') '_') | (&('-') '-') | (&('.') '.') | (&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]) | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z]))*> Action12)) '<' ws skip)> */
-		func() bool {
-			position1485, tokenIndex1485, depth1485 := position, tokenIndex, depth
-			{
-				position1486 := position
-				depth++
-				{
-					position1487, tokenIndex1487, depth1487 := position, tokenIndex, depth
-					{
-						position1489 := position
-						depth++
-					l1490:
-						{
-							position1491, tokenIndex1491, depth1491 := position, tokenIndex, depth
+						case 'B', 'b':
 							{
-								position1492, tokenIndex1492, depth1492 := position, tokenIndex, depth
-								if c := buffer[position]; c < rune('a') || c > rune('z') {
-									goto l1493
-								}
-								position++
-								goto l1492
-							l1493:
-								position, tokenIndex, depth = position1492, tokenIndex1492, depth1492
-								if c := buffer[position]; c < rune('A') || c > rune('Z') {
-									goto l1491
-								}
-								position++
-							}
-						l1492:
-							goto l1490
-						l1491:
-							position, tokenIndex, depth = position1491, tokenIndex1491, depth1491
-						}
-						depth--
-						add(rulePegText, position1489)
-					}
-					if buffer[position] != rune(':') {
-						goto l1488
-					}
-					position++
-					{
-						add(ruleAction10, position)
-					}
-					goto l1487
-				l1488:
-					position, tokenIndex, depth = position1487, tokenIndex1487, depth1487
-					{
-						position1496 := position
-						depth++
-						if c := buffer[position]; c < rune('2') || c > rune('9') {
-							goto l1495
-						}
-						position++
-					l1497:
-						{
-							position1498, tokenIndex1498, depth1498 := position, tokenIndex, depth
-							if c := buffer[position]; c < rune('0') || c > rune('9') {
-								goto l1498
-							}
-							position++
-							goto l1497
-						l1498:
-							position, tokenIndex, depth = position1498, tokenIndex1498, depth1498
-						}
-						depth--
-						add(rulePegText, position1496)
-					}
-					if buffer[position] != rune('/') {
-						goto l1495
-					}
-					position++
-					{
-						add(ruleAction11, position)
-					}
-					goto l1487
-				l1495:
-					position, tokenIndex, depth = position1487, tokenIndex1487, depth1487
-					{
-						position1500 := position
-						depth++
-					l1501:
-						{
-							position1502, tokenIndex1502, depth1502 := position, tokenIndex, depth
-							{
-								switch buffer[position] {
-								case '+':
-									if buffer[position] != rune('+') {
-										goto l1502
-									}
-									position++
-									break
-								case '_':
-									if buffer[position] != rune('_') {
-										goto l1502
-									}
-									position++
-									break
-								case '-':
-									if buffer[position] != rune('-') {
-										goto l1502
-									}
-									position++
-									break
-								case '.':
-									if buffer[position] != rune('.') {
-										goto l1502
-									}
-									position++
-									break
-								case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-									if c := buffer[position]; c < rune('0') || c > rune('9') {
-										goto l1502
-									}
-									position++
-									break
-								case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
-									if c := buffer[position]; c < rune('A') || c > rune('Z') {
-										goto l1502
-									}
-									position++
-									break
-								default:
-									if c := buffer[position]; c < rune('a') || c > rune('z') {
-										goto l1502
-									}
-									position++
-									break
-								}
-							}
-
-							goto l1501
-						l1502:
-							position, tokenIndex, depth = position1502, tokenIndex1502, depth1502
-						}
-						depth--
-						add(rulePegText, position1500)
-					}
-					{
-						add(ruleAction12, position)
-					}
-				}
-			l1487:
-				if buffer[position] != rune('<') {
-					goto l1485
-				}
-				position++
-				if !rules[rulews]() {
-					goto l1485
-				}
-				if !rules[ruleskip]() {
-					goto l1485
-				}
-				depth--
-				add(rulepof, position1486)
-			}
-			return true
-		l1485:
-			position, tokenIndex, depth = position1485, tokenIndex1485, depth1485
-			return false
-		},
-		/* 67 var <- <(('?' / '$') VARNAME skip)> */
-		func() bool {
-			position1505, tokenIndex1505, depth1505 := position, tokenIndex, depth
-			{
-				position1506 := position
-				depth++
-				{
-					position1507, tokenIndex1507, depth1507 := position, tokenIndex, depth
-					if buffer[position] != rune('?') {
-						goto l1508
-					}
-					position++
-					goto l1507
-				l1508:
-					position, tokenIndex, depth = position1507, tokenIndex1507, depth1507
-					if buffer[position] != rune('$') {
-						goto l1505
-					}
-					position++
-				}
-			l1507:
-				{
-					position1509 := position
-					depth++
-					{
-						position1512, tokenIndex1512, depth1512 := position, tokenIndex, depth
-						{
-							position1514 := position
-							depth++
-							{
-								position1515, tokenIndex1515, depth1515 := position, tokenIndex, depth
+								position1467 := position
+								depth++
 								{
-									position1517 := position
+									position1468, tokenIndex1468, depth1468 := position, tokenIndex, depth
+									if buffer[position] != rune('b') {
+										goto l1469
+									}
+									position++
+									goto l1468
+								l1469:
+									position, tokenIndex, depth = position1468, tokenIndex1468, depth1468
+									if buffer[position] != rune('B') {
+										goto l813
+									}
+									position++
+								}
+							l1468:
+								{
+									position1470, tokenIndex1470, depth1470 := position, tokenIndex, depth
+									if buffer[position] != rune('n') {
+										goto l1471
+									}
+									position++
+									goto l1470
+								l1471:
+									position, tokenIndex, depth = position1470, tokenIndex1470, depth1470
+									if buffer[position] != rune('N') {
+										goto l813
+									}
+									position++
+								}
+							l1470:
+								{
+									position1472, tokenIndex1472, depth1472 := position, tokenIndex, depth
+									if buffer[position] != rune('o') {
+										goto l1473
+									}
+									position++
+									goto l1472
+								l1473:
+									position, tokenIndex, depth = position1472, tokenIndex1472, depth1472
+									if buffer[position] != rune('O') {
+										goto l813
+									}
+									position++
+								}
+							l1472:
+								{
+									position1474, tokenIndex1474, depth1474 := position, tokenIndex, depth
+									if buffer[position] != rune('d') {
+										goto l1475
+									}
+									position++
+									goto l1474
+								l1475:
+									position, tokenIndex, depth = position1474, tokenIndex1474, depth1474
+									if buffer[position] != rune('D') {
+										goto l813
+									}
+									position++
+								}
+							l1474:
+								{
+									position1476, tokenIndex1476, depth1476 := position, tokenIndex, depth
+									if buffer[position] != rune('e') {
+										goto l1477
+									}
+									position++
+									goto l1476
+								l1477:
+									position, tokenIndex, depth = position1476, tokenIndex1476, depth1476
+									if buffer[position] != rune('E') {
+										goto l813
+									}
+									position++
+								}
+							l1476:
+								if !rules[ruleskip]() {
+									goto l813
+								}
+								depth--
+								add(ruleBNODE, position1467)
+							}
+							{
+								position1478, tokenIndex1478, depth1478 := position, tokenIndex, depth
+								if !rules[ruleLPAREN]() {
+									goto l1479
+								}
+								if !rules[ruleexpression]() {
+									goto l1479
+								}
+								if !rules[ruleRPAREN]() {
+									goto l1479
+								}
+								goto l1478
+							l1479:
+								position, tokenIndex, depth = position1478, tokenIndex1478, depth1478
+								if !rules[rulenil]() {
+									goto l813
+								}
+							}
+						l1478:
+							break
+						default:
+							{
+								position1480, tokenIndex1480, depth1480 := position, tokenIndex, depth
+								{
+									position1482 := position
 									depth++
 									{
+										position1483, tokenIndex1483, depth1483 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1484
+										}
+										position++
+										goto l1483
+									l1484:
+										position, tokenIndex, depth = position1483, tokenIndex1483, depth1483
+										if buffer[position] != rune('S') {
+											goto l1481
+										}
+										position++
+									}
+								l1483:
+									{
+										position1485, tokenIndex1485, depth1485 := position, tokenIndex, depth
+										if buffer[position] != rune('u') {
+											goto l1486
+										}
+										position++
+										goto l1485
+									l1486:
+										position, tokenIndex, depth = position1485, tokenIndex1485, depth1485
+										if buffer[position] != rune('U') {
+											goto l1481
+										}
+										position++
+									}
+								l1485:
+									{
+										position1487, tokenIndex1487, depth1487 := position, tokenIndex, depth
+										if buffer[position] != rune('b') {
+											goto l1488
+										}
+										position++
+										goto l1487
+									l1488:
+										position, tokenIndex, depth = position1487, tokenIndex1487, depth1487
+										if buffer[position] != rune('B') {
+											goto l1481
+										}
+										position++
+									}
+								l1487:
+									{
+										position1489, tokenIndex1489, depth1489 := position, tokenIndex, depth
+										if buffer[position] != rune('s') {
+											goto l1490
+										}
+										position++
+										goto l1489
+									l1490:
+										position, tokenIndex, depth = position1489, tokenIndex1489, depth1489
+										if buffer[position] != rune('S') {
+											goto l1481
+										}
+										position++
+									}
+								l1489:
+									{
+										position1491, tokenIndex1491, depth1491 := position, tokenIndex, depth
+										if buffer[position] != rune('t') {
+											goto l1492
+										}
+										position++
+										goto l1491
+									l1492:
+										position, tokenIndex, depth = position1491, tokenIndex1491, depth1491
+										if buffer[position] != rune('T') {
+											goto l1481
+										}
+										position++
+									}
+								l1491:
+									{
+										position1493, tokenIndex1493, depth1493 := position, tokenIndex, depth
+										if buffer[position] != rune('r') {
+											goto l1494
+										}
+										position++
+										goto l1493
+									l1494:
+										position, tokenIndex, depth = position1493, tokenIndex1493, depth1493
+										if buffer[position] != rune('R') {
+											goto l1481
+										}
+										position++
+									}
+								l1493:
+									if !rules[ruleskip]() {
+										goto l1481
+									}
+									depth--
+									add(ruleSUBSTR, position1482)
+								}
+								goto l1480
+							l1481:
+								position, tokenIndex, depth = position1480, tokenIndex1480, depth1480
+								{
+									position1496 := position
+									depth++
+									{
+										position1497, tokenIndex1497, depth1497 := position, tokenIndex, depth
+										if buffer[position] != rune('r') {
+											goto l1498
+										}
+										position++
+										goto l1497
+									l1498:
+										position, tokenIndex, depth = position1497, tokenIndex1497, depth1497
+										if buffer[position] != rune('R') {
+											goto l1495
+										}
+										position++
+									}
+								l1497:
+									{
+										position1499, tokenIndex1499, depth1499 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1500
+										}
+										position++
+										goto l1499
+									l1500:
+										position, tokenIndex, depth = position1499, tokenIndex1499, depth1499
+										if buffer[position] != rune('E') {
+											goto l1495
+										}
+										position++
+									}
+								l1499:
+									{
+										position1501, tokenIndex1501, depth1501 := position, tokenIndex, depth
+										if buffer[position] != rune('p') {
+											goto l1502
+										}
+										position++
+										goto l1501
+									l1502:
+										position, tokenIndex, depth = position1501, tokenIndex1501, depth1501
+										if buffer[position] != rune('P') {
+											goto l1495
+										}
+										position++
+									}
+								l1501:
+									{
+										position1503, tokenIndex1503, depth1503 := position, tokenIndex, depth
+										if buffer[position] != rune('l') {
+											goto l1504
+										}
+										position++
+										goto l1503
+									l1504:
+										position, tokenIndex, depth = position1503, tokenIndex1503, depth1503
+										if buffer[position] != rune('L') {
+											goto l1495
+										}
+										position++
+									}
+								l1503:
+									{
+										position1505, tokenIndex1505, depth1505 := position, tokenIndex, depth
+										if buffer[position] != rune('a') {
+											goto l1506
+										}
+										position++
+										goto l1505
+									l1506:
+										position, tokenIndex, depth = position1505, tokenIndex1505, depth1505
+										if buffer[position] != rune('A') {
+											goto l1495
+										}
+										position++
+									}
+								l1505:
+									{
+										position1507, tokenIndex1507, depth1507 := position, tokenIndex, depth
+										if buffer[position] != rune('c') {
+											goto l1508
+										}
+										position++
+										goto l1507
+									l1508:
+										position, tokenIndex, depth = position1507, tokenIndex1507, depth1507
+										if buffer[position] != rune('C') {
+											goto l1495
+										}
+										position++
+									}
+								l1507:
+									{
+										position1509, tokenIndex1509, depth1509 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1510
+										}
+										position++
+										goto l1509
+									l1510:
+										position, tokenIndex, depth = position1509, tokenIndex1509, depth1509
+										if buffer[position] != rune('E') {
+											goto l1495
+										}
+										position++
+									}
+								l1509:
+									if !rules[ruleskip]() {
+										goto l1495
+									}
+									depth--
+									add(ruleREPLACE, position1496)
+								}
+								goto l1480
+							l1495:
+								position, tokenIndex, depth = position1480, tokenIndex1480, depth1480
+								{
+									position1511 := position
+									depth++
+									{
+										position1512, tokenIndex1512, depth1512 := position, tokenIndex, depth
+										if buffer[position] != rune('r') {
+											goto l1513
+										}
+										position++
+										goto l1512
+									l1513:
+										position, tokenIndex, depth = position1512, tokenIndex1512, depth1512
+										if buffer[position] != rune('R') {
+											goto l813
+										}
+										position++
+									}
+								l1512:
+									{
+										position1514, tokenIndex1514, depth1514 := position, tokenIndex, depth
+										if buffer[position] != rune('e') {
+											goto l1515
+										}
+										position++
+										goto l1514
+									l1515:
+										position, tokenIndex, depth = position1514, tokenIndex1514, depth1514
+										if buffer[position] != rune('E') {
+											goto l813
+										}
+										position++
+									}
+								l1514:
+									{
+										position1516, tokenIndex1516, depth1516 := position, tokenIndex, depth
+										if buffer[position] != rune('g') {
+											goto l1517
+										}
+										position++
+										goto l1516
+									l1517:
+										position, tokenIndex, depth = position1516, tokenIndex1516, depth1516
+										if buffer[position] != rune('G') {
+											goto l813
+										}
+										position++
+									}
+								l1516:
+									{
 										position1518, tokenIndex1518, depth1518 := position, tokenIndex, depth
-										if c := buffer[position]; c < rune('a') || c > rune('z') {
+										if buffer[position] != rune('e') {
 											goto l1519
 										}
 										position++
 										goto l1518
 									l1519:
 										position, tokenIndex, depth = position1518, tokenIndex1518, depth1518
-										if c := buffer[position]; c < rune('A') || c > rune('Z') {
-											goto l1516
+										if buffer[position] != rune('E') {
+											goto l813
 										}
 										position++
 									}
 								l1518:
-									depth--
-									add(rulePN_CHARS_BASE, position1517)
-								}
-								goto l1515
-							l1516:
-								position, tokenIndex, depth = position1515, tokenIndex1515, depth1515
-								if buffer[position] != rune('_') {
-									goto l1513
-								}
-								position++
-							}
-						l1515:
-							depth--
-							add(rulePN_CHARS_U, position1514)
-						}
-						goto l1512
-					l1513:
-						position, tokenIndex, depth = position1512, tokenIndex1512, depth1512
-						if c := buffer[position]; c < rune('0') || c > rune('9') {
-							goto l1505
-						}
-						position++
-					}
-				l1512:
-				l1510:
-					{
-						position1511, tokenIndex1511, depth1511 := position, tokenIndex, depth
-						{
-							position1520, tokenIndex1520, depth1520 := position, tokenIndex, depth
-							{
-								position1522 := position
-								depth++
-								{
-									position1523, tokenIndex1523, depth1523 := position, tokenIndex, depth
 									{
-										position1525 := position
-										depth++
-										{
-											position1526, tokenIndex1526, depth1526 := position, tokenIndex, depth
-											if c := buffer[position]; c < rune('a') || c > rune('z') {
-												goto l1527
-											}
-											position++
-											goto l1526
-										l1527:
-											position, tokenIndex, depth = position1526, tokenIndex1526, depth1526
-											if c := buffer[position]; c < rune('A') || c > rune('Z') {
-												goto l1524
-											}
-											position++
+										position1520, tokenIndex1520, depth1520 := position, tokenIndex, depth
+										if buffer[position] != rune('x') {
+											goto l1521
 										}
-									l1526:
-										depth--
-										add(rulePN_CHARS_BASE, position1525)
+										position++
+										goto l1520
+									l1521:
+										position, tokenIndex, depth = position1520, tokenIndex1520, depth1520
+										if buffer[position] != rune('X') {
+											goto l813
+										}
+										position++
 									}
-									goto l1523
-								l1524:
-									position, tokenIndex, depth = position1523, tokenIndex1523, depth1523
-									if buffer[position] != rune('_') {
-										goto l1521
+								l1520:
+									if !rules[ruleskip]() {
+										goto l813
 									}
-									position++
+									depth--
+									add(ruleREGEX, position1511)
 								}
-							l1523:
-								depth--
-								add(rulePN_CHARS_U, position1522)
 							}
-							goto l1520
-						l1521:
-							position, tokenIndex, depth = position1520, tokenIndex1520, depth1520
-							if c := buffer[position]; c < rune('0') || c > rune('9') {
-								goto l1511
+						l1480:
+							if !rules[ruleLPAREN]() {
+								goto l813
 							}
-							position++
+							if !rules[ruleexpression]() {
+								goto l813
+							}
+							if !rules[ruleCOMMA]() {
+								goto l813
+							}
+							if !rules[ruleexpression]() {
+								goto l813
+							}
+							{
+								position1522, tokenIndex1522, depth1522 := position, tokenIndex, depth
+								if !rules[ruleCOMMA]() {
+									goto l1522
+								}
+								if !rules[ruleexpression]() {
+									goto l1522
+								}
+								goto l1523
+							l1522:
+								position, tokenIndex, depth = position1522, tokenIndex1522, depth1522
+							}
+						l1523:
+							if !rules[ruleRPAREN]() {
+								goto l813
+							}
+							break
 						}
-					l1520:
-						goto l1510
-					l1511:
-						position, tokenIndex, depth = position1511, tokenIndex1511, depth1511
 					}
-					depth--
-					add(ruleVARNAME, position1509)
+
 				}
-				if !rules[ruleskip]() {
-					goto l1505
-				}
+			l815:
 				depth--
-				add(rulevar, position1506)
+				add(rulebuiltinCall, position814)
 			}
 			return true
-		l1505:
-			position, tokenIndex, depth = position1505, tokenIndex1505, depth1505
+		l813:
+			position, tokenIndex, depth = position813, tokenIndex813, depth813
 			return false
 		},
-		/* 68 iriref <- <(iri / prefixedName)> */
+		/* 69 pof <- <(((<([a-z] / [A-Z])*> ':' Action10) / (<([2-9] [0-9]*)> '/' Action11) / (<((&('+') '+') | (&('_') '_') | (&('-') '-') | (&('.') '.') | (&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]) | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z]))*> Action12)) '<' ws skip)> */
 		func() bool {
-			position1528, tokenIndex1528, depth1528 := position, tokenIndex, depth
+			position1524, tokenIndex1524, depth1524 := position, tokenIndex, depth
 			{
-				position1529 := position
+				position1525 := position
 				depth++
 				{
-					position1530, tokenIndex1530, depth1530 := position, tokenIndex, depth
-					if !rules[ruleiri]() {
-						goto l1531
-					}
-					goto l1530
-				l1531:
-					position, tokenIndex, depth = position1530, tokenIndex1530, depth1530
+					position1526, tokenIndex1526, depth1526 := position, tokenIndex, depth
 					{
-						position1532 := position
+						position1528 := position
 						depth++
-					l1533:
+					l1529:
 						{
-							position1534, tokenIndex1534, depth1534 := position, tokenIndex, depth
+							position1530, tokenIndex1530, depth1530 := position, tokenIndex, depth
 							{
-								position1535, tokenIndex1535, depth1535 := position, tokenIndex, depth
-								{
-									position1536, tokenIndex1536, depth1536 := position, tokenIndex, depth
-									if buffer[position] != rune(':') {
-										goto l1537
-									}
-									position++
-									goto l1536
-								l1537:
-									position, tokenIndex, depth = position1536, tokenIndex1536, depth1536
-									if buffer[position] != rune(' ') {
-										goto l1535
-									}
-									position++
+								position1531, tokenIndex1531, depth1531 := position, tokenIndex, depth
+								if c := buffer[position]; c < rune('a') || c > rune('z') {
+									goto l1532
 								}
-							l1536:
-								goto l1534
-							l1535:
-								position, tokenIndex, depth = position1535, tokenIndex1535, depth1535
-							}
-							if !matchDot() {
-								goto l1534
-							}
-							goto l1533
-						l1534:
-							position, tokenIndex, depth = position1534, tokenIndex1534, depth1534
-						}
-						if buffer[position] != rune(':') {
-							goto l1528
-						}
-						position++
-					l1538:
-						{
-							position1539, tokenIndex1539, depth1539 := position, tokenIndex, depth
-							{
-								position1540, tokenIndex1540, depth1540 := position, tokenIndex, depth
+								position++
+								goto l1531
+							l1532:
+								position, tokenIndex, depth = position1531, tokenIndex1531, depth1531
 								if c := buffer[position]; c < rune('A') || c > rune('Z') {
-									goto l1541
+									goto l1530
 								}
 								position++
-								goto l1540
-							l1541:
-								position, tokenIndex, depth = position1540, tokenIndex1540, depth1540
-								if c := buffer[position]; c < rune('0') || c > rune('9') {
-									goto l1542
-								}
-								position++
-								goto l1540
-							l1542:
-								position, tokenIndex, depth = position1540, tokenIndex1540, depth1540
-								if c := buffer[position]; c < rune('.') || c > rune('_') {
-									goto l1543
-								}
-								position++
-								goto l1540
-							l1543:
-								position, tokenIndex, depth = position1540, tokenIndex1540, depth1540
-								{
-									switch buffer[position] {
-									case '%':
-										if buffer[position] != rune('%') {
-											goto l1539
-										}
-										position++
-										break
-									case ':':
-										if buffer[position] != rune(':') {
-											goto l1539
-										}
-										position++
-										break
-									default:
-										if c := buffer[position]; c < rune('a') || c > rune('z') {
-											goto l1539
-										}
-										position++
-										break
-									}
-								}
-
 							}
-						l1540:
-							goto l1538
-						l1539:
-							position, tokenIndex, depth = position1539, tokenIndex1539, depth1539
-						}
-						if !rules[ruleskip]() {
-							goto l1528
+						l1531:
+							goto l1529
+						l1530:
+							position, tokenIndex, depth = position1530, tokenIndex1530, depth1530
 						}
 						depth--
-						add(ruleprefixedName, position1532)
+						add(rulePegText, position1528)
 					}
-				}
-			l1530:
-				depth--
-				add(ruleiriref, position1529)
-			}
-			return true
-		l1528:
-			position, tokenIndex, depth = position1528, tokenIndex1528, depth1528
-			return false
-		},
-		/* 69 iri <- <('<' (!'>' .)* '>' skip)> */
-		func() bool {
-			position1545, tokenIndex1545, depth1545 := position, tokenIndex, depth
-			{
-				position1546 := position
-				depth++
-				if buffer[position] != rune('<') {
-					goto l1545
-				}
-				position++
-			l1547:
-				{
-					position1548, tokenIndex1548, depth1548 := position, tokenIndex, depth
+					if buffer[position] != rune(':') {
+						goto l1527
+					}
+					position++
 					{
-						position1549, tokenIndex1549, depth1549 := position, tokenIndex, depth
-						if buffer[position] != rune('>') {
-							goto l1549
+						add(ruleAction10, position)
+					}
+					goto l1526
+				l1527:
+					position, tokenIndex, depth = position1526, tokenIndex1526, depth1526
+					{
+						position1535 := position
+						depth++
+						if c := buffer[position]; c < rune('2') || c > rune('9') {
+							goto l1534
 						}
 						position++
-						goto l1548
-					l1549:
-						position, tokenIndex, depth = position1549, tokenIndex1549, depth1549
+					l1536:
+						{
+							position1537, tokenIndex1537, depth1537 := position, tokenIndex, depth
+							if c := buffer[position]; c < rune('0') || c > rune('9') {
+								goto l1537
+							}
+							position++
+							goto l1536
+						l1537:
+							position, tokenIndex, depth = position1537, tokenIndex1537, depth1537
+						}
+						depth--
+						add(rulePegText, position1535)
 					}
-					if !matchDot() {
-						goto l1548
+					if buffer[position] != rune('/') {
+						goto l1534
 					}
-					goto l1547
-				l1548:
-					position, tokenIndex, depth = position1548, tokenIndex1548, depth1548
-				}
-				if buffer[position] != rune('>') {
-					goto l1545
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1545
-				}
-				depth--
-				add(ruleiri, position1546)
-			}
-			return true
-		l1545:
-			position, tokenIndex, depth = position1545, tokenIndex1545, depth1545
-			return false
-		},
-		/* 70 prefixedName <- <((!(':' / ' ') .)* ':' ([A-Z] / [0-9] / [.-_] / ((&('%') '%') | (&(':') ':') | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z])))* skip)> */
-		nil,
-		/* 71 literal <- <(string (('@' ([a-z] / [A-Z])+ ('-' ((&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]) | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z]))+)*) / ('^' '^' iriref))? skip)> */
-		func() bool {
-			position1551, tokenIndex1551, depth1551 := position, tokenIndex, depth
-			{
-				position1552 := position
-				depth++
-				if !rules[rulestring]() {
-					goto l1551
-				}
-				{
-					position1553, tokenIndex1553, depth1553 := position, tokenIndex, depth
+					position++
 					{
-						position1555, tokenIndex1555, depth1555 := position, tokenIndex, depth
-						if buffer[position] != rune('@') {
-							goto l1556
-						}
-						position++
+						add(ruleAction11, position)
+					}
+					goto l1526
+				l1534:
+					position, tokenIndex, depth = position1526, tokenIndex1526, depth1526
+					{
+						position1539 := position
+						depth++
+					l1540:
 						{
-							position1559, tokenIndex1559, depth1559 := position, tokenIndex, depth
-							if c := buffer[position]; c < rune('a') || c > rune('z') {
-								goto l1560
-							}
-							position++
-							goto l1559
-						l1560:
-							position, tokenIndex, depth = position1559, tokenIndex1559, depth1559
-							if c := buffer[position]; c < rune('A') || c > rune('Z') {
-								goto l1556
-							}
-							position++
-						}
-					l1559:
-					l1557:
-						{
-							position1558, tokenIndex1558, depth1558 := position, tokenIndex, depth
-							{
-								position1561, tokenIndex1561, depth1561 := position, tokenIndex, depth
-								if c := buffer[position]; c < rune('a') || c > rune('z') {
-									goto l1562
-								}
-								position++
-								goto l1561
-							l1562:
-								position, tokenIndex, depth = position1561, tokenIndex1561, depth1561
-								if c := buffer[position]; c < rune('A') || c > rune('Z') {
-									goto l1558
-								}
-								position++
-							}
-						l1561:
-							goto l1557
-						l1558:
-							position, tokenIndex, depth = position1558, tokenIndex1558, depth1558
-						}
-					l1563:
-						{
-							position1564, tokenIndex1564, depth1564 := position, tokenIndex, depth
-							if buffer[position] != rune('-') {
-								goto l1564
-							}
-							position++
+							position1541, tokenIndex1541, depth1541 := position, tokenIndex, depth
 							{
 								switch buffer[position] {
+								case '+':
+									if buffer[position] != rune('+') {
+										goto l1541
+									}
+									position++
+									break
+								case '_':
+									if buffer[position] != rune('_') {
+										goto l1541
+									}
+									position++
+									break
+								case '-':
+									if buffer[position] != rune('-') {
+										goto l1541
+									}
+									position++
+									break
+								case '.':
+									if buffer[position] != rune('.') {
+										goto l1541
+									}
+									position++
+									break
 								case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 									if c := buffer[position]; c < rune('0') || c > rune('9') {
-										goto l1564
+										goto l1541
 									}
 									position++
 									break
 								case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
 									if c := buffer[position]; c < rune('A') || c > rune('Z') {
-										goto l1564
+										goto l1541
 									}
 									position++
 									break
 								default:
 									if c := buffer[position]; c < rune('a') || c > rune('z') {
-										goto l1564
+										goto l1541
 									}
 									position++
 									break
 								}
 							}
 
-						l1565:
+							goto l1540
+						l1541:
+							position, tokenIndex, depth = position1541, tokenIndex1541, depth1541
+						}
+						depth--
+						add(rulePegText, position1539)
+					}
+					{
+						add(ruleAction12, position)
+					}
+				}
+			l1526:
+				if buffer[position] != rune('<') {
+					goto l1524
+				}
+				position++
+				if !rules[rulews]() {
+					goto l1524
+				}
+				if !rules[ruleskip]() {
+					goto l1524
+				}
+				depth--
+				add(rulepof, position1525)
+			}
+			return true
+		l1524:
+			position, tokenIndex, depth = position1524, tokenIndex1524, depth1524
+			return false
+		},
+		/* 70 var <- <(('?' / '$') VARNAME skip)> */
+		func() bool {
+			position1544, tokenIndex1544, depth1544 := position, tokenIndex, depth
+			{
+				position1545 := position
+				depth++
+				{
+					position1546, tokenIndex1546, depth1546 := position, tokenIndex, depth
+					if buffer[position] != rune('?') {
+						goto l1547
+					}
+					position++
+					goto l1546
+				l1547:
+					position, tokenIndex, depth = position1546, tokenIndex1546, depth1546
+					if buffer[position] != rune('$') {
+						goto l1544
+					}
+					position++
+				}
+			l1546:
+				{
+					position1548 := position
+					depth++
+					{
+						position1549, tokenIndex1549, depth1549 := position, tokenIndex, depth
+						if !rules[rulepnCharsU]() {
+							goto l1550
+						}
+						goto l1549
+					l1550:
+						position, tokenIndex, depth = position1549, tokenIndex1549, depth1549
+						if c := buffer[position]; c < rune('0') || c > rune('9') {
+							goto l1544
+						}
+						position++
+					}
+				l1549:
+				l1551:
+					{
+						position1552, tokenIndex1552, depth1552 := position, tokenIndex, depth
+						{
+							position1553, tokenIndex1553, depth1553 := position, tokenIndex, depth
+							if !rules[rulepnCharsU]() {
+								goto l1554
+							}
+							goto l1553
+						l1554:
+							position, tokenIndex, depth = position1553, tokenIndex1553, depth1553
 							{
-								position1566, tokenIndex1566, depth1566 := position, tokenIndex, depth
+								switch buffer[position] {
+								case 'â':
+									if c := buffer[position]; c < rune('‿') || c > rune('⁀') {
+										goto l1552
+									}
+									position++
+									break
+								case 'Ì', 'Í':
+									if c := buffer[position]; c < rune('̀') || c > rune('ͯ') {
+										goto l1552
+									}
+									position++
+									break
+								case 'Â':
+									if buffer[position] != rune('·') {
+										goto l1552
+									}
+									position++
+									break
+								default:
+									if c := buffer[position]; c < rune('0') || c > rune('9') {
+										goto l1552
+									}
+									position++
+									break
+								}
+							}
+
+						}
+					l1553:
+						goto l1551
+					l1552:
+						position, tokenIndex, depth = position1552, tokenIndex1552, depth1552
+					}
+					depth--
+					add(ruleVARNAME, position1548)
+				}
+				if !rules[ruleskip]() {
+					goto l1544
+				}
+				depth--
+				add(rulevar, position1545)
+			}
+			return true
+		l1544:
+			position, tokenIndex, depth = position1544, tokenIndex1544, depth1544
+			return false
+		},
+		/* 71 iriref <- <(iri / prefixedName)> */
+		func() bool {
+			position1556, tokenIndex1556, depth1556 := position, tokenIndex, depth
+			{
+				position1557 := position
+				depth++
+				{
+					position1558, tokenIndex1558, depth1558 := position, tokenIndex, depth
+					if !rules[ruleiri]() {
+						goto l1559
+					}
+					goto l1558
+				l1559:
+					position, tokenIndex, depth = position1558, tokenIndex1558, depth1558
+					{
+						position1560 := position
+						depth++
+						{
+							position1561, tokenIndex1561, depth1561 := position, tokenIndex, depth
+							if !rules[rulepnPrefix]() {
+								goto l1561
+							}
+							goto l1562
+						l1561:
+							position, tokenIndex, depth = position1561, tokenIndex1561, depth1561
+						}
+					l1562:
+						if buffer[position] != rune(':') {
+							goto l1556
+						}
+						position++
+						{
+							position1563 := position
+							depth++
+							{
+								switch buffer[position] {
+								case '%', '\\':
+									{
+										position1567 := position
+										depth++
+										{
+											position1568, tokenIndex1568, depth1568 := position, tokenIndex, depth
+											{
+												position1570 := position
+												depth++
+												if buffer[position] != rune('%') {
+													goto l1569
+												}
+												position++
+												if !rules[rulehex]() {
+													goto l1569
+												}
+												if !rules[rulehex]() {
+													goto l1569
+												}
+												depth--
+												add(rulepercent, position1570)
+											}
+											goto l1568
+										l1569:
+											position, tokenIndex, depth = position1568, tokenIndex1568, depth1568
+											{
+												position1571 := position
+												depth++
+												if buffer[position] != rune('\\') {
+													goto l1556
+												}
+												position++
+												{
+													switch buffer[position] {
+													case '%':
+														if buffer[position] != rune('%') {
+															goto l1556
+														}
+														position++
+														break
+													case '@':
+														if buffer[position] != rune('@') {
+															goto l1556
+														}
+														position++
+														break
+													case '#':
+														if buffer[position] != rune('#') {
+															goto l1556
+														}
+														position++
+														break
+													case '?':
+														if buffer[position] != rune('?') {
+															goto l1556
+														}
+														position++
+														break
+													case '/':
+														if buffer[position] != rune('/') {
+															goto l1556
+														}
+														position++
+														break
+													case '=':
+														if buffer[position] != rune('=') {
+															goto l1556
+														}
+														position++
+														break
+													case ';':
+														if buffer[position] != rune(';') {
+															goto l1556
+														}
+														position++
+														break
+													case ',':
+														if buffer[position] != rune(',') {
+															goto l1556
+														}
+														position++
+														break
+													case '+':
+														if buffer[position] != rune('+') {
+															goto l1556
+														}
+														position++
+														break
+													case '*':
+														if buffer[position] != rune('*') {
+															goto l1556
+														}
+														position++
+														break
+													case ')':
+														if buffer[position] != rune(')') {
+															goto l1556
+														}
+														position++
+														break
+													case '(':
+														if buffer[position] != rune('(') {
+															goto l1556
+														}
+														position++
+														break
+													case '\'':
+														if buffer[position] != rune('\'') {
+															goto l1556
+														}
+														position++
+														break
+													case '&':
+														if buffer[position] != rune('&') {
+															goto l1556
+														}
+														position++
+														break
+													case '$':
+														if buffer[position] != rune('$') {
+															goto l1556
+														}
+														position++
+														break
+													case '!':
+														if buffer[position] != rune('!') {
+															goto l1556
+														}
+														position++
+														break
+													case '-':
+														if buffer[position] != rune('-') {
+															goto l1556
+														}
+														position++
+														break
+													case '.':
+														if buffer[position] != rune('.') {
+															goto l1556
+														}
+														position++
+														break
+													case '~':
+														if buffer[position] != rune('~') {
+															goto l1556
+														}
+														position++
+														break
+													default:
+														if buffer[position] != rune('_') {
+															goto l1556
+														}
+														position++
+														break
+													}
+												}
+
+												depth--
+												add(rulepnLocalEsc, position1571)
+											}
+										}
+									l1568:
+										depth--
+										add(ruleplx, position1567)
+									}
+									break
+								case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+									if c := buffer[position]; c < rune('0') || c > rune('9') {
+										goto l1556
+									}
+									position++
+									break
+								case ':':
+									if buffer[position] != rune(':') {
+										goto l1556
+									}
+									position++
+									break
+								default:
+									if !rules[rulepnCharsU]() {
+										goto l1556
+									}
+									break
+								}
+							}
+
+						l1564:
+							{
+								position1565, tokenIndex1565, depth1565 := position, tokenIndex, depth
 								{
 									switch buffer[position] {
+									case '%', '\\':
+										{
+											position1574 := position
+											depth++
+											{
+												position1575, tokenIndex1575, depth1575 := position, tokenIndex, depth
+												{
+													position1577 := position
+													depth++
+													if buffer[position] != rune('%') {
+														goto l1576
+													}
+													position++
+													if !rules[rulehex]() {
+														goto l1576
+													}
+													if !rules[rulehex]() {
+														goto l1576
+													}
+													depth--
+													add(rulepercent, position1577)
+												}
+												goto l1575
+											l1576:
+												position, tokenIndex, depth = position1575, tokenIndex1575, depth1575
+												{
+													position1578 := position
+													depth++
+													if buffer[position] != rune('\\') {
+														goto l1565
+													}
+													position++
+													{
+														switch buffer[position] {
+														case '%':
+															if buffer[position] != rune('%') {
+																goto l1565
+															}
+															position++
+															break
+														case '@':
+															if buffer[position] != rune('@') {
+																goto l1565
+															}
+															position++
+															break
+														case '#':
+															if buffer[position] != rune('#') {
+																goto l1565
+															}
+															position++
+															break
+														case '?':
+															if buffer[position] != rune('?') {
+																goto l1565
+															}
+															position++
+															break
+														case '/':
+															if buffer[position] != rune('/') {
+																goto l1565
+															}
+															position++
+															break
+														case '=':
+															if buffer[position] != rune('=') {
+																goto l1565
+															}
+															position++
+															break
+														case ';':
+															if buffer[position] != rune(';') {
+																goto l1565
+															}
+															position++
+															break
+														case ',':
+															if buffer[position] != rune(',') {
+																goto l1565
+															}
+															position++
+															break
+														case '+':
+															if buffer[position] != rune('+') {
+																goto l1565
+															}
+															position++
+															break
+														case '*':
+															if buffer[position] != rune('*') {
+																goto l1565
+															}
+															position++
+															break
+														case ')':
+															if buffer[position] != rune(')') {
+																goto l1565
+															}
+															position++
+															break
+														case '(':
+															if buffer[position] != rune('(') {
+																goto l1565
+															}
+															position++
+															break
+														case '\'':
+															if buffer[position] != rune('\'') {
+																goto l1565
+															}
+															position++
+															break
+														case '&':
+															if buffer[position] != rune('&') {
+																goto l1565
+															}
+															position++
+															break
+														case '$':
+															if buffer[position] != rune('$') {
+																goto l1565
+															}
+															position++
+															break
+														case '!':
+															if buffer[position] != rune('!') {
+																goto l1565
+															}
+															position++
+															break
+														case '-':
+															if buffer[position] != rune('-') {
+																goto l1565
+															}
+															position++
+															break
+														case '.':
+															if buffer[position] != rune('.') {
+																goto l1565
+															}
+															position++
+															break
+														case '~':
+															if buffer[position] != rune('~') {
+																goto l1565
+															}
+															position++
+															break
+														default:
+															if buffer[position] != rune('_') {
+																goto l1565
+															}
+															position++
+															break
+														}
+													}
+
+													depth--
+													add(rulepnLocalEsc, position1578)
+												}
+											}
+										l1575:
+											depth--
+											add(ruleplx, position1574)
+										}
+										break
 									case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 										if c := buffer[position]; c < rune('0') || c > rune('9') {
-											goto l1566
+											goto l1565
 										}
 										position++
 										break
-									case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
-										if c := buffer[position]; c < rune('A') || c > rune('Z') {
-											goto l1566
+									case ':':
+										if buffer[position] != rune(':') {
+											goto l1565
 										}
 										position++
 										break
 									default:
-										if c := buffer[position]; c < rune('a') || c > rune('z') {
-											goto l1566
+										if !rules[rulepnCharsU]() {
+											goto l1565
 										}
-										position++
 										break
 									}
 								}
 
-								goto l1565
-							l1566:
-								position, tokenIndex, depth = position1566, tokenIndex1566, depth1566
+								goto l1564
+							l1565:
+								position, tokenIndex, depth = position1565, tokenIndex1565, depth1565
 							}
-							goto l1563
-						l1564:
-							position, tokenIndex, depth = position1564, tokenIndex1564, depth1564
+							depth--
+							add(rulepnLocal, position1563)
 						}
-						goto l1555
-					l1556:
-						position, tokenIndex, depth = position1555, tokenIndex1555, depth1555
-						if buffer[position] != rune('^') {
-							goto l1553
+						if !rules[ruleskip]() {
+							goto l1556
 						}
-						position++
-						if buffer[position] != rune('^') {
-							goto l1553
-						}
-						position++
-						if !rules[ruleiriref]() {
-							goto l1553
-						}
+						depth--
+						add(ruleprefixedName, position1560)
 					}
-				l1555:
-					goto l1554
-				l1553:
-					position, tokenIndex, depth = position1553, tokenIndex1553, depth1553
 				}
-			l1554:
-				if !rules[ruleskip]() {
-					goto l1551
-				}
+			l1558:
 				depth--
-				add(ruleliteral, position1552)
+				add(ruleiriref, position1557)
 			}
 			return true
-		l1551:
-			position, tokenIndex, depth = position1551, tokenIndex1551, depth1551
+		l1556:
+			position, tokenIndex, depth = position1556, tokenIndex1556, depth1556
 			return false
 		},
-		/* 72 string <- <('"' (!'"' .)* '"')> */
+		/* 72 iri <- <('<' (!'>' .)* '>' skip)> */
 		func() bool {
-			position1569, tokenIndex1569, depth1569 := position, tokenIndex, depth
+			position1580, tokenIndex1580, depth1580 := position, tokenIndex, depth
 			{
-				position1570 := position
+				position1581 := position
 				depth++
-				if buffer[position] != rune('"') {
-					goto l1569
+				if buffer[position] != rune('<') {
+					goto l1580
 				}
 				position++
-			l1571:
+			l1582:
 				{
-					position1572, tokenIndex1572, depth1572 := position, tokenIndex, depth
+					position1583, tokenIndex1583, depth1583 := position, tokenIndex, depth
 					{
-						position1573, tokenIndex1573, depth1573 := position, tokenIndex, depth
-						if buffer[position] != rune('"') {
-							goto l1573
+						position1584, tokenIndex1584, depth1584 := position, tokenIndex, depth
+						if buffer[position] != rune('>') {
+							goto l1584
 						}
 						position++
-						goto l1572
-					l1573:
-						position, tokenIndex, depth = position1573, tokenIndex1573, depth1573
+						goto l1583
+					l1584:
+						position, tokenIndex, depth = position1584, tokenIndex1584, depth1584
 					}
 					if !matchDot() {
-						goto l1572
+						goto l1583
 					}
-					goto l1571
-				l1572:
-					position, tokenIndex, depth = position1572, tokenIndex1572, depth1572
+					goto l1582
+				l1583:
+					position, tokenIndex, depth = position1583, tokenIndex1583, depth1583
 				}
-				if buffer[position] != rune('"') {
-					goto l1569
-				}
-				position++
-				depth--
-				add(rulestring, position1570)
-			}
-			return true
-		l1569:
-			position, tokenIndex, depth = position1569, tokenIndex1569, depth1569
-			return false
-		},
-		/* 73 numericLiteral <- <(('+' / '-')? [0-9]+ ('.' [0-9]*)? skip)> */
-		func() bool {
-			position1574, tokenIndex1574, depth1574 := position, tokenIndex, depth
-			{
-				position1575 := position
-				depth++
-				{
-					position1576, tokenIndex1576, depth1576 := position, tokenIndex, depth
-					{
-						position1578, tokenIndex1578, depth1578 := position, tokenIndex, depth
-						if buffer[position] != rune('+') {
-							goto l1579
-						}
-						position++
-						goto l1578
-					l1579:
-						position, tokenIndex, depth = position1578, tokenIndex1578, depth1578
-						if buffer[position] != rune('-') {
-							goto l1576
-						}
-						position++
-					}
-				l1578:
-					goto l1577
-				l1576:
-					position, tokenIndex, depth = position1576, tokenIndex1576, depth1576
-				}
-			l1577:
-				if c := buffer[position]; c < rune('0') || c > rune('9') {
-					goto l1574
-				}
-				position++
-			l1580:
-				{
-					position1581, tokenIndex1581, depth1581 := position, tokenIndex, depth
-					if c := buffer[position]; c < rune('0') || c > rune('9') {
-						goto l1581
-					}
-					position++
+				if buffer[position] != rune('>') {
 					goto l1580
-				l1581:
-					position, tokenIndex, depth = position1581, tokenIndex1581, depth1581
 				}
-				{
-					position1582, tokenIndex1582, depth1582 := position, tokenIndex, depth
-					if buffer[position] != rune('.') {
-						goto l1582
-					}
-					position++
-				l1584:
-					{
-						position1585, tokenIndex1585, depth1585 := position, tokenIndex, depth
-						if c := buffer[position]; c < rune('0') || c > rune('9') {
-							goto l1585
-						}
-						position++
-						goto l1584
-					l1585:
-						position, tokenIndex, depth = position1585, tokenIndex1585, depth1585
-					}
-					goto l1583
-				l1582:
-					position, tokenIndex, depth = position1582, tokenIndex1582, depth1582
-				}
-			l1583:
+				position++
 				if !rules[ruleskip]() {
-					goto l1574
+					goto l1580
 				}
 				depth--
-				add(rulenumericLiteral, position1575)
+				add(ruleiri, position1581)
 			}
 			return true
-		l1574:
-			position, tokenIndex, depth = position1574, tokenIndex1574, depth1574
+		l1580:
+			position, tokenIndex, depth = position1580, tokenIndex1580, depth1580
 			return false
 		},
-		/* 74 signedNumericLiteral <- <(('+' / '-') [0-9]+ ('.' [0-9]*)? skip)> */
+		/* 73 prefixedName <- <(pnPrefix? ':' pnLocal skip)> */
 		nil,
-		/* 75 booleanLiteral <- <(TRUE / FALSE)> */
+		/* 74 literal <- <(string (('@' ([a-z] / [A-Z])+ ('-' ((&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]) | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z]))+)*) / ('^' '^' iriref))? skip)> */
 		func() bool {
-			position1587, tokenIndex1587, depth1587 := position, tokenIndex, depth
+			position1586, tokenIndex1586, depth1586 := position, tokenIndex, depth
 			{
-				position1588 := position
+				position1587 := position
 				depth++
+				if !rules[rulestring]() {
+					goto l1586
+				}
 				{
-					position1589, tokenIndex1589, depth1589 := position, tokenIndex, depth
+					position1588, tokenIndex1588, depth1588 := position, tokenIndex, depth
 					{
-						position1591 := position
-						depth++
-						{
-							position1592, tokenIndex1592, depth1592 := position, tokenIndex, depth
-							if buffer[position] != rune('t') {
-								goto l1593
-							}
-							position++
-							goto l1592
-						l1593:
-							position, tokenIndex, depth = position1592, tokenIndex1592, depth1592
-							if buffer[position] != rune('T') {
-								goto l1590
-							}
-							position++
+						position1590, tokenIndex1590, depth1590 := position, tokenIndex, depth
+						if buffer[position] != rune('@') {
+							goto l1591
 						}
-					l1592:
+						position++
 						{
 							position1594, tokenIndex1594, depth1594 := position, tokenIndex, depth
-							if buffer[position] != rune('r') {
+							if c := buffer[position]; c < rune('a') || c > rune('z') {
 								goto l1595
 							}
 							position++
 							goto l1594
 						l1595:
 							position, tokenIndex, depth = position1594, tokenIndex1594, depth1594
-							if buffer[position] != rune('R') {
-								goto l1590
+							if c := buffer[position]; c < rune('A') || c > rune('Z') {
+								goto l1591
 							}
 							position++
 						}
 					l1594:
+					l1592:
 						{
-							position1596, tokenIndex1596, depth1596 := position, tokenIndex, depth
-							if buffer[position] != rune('u') {
-								goto l1597
+							position1593, tokenIndex1593, depth1593 := position, tokenIndex, depth
+							{
+								position1596, tokenIndex1596, depth1596 := position, tokenIndex, depth
+								if c := buffer[position]; c < rune('a') || c > rune('z') {
+									goto l1597
+								}
+								position++
+								goto l1596
+							l1597:
+								position, tokenIndex, depth = position1596, tokenIndex1596, depth1596
+								if c := buffer[position]; c < rune('A') || c > rune('Z') {
+									goto l1593
+								}
+								position++
 							}
-							position++
-							goto l1596
-						l1597:
-							position, tokenIndex, depth = position1596, tokenIndex1596, depth1596
-							if buffer[position] != rune('U') {
-								goto l1590
-							}
-							position++
+						l1596:
+							goto l1592
+						l1593:
+							position, tokenIndex, depth = position1593, tokenIndex1593, depth1593
 						}
-					l1596:
+					l1598:
 						{
-							position1598, tokenIndex1598, depth1598 := position, tokenIndex, depth
-							if buffer[position] != rune('e') {
+							position1599, tokenIndex1599, depth1599 := position, tokenIndex, depth
+							if buffer[position] != rune('-') {
 								goto l1599
 							}
 							position++
+							{
+								switch buffer[position] {
+								case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+									if c := buffer[position]; c < rune('0') || c > rune('9') {
+										goto l1599
+									}
+									position++
+									break
+								case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
+									if c := buffer[position]; c < rune('A') || c > rune('Z') {
+										goto l1599
+									}
+									position++
+									break
+								default:
+									if c := buffer[position]; c < rune('a') || c > rune('z') {
+										goto l1599
+									}
+									position++
+									break
+								}
+							}
+
+						l1600:
+							{
+								position1601, tokenIndex1601, depth1601 := position, tokenIndex, depth
+								{
+									switch buffer[position] {
+									case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+										if c := buffer[position]; c < rune('0') || c > rune('9') {
+											goto l1601
+										}
+										position++
+										break
+									case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
+										if c := buffer[position]; c < rune('A') || c > rune('Z') {
+											goto l1601
+										}
+										position++
+										break
+									default:
+										if c := buffer[position]; c < rune('a') || c > rune('z') {
+											goto l1601
+										}
+										position++
+										break
+									}
+								}
+
+								goto l1600
+							l1601:
+								position, tokenIndex, depth = position1601, tokenIndex1601, depth1601
+							}
 							goto l1598
 						l1599:
-							position, tokenIndex, depth = position1598, tokenIndex1598, depth1598
-							if buffer[position] != rune('E') {
-								goto l1590
-							}
-							position++
+							position, tokenIndex, depth = position1599, tokenIndex1599, depth1599
 						}
-					l1598:
-						if !rules[ruleskip]() {
-							goto l1590
+						goto l1590
+					l1591:
+						position, tokenIndex, depth = position1590, tokenIndex1590, depth1590
+						if buffer[position] != rune('^') {
+							goto l1588
 						}
-						depth--
-						add(ruleTRUE, position1591)
+						position++
+						if buffer[position] != rune('^') {
+							goto l1588
+						}
+						position++
+						if !rules[ruleiriref]() {
+							goto l1588
+						}
 					}
-					goto l1589
 				l1590:
-					position, tokenIndex, depth = position1589, tokenIndex1589, depth1589
-					{
-						position1600 := position
-						depth++
-						{
-							position1601, tokenIndex1601, depth1601 := position, tokenIndex, depth
-							if buffer[position] != rune('f') {
-								goto l1602
-							}
-							position++
-							goto l1601
-						l1602:
-							position, tokenIndex, depth = position1601, tokenIndex1601, depth1601
-							if buffer[position] != rune('F') {
-								goto l1587
-							}
-							position++
-						}
-					l1601:
-						{
-							position1603, tokenIndex1603, depth1603 := position, tokenIndex, depth
-							if buffer[position] != rune('a') {
-								goto l1604
-							}
-							position++
-							goto l1603
-						l1604:
-							position, tokenIndex, depth = position1603, tokenIndex1603, depth1603
-							if buffer[position] != rune('A') {
-								goto l1587
-							}
-							position++
-						}
-					l1603:
-						{
-							position1605, tokenIndex1605, depth1605 := position, tokenIndex, depth
-							if buffer[position] != rune('l') {
-								goto l1606
-							}
-							position++
-							goto l1605
-						l1606:
-							position, tokenIndex, depth = position1605, tokenIndex1605, depth1605
-							if buffer[position] != rune('L') {
-								goto l1587
-							}
-							position++
-						}
-					l1605:
-						{
-							position1607, tokenIndex1607, depth1607 := position, tokenIndex, depth
-							if buffer[position] != rune('s') {
-								goto l1608
-							}
-							position++
-							goto l1607
-						l1608:
-							position, tokenIndex, depth = position1607, tokenIndex1607, depth1607
-							if buffer[position] != rune('S') {
-								goto l1587
-							}
-							position++
-						}
-					l1607:
-						{
-							position1609, tokenIndex1609, depth1609 := position, tokenIndex, depth
-							if buffer[position] != rune('e') {
-								goto l1610
-							}
-							position++
-							goto l1609
-						l1610:
-							position, tokenIndex, depth = position1609, tokenIndex1609, depth1609
-							if buffer[position] != rune('E') {
-								goto l1587
-							}
-							position++
-						}
-					l1609:
-						if !rules[ruleskip]() {
-							goto l1587
-						}
-						depth--
-						add(ruleFALSE, position1600)
-					}
+					goto l1589
+				l1588:
+					position, tokenIndex, depth = position1588, tokenIndex1588, depth1588
 				}
 			l1589:
+				if !rules[ruleskip]() {
+					goto l1586
+				}
 				depth--
-				add(rulebooleanLiteral, position1588)
+				add(ruleliteral, position1587)
 			}
 			return true
-		l1587:
-			position, tokenIndex, depth = position1587, tokenIndex1587, depth1587
+		l1586:
+			position, tokenIndex, depth = position1586, tokenIndex1586, depth1586
 			return false
 		},
-		/* 76 blankNode <- <(blankNodeLabel / anon)> */
-		nil,
-		/* 77 blankNodeLabel <- <('_' ':' ((&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]) | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z])) ([a-z] / [A-Z] / [0-9] / [.-_])? skip)> */
-		nil,
-		/* 78 anon <- <('[' ws* ']' skip)> */
-		nil,
-		/* 79 nil <- <('(' ws* ')' skip)> */
+		/* 75 string <- <(stringLiteralA / stringLiteralB / stringLiteralLongA / stringLiteralLongB)> */
 		func() bool {
-			position1614, tokenIndex1614, depth1614 := position, tokenIndex, depth
+			position1604, tokenIndex1604, depth1604 := position, tokenIndex, depth
 			{
-				position1615 := position
+				position1605 := position
 				depth++
-				if buffer[position] != rune('(') {
-					goto l1614
+				{
+					position1606, tokenIndex1606, depth1606 := position, tokenIndex, depth
+					{
+						position1608 := position
+						depth++
+						if buffer[position] != rune('\'') {
+							goto l1607
+						}
+						position++
+					l1609:
+						{
+							position1610, tokenIndex1610, depth1610 := position, tokenIndex, depth
+							{
+								position1611, tokenIndex1611, depth1611 := position, tokenIndex, depth
+								{
+									position1613, tokenIndex1613, depth1613 := position, tokenIndex, depth
+									{
+										switch buffer[position] {
+										case '\r':
+											if buffer[position] != rune('\r') {
+												goto l1613
+											}
+											position++
+											break
+										case '\n':
+											if buffer[position] != rune('\n') {
+												goto l1613
+											}
+											position++
+											break
+										case '\\':
+											if buffer[position] != rune('\\') {
+												goto l1613
+											}
+											position++
+											break
+										default:
+											if buffer[position] != rune('\'') {
+												goto l1613
+											}
+											position++
+											break
+										}
+									}
+
+									goto l1612
+								l1613:
+									position, tokenIndex, depth = position1613, tokenIndex1613, depth1613
+								}
+								if !matchDot() {
+									goto l1612
+								}
+								goto l1611
+							l1612:
+								position, tokenIndex, depth = position1611, tokenIndex1611, depth1611
+								if !rules[ruleechar]() {
+									goto l1610
+								}
+							}
+						l1611:
+							goto l1609
+						l1610:
+							position, tokenIndex, depth = position1610, tokenIndex1610, depth1610
+						}
+						if buffer[position] != rune('\'') {
+							goto l1607
+						}
+						position++
+						depth--
+						add(rulestringLiteralA, position1608)
+					}
+					goto l1606
+				l1607:
+					position, tokenIndex, depth = position1606, tokenIndex1606, depth1606
+					{
+						position1616 := position
+						depth++
+						if buffer[position] != rune('"') {
+							goto l1615
+						}
+						position++
+					l1617:
+						{
+							position1618, tokenIndex1618, depth1618 := position, tokenIndex, depth
+							{
+								position1619, tokenIndex1619, depth1619 := position, tokenIndex, depth
+								{
+									position1621, tokenIndex1621, depth1621 := position, tokenIndex, depth
+									{
+										switch buffer[position] {
+										case '\r':
+											if buffer[position] != rune('\r') {
+												goto l1621
+											}
+											position++
+											break
+										case '\n':
+											if buffer[position] != rune('\n') {
+												goto l1621
+											}
+											position++
+											break
+										case '\\':
+											if buffer[position] != rune('\\') {
+												goto l1621
+											}
+											position++
+											break
+										default:
+											if buffer[position] != rune('"') {
+												goto l1621
+											}
+											position++
+											break
+										}
+									}
+
+									goto l1620
+								l1621:
+									position, tokenIndex, depth = position1621, tokenIndex1621, depth1621
+								}
+								if !matchDot() {
+									goto l1620
+								}
+								goto l1619
+							l1620:
+								position, tokenIndex, depth = position1619, tokenIndex1619, depth1619
+								if !rules[ruleechar]() {
+									goto l1618
+								}
+							}
+						l1619:
+							goto l1617
+						l1618:
+							position, tokenIndex, depth = position1618, tokenIndex1618, depth1618
+						}
+						if buffer[position] != rune('"') {
+							goto l1615
+						}
+						position++
+						depth--
+						add(rulestringLiteralB, position1616)
+					}
+					goto l1606
+				l1615:
+					position, tokenIndex, depth = position1606, tokenIndex1606, depth1606
+					{
+						position1624 := position
+						depth++
+						if buffer[position] != rune('\'') {
+							goto l1623
+						}
+						position++
+						if buffer[position] != rune('\'') {
+							goto l1623
+						}
+						position++
+						if buffer[position] != rune('\'') {
+							goto l1623
+						}
+						position++
+					l1625:
+						{
+							position1626, tokenIndex1626, depth1626 := position, tokenIndex, depth
+							{
+								position1627, tokenIndex1627, depth1627 := position, tokenIndex, depth
+								{
+									position1629, tokenIndex1629, depth1629 := position, tokenIndex, depth
+									if buffer[position] != rune('\'') {
+										goto l1630
+									}
+									position++
+									goto l1629
+								l1630:
+									position, tokenIndex, depth = position1629, tokenIndex1629, depth1629
+									if buffer[position] != rune('\'') {
+										goto l1627
+									}
+									position++
+									if buffer[position] != rune('\'') {
+										goto l1627
+									}
+									position++
+								}
+							l1629:
+								goto l1628
+							l1627:
+								position, tokenIndex, depth = position1627, tokenIndex1627, depth1627
+							}
+						l1628:
+							{
+								position1631, tokenIndex1631, depth1631 := position, tokenIndex, depth
+								{
+									position1633, tokenIndex1633, depth1633 := position, tokenIndex, depth
+									{
+										position1634, tokenIndex1634, depth1634 := position, tokenIndex, depth
+										if buffer[position] != rune('\'') {
+											goto l1635
+										}
+										position++
+										goto l1634
+									l1635:
+										position, tokenIndex, depth = position1634, tokenIndex1634, depth1634
+										if buffer[position] != rune('\\') {
+											goto l1633
+										}
+										position++
+									}
+								l1634:
+									goto l1632
+								l1633:
+									position, tokenIndex, depth = position1633, tokenIndex1633, depth1633
+								}
+								if !matchDot() {
+									goto l1632
+								}
+								goto l1631
+							l1632:
+								position, tokenIndex, depth = position1631, tokenIndex1631, depth1631
+								if !rules[ruleechar]() {
+									goto l1626
+								}
+							}
+						l1631:
+							goto l1625
+						l1626:
+							position, tokenIndex, depth = position1626, tokenIndex1626, depth1626
+						}
+						if buffer[position] != rune('\'') {
+							goto l1623
+						}
+						position++
+						if buffer[position] != rune('\'') {
+							goto l1623
+						}
+						position++
+						if buffer[position] != rune('\'') {
+							goto l1623
+						}
+						position++
+						depth--
+						add(rulestringLiteralLongA, position1624)
+					}
+					goto l1606
+				l1623:
+					position, tokenIndex, depth = position1606, tokenIndex1606, depth1606
+					{
+						position1636 := position
+						depth++
+						if buffer[position] != rune('"') {
+							goto l1604
+						}
+						position++
+						if buffer[position] != rune('"') {
+							goto l1604
+						}
+						position++
+						if buffer[position] != rune('"') {
+							goto l1604
+						}
+						position++
+					l1637:
+						{
+							position1638, tokenIndex1638, depth1638 := position, tokenIndex, depth
+							{
+								position1639, tokenIndex1639, depth1639 := position, tokenIndex, depth
+								{
+									position1641, tokenIndex1641, depth1641 := position, tokenIndex, depth
+									if buffer[position] != rune('"') {
+										goto l1642
+									}
+									position++
+									goto l1641
+								l1642:
+									position, tokenIndex, depth = position1641, tokenIndex1641, depth1641
+									if buffer[position] != rune('"') {
+										goto l1639
+									}
+									position++
+									if buffer[position] != rune('"') {
+										goto l1639
+									}
+									position++
+								}
+							l1641:
+								goto l1640
+							l1639:
+								position, tokenIndex, depth = position1639, tokenIndex1639, depth1639
+							}
+						l1640:
+							{
+								position1643, tokenIndex1643, depth1643 := position, tokenIndex, depth
+								{
+									position1645, tokenIndex1645, depth1645 := position, tokenIndex, depth
+									{
+										position1646, tokenIndex1646, depth1646 := position, tokenIndex, depth
+										if buffer[position] != rune('"') {
+											goto l1647
+										}
+										position++
+										goto l1646
+									l1647:
+										position, tokenIndex, depth = position1646, tokenIndex1646, depth1646
+										if buffer[position] != rune('\\') {
+											goto l1645
+										}
+										position++
+									}
+								l1646:
+									goto l1644
+								l1645:
+									position, tokenIndex, depth = position1645, tokenIndex1645, depth1645
+								}
+								if !matchDot() {
+									goto l1644
+								}
+								goto l1643
+							l1644:
+								position, tokenIndex, depth = position1643, tokenIndex1643, depth1643
+								if !rules[ruleechar]() {
+									goto l1638
+								}
+							}
+						l1643:
+							goto l1637
+						l1638:
+							position, tokenIndex, depth = position1638, tokenIndex1638, depth1638
+						}
+						if buffer[position] != rune('"') {
+							goto l1604
+						}
+						position++
+						if buffer[position] != rune('"') {
+							goto l1604
+						}
+						position++
+						if buffer[position] != rune('"') {
+							goto l1604
+						}
+						position++
+						depth--
+						add(rulestringLiteralLongB, position1636)
+					}
+				}
+			l1606:
+				depth--
+				add(rulestring, position1605)
+			}
+			return true
+		l1604:
+			position, tokenIndex, depth = position1604, tokenIndex1604, depth1604
+			return false
+		},
+		/* 76 stringLiteralA <- <('\'' ((!((&('\r') '\r') | (&('\n') '\n') | (&('\\') '\\') | (&('\'') '\'')) .) / echar)* '\'')> */
+		nil,
+		/* 77 stringLiteralB <- <('"' ((!((&('\r') '\r') | (&('\n') '\n') | (&('\\') '\\') | (&('"') '"')) .) / echar)* '"')> */
+		nil,
+		/* 78 stringLiteralLongA <- <('\'' '\'' '\'' (('\'' / ('\'' '\''))? ((!('\'' / '\\') .) / echar))* ('\'' '\'' '\''))> */
+		nil,
+		/* 79 stringLiteralLongB <- <('"' '"' '"' (('"' / ('"' '"'))? ((!('"' / '\\') .) / echar))* ('"' '"' '"'))> */
+		nil,
+		/* 80 echar <- <('\\' ((&('\'') '\'') | (&('"') '"') | (&('\\') '\\') | (&('f') 'f') | (&('r') 'r') | (&('n') 'n') | (&('b') 'b') | (&('t') 't')))> */
+		func() bool {
+			position1652, tokenIndex1652, depth1652 := position, tokenIndex, depth
+			{
+				position1653 := position
+				depth++
+				if buffer[position] != rune('\\') {
+					goto l1652
 				}
 				position++
-			l1616:
 				{
-					position1617, tokenIndex1617, depth1617 := position, tokenIndex, depth
-					if !rules[rulews]() {
-						goto l1617
+					switch buffer[position] {
+					case '\'':
+						if buffer[position] != rune('\'') {
+							goto l1652
+						}
+						position++
+						break
+					case '"':
+						if buffer[position] != rune('"') {
+							goto l1652
+						}
+						position++
+						break
+					case '\\':
+						if buffer[position] != rune('\\') {
+							goto l1652
+						}
+						position++
+						break
+					case 'f':
+						if buffer[position] != rune('f') {
+							goto l1652
+						}
+						position++
+						break
+					case 'r':
+						if buffer[position] != rune('r') {
+							goto l1652
+						}
+						position++
+						break
+					case 'n':
+						if buffer[position] != rune('n') {
+							goto l1652
+						}
+						position++
+						break
+					case 'b':
+						if buffer[position] != rune('b') {
+							goto l1652
+						}
+						position++
+						break
+					default:
+						if buffer[position] != rune('t') {
+							goto l1652
+						}
+						position++
+						break
 					}
-					goto l1616
-				l1617:
-					position, tokenIndex, depth = position1617, tokenIndex1617, depth1617
 				}
-				if buffer[position] != rune(')') {
-					goto l1614
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1614
-				}
+
 				depth--
-				add(rulenil, position1615)
+				add(ruleechar, position1653)
 			}
 			return true
-		l1614:
-			position, tokenIndex, depth = position1614, tokenIndex1614, depth1614
+		l1652:
+			position, tokenIndex, depth = position1652, tokenIndex1652, depth1652
 			return false
 		},
-		/* 80 VARNAME <- <(PN_CHARS_U / [0-9])+> */
-		nil,
-		/* 81 PN_CHARS_U <- <(PN_CHARS_BASE / '_')> */
-		nil,
-		/* 82 PN_CHARS_BASE <- <([a-z] / [A-Z])> */
-		nil,
-		/* 83 PREFIX <- <(('p' / 'P') ('r' / 'R') ('e' / 'E') ('f' / 'F') ('i' / 'I') ('x' / 'X') skip)> */
-		nil,
-		/* 84 TRUE <- <(('t' / 'T') ('r' / 'R') ('u' / 'U') ('e' / 'E') skip)> */
-		nil,
-		/* 85 FALSE <- <(('f' / 'F') ('a' / 'A') ('l' / 'L') ('s' / 'S') ('e' / 'E') skip)> */
-		nil,
-		/* 86 BASE <- <(('b' / 'B') ('a' / 'A') ('s' / 'S') ('e' / 'E') skip)> */
-		nil,
-		/* 87 SELECT <- <(('s' / 'S') ('e' / 'E') ('l' / 'L') ('e' / 'E') ('c' / 'C') ('t' / 'T') skip)> */
-		nil,
-		/* 88 REDUCED <- <(('r' / 'R') ('e' / 'E') ('d' / 'D') ('u' / 'U') ('c' / 'C') ('e' / 'E') ('d' / 'D') skip)> */
-		nil,
-		/* 89 DISTINCT <- <(('d' / 'D') ('i' / 'I') ('s' / 'S') ('t' / 'T') ('i' / 'I') ('n' / 'N') ('c' / 'C') ('t' / 'T') skip)> */
+		/* 81 numericLiteral <- <(('+' / '-')? [0-9]+ ('.' [0-9]*)? skip)> */
 		func() bool {
-			position1627, tokenIndex1627, depth1627 := position, tokenIndex, depth
+			position1655, tokenIndex1655, depth1655 := position, tokenIndex, depth
 			{
-				position1628 := position
+				position1656 := position
 				depth++
 				{
-					position1629, tokenIndex1629, depth1629 := position, tokenIndex, depth
-					if buffer[position] != rune('d') {
-						goto l1630
+					position1657, tokenIndex1657, depth1657 := position, tokenIndex, depth
+					{
+						position1659, tokenIndex1659, depth1659 := position, tokenIndex, depth
+						if buffer[position] != rune('+') {
+							goto l1660
+						}
+						position++
+						goto l1659
+					l1660:
+						position, tokenIndex, depth = position1659, tokenIndex1659, depth1659
+						if buffer[position] != rune('-') {
+							goto l1657
+						}
+						position++
 					}
-					position++
-					goto l1629
-				l1630:
-					position, tokenIndex, depth = position1629, tokenIndex1629, depth1629
-					if buffer[position] != rune('D') {
-						goto l1627
-					}
-					position++
-				}
-			l1629:
-				{
-					position1631, tokenIndex1631, depth1631 := position, tokenIndex, depth
-					if buffer[position] != rune('i') {
-						goto l1632
-					}
-					position++
-					goto l1631
-				l1632:
-					position, tokenIndex, depth = position1631, tokenIndex1631, depth1631
-					if buffer[position] != rune('I') {
-						goto l1627
-					}
-					position++
-				}
-			l1631:
-				{
-					position1633, tokenIndex1633, depth1633 := position, tokenIndex, depth
-					if buffer[position] != rune('s') {
-						goto l1634
-					}
-					position++
-					goto l1633
-				l1634:
-					position, tokenIndex, depth = position1633, tokenIndex1633, depth1633
-					if buffer[position] != rune('S') {
-						goto l1627
-					}
-					position++
-				}
-			l1633:
-				{
-					position1635, tokenIndex1635, depth1635 := position, tokenIndex, depth
-					if buffer[position] != rune('t') {
-						goto l1636
-					}
-					position++
-					goto l1635
-				l1636:
-					position, tokenIndex, depth = position1635, tokenIndex1635, depth1635
-					if buffer[position] != rune('T') {
-						goto l1627
-					}
-					position++
-				}
-			l1635:
-				{
-					position1637, tokenIndex1637, depth1637 := position, tokenIndex, depth
-					if buffer[position] != rune('i') {
-						goto l1638
-					}
-					position++
-					goto l1637
-				l1638:
-					position, tokenIndex, depth = position1637, tokenIndex1637, depth1637
-					if buffer[position] != rune('I') {
-						goto l1627
-					}
-					position++
-				}
-			l1637:
-				{
-					position1639, tokenIndex1639, depth1639 := position, tokenIndex, depth
-					if buffer[position] != rune('n') {
-						goto l1640
-					}
-					position++
-					goto l1639
-				l1640:
-					position, tokenIndex, depth = position1639, tokenIndex1639, depth1639
-					if buffer[position] != rune('N') {
-						goto l1627
-					}
-					position++
-				}
-			l1639:
-				{
-					position1641, tokenIndex1641, depth1641 := position, tokenIndex, depth
-					if buffer[position] != rune('c') {
-						goto l1642
-					}
-					position++
-					goto l1641
-				l1642:
-					position, tokenIndex, depth = position1641, tokenIndex1641, depth1641
-					if buffer[position] != rune('C') {
-						goto l1627
-					}
-					position++
-				}
-			l1641:
-				{
-					position1643, tokenIndex1643, depth1643 := position, tokenIndex, depth
-					if buffer[position] != rune('t') {
-						goto l1644
-					}
-					position++
-					goto l1643
-				l1644:
-					position, tokenIndex, depth = position1643, tokenIndex1643, depth1643
-					if buffer[position] != rune('T') {
-						goto l1627
-					}
-					position++
-				}
-			l1643:
-				if !rules[ruleskip]() {
-					goto l1627
-				}
-				depth--
-				add(ruleDISTINCT, position1628)
-			}
-			return true
-		l1627:
-			position, tokenIndex, depth = position1627, tokenIndex1627, depth1627
-			return false
-		},
-		/* 90 FROM <- <(('f' / 'F') ('r' / 'R') ('o' / 'O') ('m' / 'M') skip)> */
-		nil,
-		/* 91 NAMED <- <(('n' / 'N') ('a' / 'A') ('m' / 'M') ('e' / 'E') ('d' / 'D') skip)> */
-		nil,
-		/* 92 WHERE <- <(('w' / 'W') ('h' / 'H') ('e' / 'E') ('r' / 'R') ('e' / 'E') skip)> */
-		nil,
-		/* 93 LBRACE <- <('{' skip)> */
-		func() bool {
-			position1648, tokenIndex1648, depth1648 := position, tokenIndex, depth
-			{
-				position1649 := position
-				depth++
-				if buffer[position] != rune('{') {
-					goto l1648
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1648
-				}
-				depth--
-				add(ruleLBRACE, position1649)
-			}
-			return true
-		l1648:
-			position, tokenIndex, depth = position1648, tokenIndex1648, depth1648
-			return false
-		},
-		/* 94 RBRACE <- <('}' skip)> */
-		func() bool {
-			position1650, tokenIndex1650, depth1650 := position, tokenIndex, depth
-			{
-				position1651 := position
-				depth++
-				if buffer[position] != rune('}') {
-					goto l1650
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1650
-				}
-				depth--
-				add(ruleRBRACE, position1651)
-			}
-			return true
-		l1650:
-			position, tokenIndex, depth = position1650, tokenIndex1650, depth1650
-			return false
-		},
-		/* 95 LBRACK <- <('[' skip)> */
-		nil,
-		/* 96 RBRACK <- <(']' skip)> */
-		nil,
-		/* 97 SEMICOLON <- <(';' skip)> */
-		func() bool {
-			position1654, tokenIndex1654, depth1654 := position, tokenIndex, depth
-			{
-				position1655 := position
-				depth++
-				if buffer[position] != rune(';') {
-					goto l1654
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1654
-				}
-				depth--
-				add(ruleSEMICOLON, position1655)
-			}
-			return true
-		l1654:
-			position, tokenIndex, depth = position1654, tokenIndex1654, depth1654
-			return false
-		},
-		/* 98 COMMA <- <(',' skip)> */
-		func() bool {
-			position1656, tokenIndex1656, depth1656 := position, tokenIndex, depth
-			{
-				position1657 := position
-				depth++
-				if buffer[position] != rune(',') {
-					goto l1656
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1656
-				}
-				depth--
-				add(ruleCOMMA, position1657)
-			}
-			return true
-		l1656:
-			position, tokenIndex, depth = position1656, tokenIndex1656, depth1656
-			return false
-		},
-		/* 99 DOT <- <('.' skip)> */
-		func() bool {
-			position1658, tokenIndex1658, depth1658 := position, tokenIndex, depth
-			{
-				position1659 := position
-				depth++
-				if buffer[position] != rune('.') {
+				l1659:
 					goto l1658
+				l1657:
+					position, tokenIndex, depth = position1657, tokenIndex1657, depth1657
 				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1658
-				}
-				depth--
-				add(ruleDOT, position1659)
-			}
-			return true
-		l1658:
-			position, tokenIndex, depth = position1658, tokenIndex1658, depth1658
-			return false
-		},
-		/* 100 COLON <- <(':' skip)> */
-		nil,
-		/* 101 PIPE <- <('|' skip)> */
-		func() bool {
-			position1661, tokenIndex1661, depth1661 := position, tokenIndex, depth
-			{
-				position1662 := position
-				depth++
-				if buffer[position] != rune('|') {
-					goto l1661
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1661
-				}
-				depth--
-				add(rulePIPE, position1662)
-			}
-			return true
-		l1661:
-			position, tokenIndex, depth = position1661, tokenIndex1661, depth1661
-			return false
-		},
-		/* 102 SLASH <- <('/' skip)> */
-		func() bool {
-			position1663, tokenIndex1663, depth1663 := position, tokenIndex, depth
-			{
-				position1664 := position
-				depth++
-				if buffer[position] != rune('/') {
-					goto l1663
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1663
-				}
-				depth--
-				add(ruleSLASH, position1664)
-			}
-			return true
-		l1663:
-			position, tokenIndex, depth = position1663, tokenIndex1663, depth1663
-			return false
-		},
-		/* 103 INVERSE <- <('^' skip)> */
-		func() bool {
-			position1665, tokenIndex1665, depth1665 := position, tokenIndex, depth
-			{
-				position1666 := position
-				depth++
-				if buffer[position] != rune('^') {
-					goto l1665
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1665
-				}
-				depth--
-				add(ruleINVERSE, position1666)
-			}
-			return true
-		l1665:
-			position, tokenIndex, depth = position1665, tokenIndex1665, depth1665
-			return false
-		},
-		/* 104 LPAREN <- <('(' skip)> */
-		func() bool {
-			position1667, tokenIndex1667, depth1667 := position, tokenIndex, depth
-			{
-				position1668 := position
-				depth++
-				if buffer[position] != rune('(') {
-					goto l1667
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1667
-				}
-				depth--
-				add(ruleLPAREN, position1668)
-			}
-			return true
-		l1667:
-			position, tokenIndex, depth = position1667, tokenIndex1667, depth1667
-			return false
-		},
-		/* 105 RPAREN <- <(')' skip)> */
-		func() bool {
-			position1669, tokenIndex1669, depth1669 := position, tokenIndex, depth
-			{
-				position1670 := position
-				depth++
-				if buffer[position] != rune(')') {
-					goto l1669
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1669
-				}
-				depth--
-				add(ruleRPAREN, position1670)
-			}
-			return true
-		l1669:
-			position, tokenIndex, depth = position1669, tokenIndex1669, depth1669
-			return false
-		},
-		/* 106 ISA <- <('a' skip)> */
-		func() bool {
-			position1671, tokenIndex1671, depth1671 := position, tokenIndex, depth
-			{
-				position1672 := position
-				depth++
-				if buffer[position] != rune('a') {
-					goto l1671
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1671
-				}
-				depth--
-				add(ruleISA, position1672)
-			}
-			return true
-		l1671:
-			position, tokenIndex, depth = position1671, tokenIndex1671, depth1671
-			return false
-		},
-		/* 107 NOT <- <('!' skip)> */
-		func() bool {
-			position1673, tokenIndex1673, depth1673 := position, tokenIndex, depth
-			{
-				position1674 := position
-				depth++
-				if buffer[position] != rune('!') {
-					goto l1673
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1673
-				}
-				depth--
-				add(ruleNOT, position1674)
-			}
-			return true
-		l1673:
-			position, tokenIndex, depth = position1673, tokenIndex1673, depth1673
-			return false
-		},
-		/* 108 STAR <- <('*' skip)> */
-		func() bool {
-			position1675, tokenIndex1675, depth1675 := position, tokenIndex, depth
-			{
-				position1676 := position
-				depth++
-				if buffer[position] != rune('*') {
-					goto l1675
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1675
-				}
-				depth--
-				add(ruleSTAR, position1676)
-			}
-			return true
-		l1675:
-			position, tokenIndex, depth = position1675, tokenIndex1675, depth1675
-			return false
-		},
-		/* 109 PLUS <- <('+' skip)> */
-		func() bool {
-			position1677, tokenIndex1677, depth1677 := position, tokenIndex, depth
-			{
-				position1678 := position
-				depth++
-				if buffer[position] != rune('+') {
-					goto l1677
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1677
-				}
-				depth--
-				add(rulePLUS, position1678)
-			}
-			return true
-		l1677:
-			position, tokenIndex, depth = position1677, tokenIndex1677, depth1677
-			return false
-		},
-		/* 110 MINUS <- <('-' skip)> */
-		func() bool {
-			position1679, tokenIndex1679, depth1679 := position, tokenIndex, depth
-			{
-				position1680 := position
-				depth++
-				if buffer[position] != rune('-') {
-					goto l1679
-				}
-				position++
-				if !rules[ruleskip]() {
-					goto l1679
-				}
-				depth--
-				add(ruleMINUS, position1680)
-			}
-			return true
-		l1679:
-			position, tokenIndex, depth = position1679, tokenIndex1679, depth1679
-			return false
-		},
-		/* 111 OPTIONAL <- <(('o' / 'O') ('p' / 'P') ('t' / 'T') ('i' / 'I') ('o' / 'O') ('n' / 'N') ('a' / 'A') ('l' / 'L') skip)> */
-		nil,
-		/* 112 UNION <- <(('u' / 'U') ('n' / 'N') ('i' / 'I') ('o' / 'O') ('n' / 'N') skip)> */
-		nil,
-		/* 113 LIMIT <- <(('l' / 'L') ('i' / 'I') ('m' / 'M') ('i' / 'I') ('t' / 'T') skip)> */
-		nil,
-		/* 114 OFFSET <- <(('o' / 'O') ('f' / 'F') ('f' / 'F') ('s' / 'S') ('e' / 'E') ('t' / 'T') skip)> */
-		nil,
-		/* 115 INTEGER <- <([0-9]+ skip)> */
-		func() bool {
-			position1685, tokenIndex1685, depth1685 := position, tokenIndex, depth
-			{
-				position1686 := position
-				depth++
+			l1658:
 				if c := buffer[position]; c < rune('0') || c > rune('9') {
-					goto l1685
+					goto l1655
 				}
 				position++
-			l1687:
+			l1661:
 				{
-					position1688, tokenIndex1688, depth1688 := position, tokenIndex, depth
+					position1662, tokenIndex1662, depth1662 := position, tokenIndex, depth
 					if c := buffer[position]; c < rune('0') || c > rune('9') {
-						goto l1688
+						goto l1662
 					}
 					position++
-					goto l1687
-				l1688:
-					position, tokenIndex, depth = position1688, tokenIndex1688, depth1688
+					goto l1661
+				l1662:
+					position, tokenIndex, depth = position1662, tokenIndex1662, depth1662
 				}
+				{
+					position1663, tokenIndex1663, depth1663 := position, tokenIndex, depth
+					if buffer[position] != rune('.') {
+						goto l1663
+					}
+					position++
+				l1665:
+					{
+						position1666, tokenIndex1666, depth1666 := position, tokenIndex, depth
+						if c := buffer[position]; c < rune('0') || c > rune('9') {
+							goto l1666
+						}
+						position++
+						goto l1665
+					l1666:
+						position, tokenIndex, depth = position1666, tokenIndex1666, depth1666
+					}
+					goto l1664
+				l1663:
+					position, tokenIndex, depth = position1663, tokenIndex1663, depth1663
+				}
+			l1664:
 				if !rules[ruleskip]() {
-					goto l1685
+					goto l1655
 				}
 				depth--
-				add(ruleINTEGER, position1686)
+				add(rulenumericLiteral, position1656)
 			}
 			return true
-		l1685:
-			position, tokenIndex, depth = position1685, tokenIndex1685, depth1685
+		l1655:
+			position, tokenIndex, depth = position1655, tokenIndex1655, depth1655
 			return false
 		},
-		/* 116 CONSTRUCT <- <(('c' / 'C') ('o' / 'O') ('n' / 'N') ('s' / 'S') ('t' / 'T') ('r' / 'R') ('u' / 'U') ('c' / 'C') ('t' / 'T') skip)> */
+		/* 82 signedNumericLiteral <- <(('+' / '-') [0-9]+ ('.' [0-9]*)? skip)> */
 		nil,
-		/* 117 DESCRIBE <- <(('d' / 'D') ('e' / 'E') ('s' / 'S') ('c' / 'C') ('r' / 'R') ('i' / 'I') ('b' / 'B') ('e' / 'E') skip)> */
-		nil,
-		/* 118 ASK <- <(('a' / 'A') ('s' / 'S') ('k' / 'K') skip)> */
-		nil,
-		/* 119 OR <- <('|' '|' skip)> */
-		nil,
-		/* 120 AND <- <('&' '&' skip)> */
-		nil,
-		/* 121 EQ <- <('=' skip)> */
+		/* 83 booleanLiteral <- <(TRUE / FALSE)> */
 		func() bool {
-			position1694, tokenIndex1694, depth1694 := position, tokenIndex, depth
+			position1668, tokenIndex1668, depth1668 := position, tokenIndex, depth
 			{
-				position1695 := position
+				position1669 := position
 				depth++
-				if buffer[position] != rune('=') {
-					goto l1694
+				{
+					position1670, tokenIndex1670, depth1670 := position, tokenIndex, depth
+					{
+						position1672 := position
+						depth++
+						{
+							position1673, tokenIndex1673, depth1673 := position, tokenIndex, depth
+							if buffer[position] != rune('t') {
+								goto l1674
+							}
+							position++
+							goto l1673
+						l1674:
+							position, tokenIndex, depth = position1673, tokenIndex1673, depth1673
+							if buffer[position] != rune('T') {
+								goto l1671
+							}
+							position++
+						}
+					l1673:
+						{
+							position1675, tokenIndex1675, depth1675 := position, tokenIndex, depth
+							if buffer[position] != rune('r') {
+								goto l1676
+							}
+							position++
+							goto l1675
+						l1676:
+							position, tokenIndex, depth = position1675, tokenIndex1675, depth1675
+							if buffer[position] != rune('R') {
+								goto l1671
+							}
+							position++
+						}
+					l1675:
+						{
+							position1677, tokenIndex1677, depth1677 := position, tokenIndex, depth
+							if buffer[position] != rune('u') {
+								goto l1678
+							}
+							position++
+							goto l1677
+						l1678:
+							position, tokenIndex, depth = position1677, tokenIndex1677, depth1677
+							if buffer[position] != rune('U') {
+								goto l1671
+							}
+							position++
+						}
+					l1677:
+						{
+							position1679, tokenIndex1679, depth1679 := position, tokenIndex, depth
+							if buffer[position] != rune('e') {
+								goto l1680
+							}
+							position++
+							goto l1679
+						l1680:
+							position, tokenIndex, depth = position1679, tokenIndex1679, depth1679
+							if buffer[position] != rune('E') {
+								goto l1671
+							}
+							position++
+						}
+					l1679:
+						if !rules[ruleskip]() {
+							goto l1671
+						}
+						depth--
+						add(ruleTRUE, position1672)
+					}
+					goto l1670
+				l1671:
+					position, tokenIndex, depth = position1670, tokenIndex1670, depth1670
+					{
+						position1681 := position
+						depth++
+						{
+							position1682, tokenIndex1682, depth1682 := position, tokenIndex, depth
+							if buffer[position] != rune('f') {
+								goto l1683
+							}
+							position++
+							goto l1682
+						l1683:
+							position, tokenIndex, depth = position1682, tokenIndex1682, depth1682
+							if buffer[position] != rune('F') {
+								goto l1668
+							}
+							position++
+						}
+					l1682:
+						{
+							position1684, tokenIndex1684, depth1684 := position, tokenIndex, depth
+							if buffer[position] != rune('a') {
+								goto l1685
+							}
+							position++
+							goto l1684
+						l1685:
+							position, tokenIndex, depth = position1684, tokenIndex1684, depth1684
+							if buffer[position] != rune('A') {
+								goto l1668
+							}
+							position++
+						}
+					l1684:
+						{
+							position1686, tokenIndex1686, depth1686 := position, tokenIndex, depth
+							if buffer[position] != rune('l') {
+								goto l1687
+							}
+							position++
+							goto l1686
+						l1687:
+							position, tokenIndex, depth = position1686, tokenIndex1686, depth1686
+							if buffer[position] != rune('L') {
+								goto l1668
+							}
+							position++
+						}
+					l1686:
+						{
+							position1688, tokenIndex1688, depth1688 := position, tokenIndex, depth
+							if buffer[position] != rune('s') {
+								goto l1689
+							}
+							position++
+							goto l1688
+						l1689:
+							position, tokenIndex, depth = position1688, tokenIndex1688, depth1688
+							if buffer[position] != rune('S') {
+								goto l1668
+							}
+							position++
+						}
+					l1688:
+						{
+							position1690, tokenIndex1690, depth1690 := position, tokenIndex, depth
+							if buffer[position] != rune('e') {
+								goto l1691
+							}
+							position++
+							goto l1690
+						l1691:
+							position, tokenIndex, depth = position1690, tokenIndex1690, depth1690
+							if buffer[position] != rune('E') {
+								goto l1668
+							}
+							position++
+						}
+					l1690:
+						if !rules[ruleskip]() {
+							goto l1668
+						}
+						depth--
+						add(ruleFALSE, position1681)
+					}
+				}
+			l1670:
+				depth--
+				add(rulebooleanLiteral, position1669)
+			}
+			return true
+		l1668:
+			position, tokenIndex, depth = position1668, tokenIndex1668, depth1668
+			return false
+		},
+		/* 84 blankNode <- <(blankNodeLabel / anon)> */
+		nil,
+		/* 85 blankNodeLabel <- <('_' ':' (pnCharsU / [0-9]) (((pnCharsU / ((&('.') '.') | (&('-') '-') | (&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9])))* pnCharsU) / ([0-9] / '-'))? skip)> */
+		nil,
+		/* 86 anon <- <('[' ws* ']' skip)> */
+		nil,
+		/* 87 nil <- <('(' ws* ')' skip)> */
+		func() bool {
+			position1695, tokenIndex1695, depth1695 := position, tokenIndex, depth
+			{
+				position1696 := position
+				depth++
+				if buffer[position] != rune('(') {
+					goto l1695
+				}
+				position++
+			l1697:
+				{
+					position1698, tokenIndex1698, depth1698 := position, tokenIndex, depth
+					if !rules[rulews]() {
+						goto l1698
+					}
+					goto l1697
+				l1698:
+					position, tokenIndex, depth = position1698, tokenIndex1698, depth1698
+				}
+				if buffer[position] != rune(')') {
+					goto l1695
 				}
 				position++
 				if !rules[ruleskip]() {
-					goto l1694
+					goto l1695
 				}
 				depth--
-				add(ruleEQ, position1695)
+				add(rulenil, position1696)
 			}
 			return true
-		l1694:
-			position, tokenIndex, depth = position1694, tokenIndex1694, depth1694
+		l1695:
+			position, tokenIndex, depth = position1695, tokenIndex1695, depth1695
 			return false
 		},
-		/* 122 NE <- <('!' '=' skip)> */
+		/* 88 VARNAME <- <((pnCharsU / [0-9]) (pnCharsU / ((&('â') [‿-⁀]) | (&('Ì' | 'Í') [̀-ͯ]) | (&('Â') '·') | (&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9])))*)> */
 		nil,
-		/* 123 GT <- <('>' skip)> */
-		nil,
-		/* 124 LT <- <('<' skip)> */
-		nil,
-		/* 125 LE <- <('<' '=' skip)> */
-		nil,
-		/* 126 GE <- <('>' '=' skip)> */
-		nil,
-		/* 127 IN <- <(('i' / 'I') ('n' / 'N') skip)> */
-		nil,
-		/* 128 NOTIN <- <(('n' / 'N') ('o' / 'O') ('t' / 'T') ' ' ('i' / 'I') ('n' / 'N') skip)> */
-		nil,
-		/* 129 AS <- <(('a' / 'A') ('s' / 'S') skip)> */
+		/* 89 pnPrefix <- <(pnCharsBase pnChars*)> */
 		func() bool {
-			position1703, tokenIndex1703, depth1703 := position, tokenIndex, depth
+			position1700, tokenIndex1700, depth1700 := position, tokenIndex, depth
 			{
-				position1704 := position
+				position1701 := position
+				depth++
+				if !rules[rulepnCharsBase]() {
+					goto l1700
+				}
+			l1702:
+				{
+					position1703, tokenIndex1703, depth1703 := position, tokenIndex, depth
+					{
+						position1704 := position
+						depth++
+						{
+							switch buffer[position] {
+							case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+								if c := buffer[position]; c < rune('0') || c > rune('9') {
+									goto l1703
+								}
+								position++
+								break
+							case '-':
+								if buffer[position] != rune('-') {
+									goto l1703
+								}
+								position++
+								break
+							default:
+								if !rules[rulepnCharsU]() {
+									goto l1703
+								}
+								break
+							}
+						}
+
+						depth--
+						add(rulepnChars, position1704)
+					}
+					goto l1702
+				l1703:
+					position, tokenIndex, depth = position1703, tokenIndex1703, depth1703
+				}
+				depth--
+				add(rulepnPrefix, position1701)
+			}
+			return true
+		l1700:
+			position, tokenIndex, depth = position1700, tokenIndex1700, depth1700
+			return false
+		},
+		/* 90 pnLocal <- <((&('%' | '\\') plx) | (&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&(':') ':') | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'Ã' | 'Ä' | 'Å' | 'Æ' | 'Ç' | 'È' | 'É' | 'Ê' | 'Ë' | 'Í' | 'Î' | 'Ï' | 'Ð' | 'Ñ' | 'Ò' | 'Ó' | 'Ô' | 'Õ' | 'Ö' | '×' | 'Ø' | 'Ù' | 'Ú' | 'Û' | 'Ü' | 'Ý' | 'Þ' | 'ß' | 'à' | 'á' | 'â' | 'ã' | 'ä' | 'å' | 'æ' | 'ç' | 'è' | 'é' | 'ê' | 'ë' | 'ì' | 'í' | 'ï' | 'ð' | 'ñ' | 'ò' | 'ó') pnCharsU))+> */
+		nil,
+		/* 91 pnChars <- <((&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('-') '-') | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'Ã' | 'Ä' | 'Å' | 'Æ' | 'Ç' | 'È' | 'É' | 'Ê' | 'Ë' | 'Í' | 'Î' | 'Ï' | 'Ð' | 'Ñ' | 'Ò' | 'Ó' | 'Ô' | 'Õ' | 'Ö' | '×' | 'Ø' | 'Ù' | 'Ú' | 'Û' | 'Ü' | 'Ý' | 'Þ' | 'ß' | 'à' | 'á' | 'â' | 'ã' | 'ä' | 'å' | 'æ' | 'ç' | 'è' | 'é' | 'ê' | 'ë' | 'ì' | 'í' | 'ï' | 'ð' | 'ñ' | 'ò' | 'ó') pnCharsU))> */
+		nil,
+		/* 92 pnCharsU <- <(pnCharsBase / '_')> */
+		func() bool {
+			position1708, tokenIndex1708, depth1708 := position, tokenIndex, depth
+			{
+				position1709 := position
 				depth++
 				{
-					position1705, tokenIndex1705, depth1705 := position, tokenIndex, depth
-					if buffer[position] != rune('a') {
-						goto l1706
+					position1710, tokenIndex1710, depth1710 := position, tokenIndex, depth
+					if !rules[rulepnCharsBase]() {
+						goto l1711
 					}
-					position++
-					goto l1705
-				l1706:
-					position, tokenIndex, depth = position1705, tokenIndex1705, depth1705
-					if buffer[position] != rune('A') {
-						goto l1703
-					}
-					position++
-				}
-			l1705:
-				{
-					position1707, tokenIndex1707, depth1707 := position, tokenIndex, depth
-					if buffer[position] != rune('s') {
+					goto l1710
+				l1711:
+					position, tokenIndex, depth = position1710, tokenIndex1710, depth1710
+					if buffer[position] != rune('_') {
 						goto l1708
 					}
 					position++
-					goto l1707
-				l1708:
-					position, tokenIndex, depth = position1707, tokenIndex1707, depth1707
-					if buffer[position] != rune('S') {
-						goto l1703
-					}
-					position++
 				}
-			l1707:
-				if !rules[ruleskip]() {
-					goto l1703
-				}
+			l1710:
 				depth--
-				add(ruleAS, position1704)
+				add(rulepnCharsU, position1709)
 			}
 			return true
-		l1703:
-			position, tokenIndex, depth = position1703, tokenIndex1703, depth1703
+		l1708:
+			position, tokenIndex, depth = position1708, tokenIndex1708, depth1708
 			return false
 		},
-		/* 130 STR <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') skip)> */
-		nil,
-		/* 131 LANG <- <(('l' / 'L') ('a' / 'A') ('n' / 'N') ('g' / 'G') skip)> */
-		nil,
-		/* 132 DATATYPE <- <(('d' / 'D') ('a' / 'A') ('t' / 'T') ('a' / 'A') ('t' / 'T') ('y' / 'Y') ('p' / 'P') ('e' / 'E') skip)> */
-		nil,
-		/* 133 IRI <- <(('i' / 'I') ('r' / 'R') ('i' / 'I') skip)> */
-		nil,
-		/* 134 URI <- <(('u' / 'U') ('r' / 'R') ('i' / 'I') skip)> */
-		nil,
-		/* 135 ABS <- <(('a' / 'A') ('b' / 'B') ('s' / 'S') skip)> */
-		nil,
-		/* 136 CEIL <- <(('c' / 'C') ('e' / 'E') ('i' / 'I') ('l' / 'L') skip)> */
-		nil,
-		/* 137 ROUND <- <(('r' / 'R') ('o' / 'O') ('u' / 'U') ('n' / 'N') ('d' / 'D') skip)> */
-		nil,
-		/* 138 FLOOR <- <(('f' / 'F') ('l' / 'L') ('o' / 'O') ('o' / 'O') ('r' / 'R') skip)> */
-		nil,
-		/* 139 STRLEN <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('l' / 'L') ('e' / 'E') ('n' / 'N') skip)> */
-		nil,
-		/* 140 UCASE <- <(('u' / 'U') ('c' / 'C') ('a' / 'A') ('s' / 'S') ('e' / 'E') skip)> */
-		nil,
-		/* 141 LCASE <- <(('l' / 'L') ('c' / 'C') ('a' / 'A') ('s' / 'S') ('e' / 'E') skip)> */
-		nil,
-		/* 142 ENCODEFORURI <- <(('e' / 'E') ('n' / 'N') ('c' / 'C') ('o' / 'O') ('d' / 'D') ('e' / 'E') '_' ('f' / 'F') ('o' / 'O') ('r' / 'R') '_' ('u' / 'U') ('r' / 'R') ('i' / 'I') skip)> */
-		nil,
-		/* 143 YEAR <- <(('y' / 'Y') ('e' / 'E') ('a' / 'A') ('r' / 'R') skip)> */
-		nil,
-		/* 144 MONTH <- <(('m' / 'M') ('o' / 'O') ('n' / 'N') ('t' / 'T') ('h' / 'H') skip)> */
-		nil,
-		/* 145 DAY <- <(('d' / 'D') ('a' / 'A') ('y' / 'Y') skip)> */
-		nil,
-		/* 146 HOURS <- <(('h' / 'H') ('o' / 'O') ('u' / 'U') ('r' / 'R') ('s' / 'S') skip)> */
-		nil,
-		/* 147 MINUTES <- <(('m' / 'M') ('i' / 'I') ('n' / 'N') ('u' / 'U') ('t' / 'T') ('e' / 'E') ('s' / 'S') skip)> */
-		nil,
-		/* 148 SECONDS <- <(('s' / 'S') ('e' / 'E') ('c' / 'C') ('o' / 'O') ('n' / 'N') ('d' / 'D') ('s' / 'S') skip)> */
-		nil,
-		/* 149 TIMEZONE <- <(('t' / 'T') ('i' / 'I') ('m' / 'M') ('e' / 'E') ('z' / 'Z') ('o' / 'O') ('n' / 'N') ('e' / 'E') skip)> */
-		nil,
-		/* 150 TZ <- <(('t' / 'T') ('z' / 'Z') skip)> */
-		nil,
-		/* 151 MD5 <- <(('m' / 'M') ('d' / 'D') skip)> */
-		nil,
-		/* 152 SHA1 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '1' skip)> */
-		nil,
-		/* 153 SHA256 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '2' '5' '6' skip)> */
-		nil,
-		/* 154 SHA384 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '3' '8' '4' skip)> */
-		nil,
-		/* 155 SHA512 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '5' '1' '2' skip)> */
-		nil,
-		/* 156 ISIRI <- <(('i' / 'I') ('s' / 'S') ('i' / 'I') ('r' / 'R') ('i' / 'I') skip)> */
-		nil,
-		/* 157 ISURI <- <(('i' / 'I') ('s' / 'S') ('u' / 'U') ('r' / 'R') ('i' / 'I') skip)> */
-		nil,
-		/* 158 ISBLANK <- <(('i' / 'I') ('s' / 'S') ('b' / 'B') ('l' / 'L') ('a' / 'A') ('n' / 'N') ('k' / 'K') skip)> */
-		nil,
-		/* 159 ISLITERAL <- <(('i' / 'I') ('s' / 'S') ('l' / 'L') ('i' / 'I') ('t' / 'T') ('e' / 'E') ('r' / 'R') ('a' / 'A') ('l' / 'L') skip)> */
-		nil,
-		/* 160 ISNUMERIC <- <(('i' / 'I') ('s' / 'S') ('n' / 'N') ('u' / 'U') ('m' / 'M') ('e' / 'E') ('r' / 'R') ('i' / 'I') ('c' / 'C') skip)> */
-		nil,
-		/* 161 LANGMATCHES <- <(('l' / 'L') ('a' / 'A') ('n' / 'N') ('g' / 'G') ('m' / 'M') ('a' / 'A') ('t' / 'T') ('c' / 'C') ('h' / 'H') ('e' / 'E') ('s' / 'S') skip)> */
-		nil,
-		/* 162 CONTAINS <- <(('c' / 'C') ('o' / 'O') ('n' / 'N') ('t' / 'T') ('a' / 'A') ('i' / 'I') ('n' / 'N') ('s' / 'S') skip)> */
-		nil,
-		/* 163 STRSTARTS <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('s' / 'S') ('t' / 'T') ('a' / 'A') ('r' / 'R') ('t' / 'T') ('s' / 'S') skip)> */
-		nil,
-		/* 164 STRENDS <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('e' / 'E') ('n' / 'N') ('d' / 'D') ('s' / 'S') skip)> */
-		nil,
-		/* 165 STRBEFORE <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('b' / 'B') ('e' / 'E') ('f' / 'F') ('o' / 'O') ('r' / 'R') ('e' / 'E') skip)> */
-		nil,
-		/* 166 STRAFTER <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('a' / 'A') ('f' / 'F') ('t' / 'T') ('e' / 'E') ('r' / 'R') skip)> */
-		nil,
-		/* 167 STRLANG <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('l' / 'L') ('a' / 'A') ('n' / 'N') ('g' / 'G') skip)> */
-		nil,
-		/* 168 STRDT <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('d' / 'D') ('t' / 'T') skip)> */
-		nil,
-		/* 169 SAMETERM <- <(('s' / 'S') ('a' / 'A') ('m' / 'M') ('e' / 'E') ('t' / 'T') ('e' / 'E') ('r' / 'R') ('m' / 'M') skip)> */
-		nil,
-		/* 170 BOUND <- <(('b' / 'B') ('o' / 'O') ('u' / 'U') ('n' / 'N') ('d' / 'D') skip)> */
-		nil,
-		/* 171 BNODE <- <(('b' / 'B') ('n' / 'N') ('o' / 'O') ('d' / 'D') ('e' / 'E') skip)> */
-		nil,
-		/* 172 RAND <- <(('r' / 'R') ('a' / 'A') ('n' / 'N') ('d' / 'D') skip)> */
-		nil,
-		/* 173 NOW <- <(('n' / 'N') ('o' / 'O') ('w' / 'W') skip)> */
-		nil,
-		/* 174 UUID <- <(('u' / 'U') ('u' / 'U') ('i' / 'I') ('d' / 'D') skip)> */
-		nil,
-		/* 175 STRUUID <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('u' / 'U') ('u' / 'U') ('i' / 'I') ('d' / 'D') skip)> */
-		nil,
-		/* 176 CONCAT <- <(('c' / 'C') ('o' / 'O') ('n' / 'N') ('c' / 'C') ('a' / 'A') ('t' / 'T') skip)> */
-		nil,
-		/* 177 SUBSTR <- <(('s' / 'S') ('u' / 'U') ('b' / 'B') ('s' / 'S') ('t' / 'T') ('r' / 'R') skip)> */
-		nil,
-		/* 178 REPLACE <- <(('r' / 'R') ('e' / 'E') ('p' / 'P') ('l' / 'L') ('a' / 'A') ('c' / 'C') ('e' / 'E') skip)> */
-		nil,
-		/* 179 REGEX <- <(('r' / 'R') ('e' / 'E') ('g' / 'G') ('e' / 'E') ('x' / 'X') skip)> */
-		nil,
-		/* 180 IF <- <(('i' / 'I') ('f' / 'F') skip)> */
-		nil,
-		/* 181 EXISTS <- <(('e' / 'E') ('x' / 'X') ('i' / 'I') ('s' / 'S') ('t' / 'T') ('s' / 'S') skip)> */
-		nil,
-		/* 182 NOTEXIST <- <(('n' / 'N') ('o' / 'O') ('t' / 'T') ' ' ('e' / 'E') ('x' / 'X') ('i' / 'I') ('s' / 'S') ('t' / 'T') ('s' / 'S') skip)> */
-		nil,
-		/* 183 COALESCE <- <(('c' / 'C') ('o' / 'O') ('a' / 'A') ('l' / 'L') ('e' / 'E') ('s' / 'S') ('c' / 'C') ('e' / 'E') skip)> */
-		nil,
-		/* 184 FILTER <- <(('f' / 'F') ('i' / 'I') ('l' / 'L') ('t' / 'T') ('e' / 'E') ('r' / 'R') skip)> */
-		nil,
-		/* 185 BIND <- <(('b' / 'B') ('i' / 'I') ('n' / 'N') ('d' / 'D') skip)> */
-		nil,
-		/* 186 SUM <- <(('s' / 'S') ('u' / 'U') ('m' / 'M') skip)> */
-		nil,
-		/* 187 MIN <- <(('m' / 'M') ('i' / 'I') ('n' / 'N') skip)> */
-		nil,
-		/* 188 MAX <- <(('m' / 'M') ('a' / 'A') ('x' / 'X') skip)> */
-		nil,
-		/* 189 AVG <- <(('a' / 'A') ('v' / 'V') ('g' / 'G') skip)> */
-		nil,
-		/* 190 SAMPLE <- <(('s' / 'S') ('a' / 'A') ('m' / 'M') ('p' / 'P') ('l' / 'L') ('e' / 'E') skip)> */
-		nil,
-		/* 191 COUNT <- <(('c' / 'C') ('o' / 'O') ('u' / 'U') ('n' / 'N') ('t' / 'T') skip)> */
-		nil,
-		/* 192 GROUPCONCAT <- <(('g' / 'G') ('r' / 'R') ('o' / 'O') ('u' / 'U') ('p' / 'P') '_' ('c' / 'C') ('o' / 'O') ('n' / 'N') ('c' / 'C') ('a' / 'A') ('t' / 'T') skip)> */
-		nil,
-		/* 193 SEPARATOR <- <(('s' / 'S') ('e' / 'E') ('p' / 'P') ('a' / 'A') ('r' / 'R') ('a' / 'A') ('t' / 'T') ('o' / 'O') ('r' / 'R') skip)> */
-		nil,
-		/* 194 ASC <- <(('a' / 'A') ('s' / 'S') ('c' / 'C') skip)> */
-		nil,
-		/* 195 DESC <- <(('d' / 'D') ('e' / 'E') ('s' / 'S') ('c' / 'C') skip)> */
-		nil,
-		/* 196 ORDER <- <(('o' / 'O') ('r' / 'R') ('d' / 'D') ('e' / 'E') ('r' / 'R') skip)> */
-		nil,
-		/* 197 GROUP <- <(('g' / 'G') ('r' / 'R') ('o' / 'O') ('u' / 'U') ('p' / 'P') skip)> */
-		nil,
-		/* 198 BY <- <(('b' / 'B') ('y' / 'Y') skip)> */
+		/* 93 pnCharsBase <- <([À-Ö] / [Ø-ö] / [Ͱ-ͽ] / [‌-‍] / [⁰-↏] / [豈-﷏] / ((&('ð' | 'ñ' | 'ò' | 'ó') [𐀀-󯿿]) | (&('ï') [ﷰ-�]) | (&('ã' | 'ä' | 'å' | 'æ' | 'ç' | 'è' | 'é' | 'ê' | 'ë' | 'ì' | 'í') [、-퟿]) | (&('â') [Ⰰ-⿯]) | (&('Í' | 'Î' | 'Ï' | 'Ð' | 'Ñ' | 'Ò' | 'Ó' | 'Ô' | 'Õ' | 'Ö' | '×' | 'Ø' | 'Ù' | 'Ú' | 'Û' | 'Ü' | 'Ý' | 'Þ' | 'ß' | 'à' | 'á') [Ϳ-῿]) | (&('Ã' | 'Ä' | 'Å' | 'Æ' | 'Ç' | 'È' | 'É' | 'Ê' | 'Ë') [ø-˿]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]) | (&('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z') [a-z])))> */
 		func() bool {
-			position1777, tokenIndex1777, depth1777 := position, tokenIndex, depth
+			position1712, tokenIndex1712, depth1712 := position, tokenIndex, depth
 			{
-				position1778 := position
+				position1713 := position
 				depth++
 				{
-					position1779, tokenIndex1779, depth1779 := position, tokenIndex, depth
-					if buffer[position] != rune('b') {
-						goto l1780
+					position1714, tokenIndex1714, depth1714 := position, tokenIndex, depth
+					if c := buffer[position]; c < rune('À') || c > rune('Ö') {
+						goto l1715
 					}
 					position++
-					goto l1779
-				l1780:
-					position, tokenIndex, depth = position1779, tokenIndex1779, depth1779
-					if buffer[position] != rune('B') {
-						goto l1777
+					goto l1714
+				l1715:
+					position, tokenIndex, depth = position1714, tokenIndex1714, depth1714
+					if c := buffer[position]; c < rune('Ø') || c > rune('ö') {
+						goto l1716
 					}
 					position++
-				}
-			l1779:
-				{
-					position1781, tokenIndex1781, depth1781 := position, tokenIndex, depth
-					if buffer[position] != rune('y') {
-						goto l1782
+					goto l1714
+				l1716:
+					position, tokenIndex, depth = position1714, tokenIndex1714, depth1714
+					if c := buffer[position]; c < rune('Ͱ') || c > rune('ͽ') {
+						goto l1717
 					}
 					position++
-					goto l1781
-				l1782:
-					position, tokenIndex, depth = position1781, tokenIndex1781, depth1781
-					if buffer[position] != rune('Y') {
-						goto l1777
+					goto l1714
+				l1717:
+					position, tokenIndex, depth = position1714, tokenIndex1714, depth1714
+					if c := buffer[position]; c < rune('\u200c') || c > rune('\u200d') {
+						goto l1718
 					}
 					position++
-				}
-			l1781:
-				if !rules[ruleskip]() {
-					goto l1777
-				}
-				depth--
-				add(ruleBY, position1778)
-			}
-			return true
-		l1777:
-			position, tokenIndex, depth = position1777, tokenIndex1777, depth1777
-			return false
-		},
-		/* 199 HAVING <- <(('h' / 'H') ('a' / 'A') ('v' / 'V') ('i' / 'I') ('n' / 'N') ('g' / 'G') skip)> */
-		nil,
-		/* 200 skip <- <(ws / comment)*> */
-		func() bool {
-			{
-				position1785 := position
-				depth++
-			l1786:
-				{
-					position1787, tokenIndex1787, depth1787 := position, tokenIndex, depth
+					goto l1714
+				l1718:
+					position, tokenIndex, depth = position1714, tokenIndex1714, depth1714
+					if c := buffer[position]; c < rune('⁰') || c > rune('\u218f') {
+						goto l1719
+					}
+					position++
+					goto l1714
+				l1719:
+					position, tokenIndex, depth = position1714, tokenIndex1714, depth1714
+					if c := buffer[position]; c < rune('豈') || c > rune('\ufdcf') {
+						goto l1720
+					}
+					position++
+					goto l1714
+				l1720:
+					position, tokenIndex, depth = position1714, tokenIndex1714, depth1714
 					{
-						position1788, tokenIndex1788, depth1788 := position, tokenIndex, depth
-						if !rules[rulews]() {
-							goto l1789
+						switch buffer[position] {
+						case 'ð', 'ñ', 'ò', 'ó':
+							if c := buffer[position]; c < rune('𐀀') || c > rune('\U000effff') {
+								goto l1712
+							}
+							position++
+							break
+						case 'ï':
+							if c := buffer[position]; c < rune('ﷰ') || c > rune('�') {
+								goto l1712
+							}
+							position++
+							break
+						case 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í':
+							if c := buffer[position]; c < rune('、') || c > rune('\ud7ff') {
+								goto l1712
+							}
+							position++
+							break
+						case 'â':
+							if c := buffer[position]; c < rune('Ⰰ') || c > rune('\u2fef') {
+								goto l1712
+							}
+							position++
+							break
+						case 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', '×', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß', 'à', 'á':
+							if c := buffer[position]; c < rune('\u037f') || c > rune('\u1fff') {
+								goto l1712
+							}
+							position++
+							break
+						case 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë':
+							if c := buffer[position]; c < rune('ø') || c > rune('˿') {
+								goto l1712
+							}
+							position++
+							break
+						case 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z':
+							if c := buffer[position]; c < rune('A') || c > rune('Z') {
+								goto l1712
+							}
+							position++
+							break
+						default:
+							if c := buffer[position]; c < rune('a') || c > rune('z') {
+								goto l1712
+							}
+							position++
+							break
 						}
-						goto l1788
-					l1789:
-						position, tokenIndex, depth = position1788, tokenIndex1788, depth1788
+					}
+
+				}
+			l1714:
+				depth--
+				add(rulepnCharsBase, position1713)
+			}
+			return true
+		l1712:
+			position, tokenIndex, depth = position1712, tokenIndex1712, depth1712
+			return false
+		},
+		/* 94 plx <- <(percent / pnLocalEsc)> */
+		nil,
+		/* 95 percent <- <('%' hex hex)> */
+		nil,
+		/* 96 hex <- <((&('a' | 'b' | 'c' | 'd' | 'e' | 'f') [a-f]) | (&('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') [0-9]) | (&('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z') [A-Z]))> */
+		func() bool {
+			position1724, tokenIndex1724, depth1724 := position, tokenIndex, depth
+			{
+				position1725 := position
+				depth++
+				{
+					switch buffer[position] {
+					case 'a', 'b', 'c', 'd', 'e', 'f':
+						if c := buffer[position]; c < rune('a') || c > rune('f') {
+							goto l1724
+						}
+						position++
+						break
+					case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+						if c := buffer[position]; c < rune('0') || c > rune('9') {
+							goto l1724
+						}
+						position++
+						break
+					default:
+						if c := buffer[position]; c < rune('A') || c > rune('Z') {
+							goto l1724
+						}
+						position++
+						break
+					}
+				}
+
+				depth--
+				add(rulehex, position1725)
+			}
+			return true
+		l1724:
+			position, tokenIndex, depth = position1724, tokenIndex1724, depth1724
+			return false
+		},
+		/* 97 pnLocalEsc <- <('\\' ((&('%') '%') | (&('@') '@') | (&('#') '#') | (&('?') '?') | (&('/') '/') | (&('=') '=') | (&(';') ';') | (&(',') ',') | (&('+') '+') | (&('*') '*') | (&(')') ')') | (&('(') '(') | (&('\'') '\'') | (&('&') '&') | (&('$') '$') | (&('!') '!') | (&('-') '-') | (&('.') '.') | (&('~') '~') | (&('_') '_')))> */
+		nil,
+		/* 98 PREFIX <- <(('p' / 'P') ('r' / 'R') ('e' / 'E') ('f' / 'F') ('i' / 'I') ('x' / 'X') skip)> */
+		nil,
+		/* 99 TRUE <- <(('t' / 'T') ('r' / 'R') ('u' / 'U') ('e' / 'E') skip)> */
+		nil,
+		/* 100 FALSE <- <(('f' / 'F') ('a' / 'A') ('l' / 'L') ('s' / 'S') ('e' / 'E') skip)> */
+		nil,
+		/* 101 BASE <- <(('b' / 'B') ('a' / 'A') ('s' / 'S') ('e' / 'E') skip)> */
+		nil,
+		/* 102 SELECT <- <(('s' / 'S') ('e' / 'E') ('l' / 'L') ('e' / 'E') ('c' / 'C') ('t' / 'T') skip)> */
+		nil,
+		/* 103 REDUCED <- <(('r' / 'R') ('e' / 'E') ('d' / 'D') ('u' / 'U') ('c' / 'C') ('e' / 'E') ('d' / 'D') skip)> */
+		nil,
+		/* 104 DISTINCT <- <(('d' / 'D') ('i' / 'I') ('s' / 'S') ('t' / 'T') ('i' / 'I') ('n' / 'N') ('c' / 'C') ('t' / 'T') skip)> */
+		func() bool {
+			position1734, tokenIndex1734, depth1734 := position, tokenIndex, depth
+			{
+				position1735 := position
+				depth++
+				{
+					position1736, tokenIndex1736, depth1736 := position, tokenIndex, depth
+					if buffer[position] != rune('d') {
+						goto l1737
+					}
+					position++
+					goto l1736
+				l1737:
+					position, tokenIndex, depth = position1736, tokenIndex1736, depth1736
+					if buffer[position] != rune('D') {
+						goto l1734
+					}
+					position++
+				}
+			l1736:
+				{
+					position1738, tokenIndex1738, depth1738 := position, tokenIndex, depth
+					if buffer[position] != rune('i') {
+						goto l1739
+					}
+					position++
+					goto l1738
+				l1739:
+					position, tokenIndex, depth = position1738, tokenIndex1738, depth1738
+					if buffer[position] != rune('I') {
+						goto l1734
+					}
+					position++
+				}
+			l1738:
+				{
+					position1740, tokenIndex1740, depth1740 := position, tokenIndex, depth
+					if buffer[position] != rune('s') {
+						goto l1741
+					}
+					position++
+					goto l1740
+				l1741:
+					position, tokenIndex, depth = position1740, tokenIndex1740, depth1740
+					if buffer[position] != rune('S') {
+						goto l1734
+					}
+					position++
+				}
+			l1740:
+				{
+					position1742, tokenIndex1742, depth1742 := position, tokenIndex, depth
+					if buffer[position] != rune('t') {
+						goto l1743
+					}
+					position++
+					goto l1742
+				l1743:
+					position, tokenIndex, depth = position1742, tokenIndex1742, depth1742
+					if buffer[position] != rune('T') {
+						goto l1734
+					}
+					position++
+				}
+			l1742:
+				{
+					position1744, tokenIndex1744, depth1744 := position, tokenIndex, depth
+					if buffer[position] != rune('i') {
+						goto l1745
+					}
+					position++
+					goto l1744
+				l1745:
+					position, tokenIndex, depth = position1744, tokenIndex1744, depth1744
+					if buffer[position] != rune('I') {
+						goto l1734
+					}
+					position++
+				}
+			l1744:
+				{
+					position1746, tokenIndex1746, depth1746 := position, tokenIndex, depth
+					if buffer[position] != rune('n') {
+						goto l1747
+					}
+					position++
+					goto l1746
+				l1747:
+					position, tokenIndex, depth = position1746, tokenIndex1746, depth1746
+					if buffer[position] != rune('N') {
+						goto l1734
+					}
+					position++
+				}
+			l1746:
+				{
+					position1748, tokenIndex1748, depth1748 := position, tokenIndex, depth
+					if buffer[position] != rune('c') {
+						goto l1749
+					}
+					position++
+					goto l1748
+				l1749:
+					position, tokenIndex, depth = position1748, tokenIndex1748, depth1748
+					if buffer[position] != rune('C') {
+						goto l1734
+					}
+					position++
+				}
+			l1748:
+				{
+					position1750, tokenIndex1750, depth1750 := position, tokenIndex, depth
+					if buffer[position] != rune('t') {
+						goto l1751
+					}
+					position++
+					goto l1750
+				l1751:
+					position, tokenIndex, depth = position1750, tokenIndex1750, depth1750
+					if buffer[position] != rune('T') {
+						goto l1734
+					}
+					position++
+				}
+			l1750:
+				if !rules[ruleskip]() {
+					goto l1734
+				}
+				depth--
+				add(ruleDISTINCT, position1735)
+			}
+			return true
+		l1734:
+			position, tokenIndex, depth = position1734, tokenIndex1734, depth1734
+			return false
+		},
+		/* 105 FROM <- <(('f' / 'F') ('r' / 'R') ('o' / 'O') ('m' / 'M') skip)> */
+		nil,
+		/* 106 NAMED <- <(('n' / 'N') ('a' / 'A') ('m' / 'M') ('e' / 'E') ('d' / 'D') skip)> */
+		nil,
+		/* 107 WHERE <- <(('w' / 'W') ('h' / 'H') ('e' / 'E') ('r' / 'R') ('e' / 'E') skip)> */
+		nil,
+		/* 108 LBRACE <- <('{' skip)> */
+		func() bool {
+			position1755, tokenIndex1755, depth1755 := position, tokenIndex, depth
+			{
+				position1756 := position
+				depth++
+				if buffer[position] != rune('{') {
+					goto l1755
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1755
+				}
+				depth--
+				add(ruleLBRACE, position1756)
+			}
+			return true
+		l1755:
+			position, tokenIndex, depth = position1755, tokenIndex1755, depth1755
+			return false
+		},
+		/* 109 RBRACE <- <('}' skip)> */
+		func() bool {
+			position1757, tokenIndex1757, depth1757 := position, tokenIndex, depth
+			{
+				position1758 := position
+				depth++
+				if buffer[position] != rune('}') {
+					goto l1757
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1757
+				}
+				depth--
+				add(ruleRBRACE, position1758)
+			}
+			return true
+		l1757:
+			position, tokenIndex, depth = position1757, tokenIndex1757, depth1757
+			return false
+		},
+		/* 110 LBRACK <- <('[' skip)> */
+		nil,
+		/* 111 RBRACK <- <(']' skip)> */
+		nil,
+		/* 112 SEMICOLON <- <(';' skip)> */
+		func() bool {
+			position1761, tokenIndex1761, depth1761 := position, tokenIndex, depth
+			{
+				position1762 := position
+				depth++
+				if buffer[position] != rune(';') {
+					goto l1761
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1761
+				}
+				depth--
+				add(ruleSEMICOLON, position1762)
+			}
+			return true
+		l1761:
+			position, tokenIndex, depth = position1761, tokenIndex1761, depth1761
+			return false
+		},
+		/* 113 COMMA <- <(',' skip)> */
+		func() bool {
+			position1763, tokenIndex1763, depth1763 := position, tokenIndex, depth
+			{
+				position1764 := position
+				depth++
+				if buffer[position] != rune(',') {
+					goto l1763
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1763
+				}
+				depth--
+				add(ruleCOMMA, position1764)
+			}
+			return true
+		l1763:
+			position, tokenIndex, depth = position1763, tokenIndex1763, depth1763
+			return false
+		},
+		/* 114 DOT <- <('.' skip)> */
+		func() bool {
+			position1765, tokenIndex1765, depth1765 := position, tokenIndex, depth
+			{
+				position1766 := position
+				depth++
+				if buffer[position] != rune('.') {
+					goto l1765
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1765
+				}
+				depth--
+				add(ruleDOT, position1766)
+			}
+			return true
+		l1765:
+			position, tokenIndex, depth = position1765, tokenIndex1765, depth1765
+			return false
+		},
+		/* 115 COLON <- <(':' skip)> */
+		nil,
+		/* 116 PIPE <- <('|' skip)> */
+		func() bool {
+			position1768, tokenIndex1768, depth1768 := position, tokenIndex, depth
+			{
+				position1769 := position
+				depth++
+				if buffer[position] != rune('|') {
+					goto l1768
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1768
+				}
+				depth--
+				add(rulePIPE, position1769)
+			}
+			return true
+		l1768:
+			position, tokenIndex, depth = position1768, tokenIndex1768, depth1768
+			return false
+		},
+		/* 117 SLASH <- <('/' skip)> */
+		func() bool {
+			position1770, tokenIndex1770, depth1770 := position, tokenIndex, depth
+			{
+				position1771 := position
+				depth++
+				if buffer[position] != rune('/') {
+					goto l1770
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1770
+				}
+				depth--
+				add(ruleSLASH, position1771)
+			}
+			return true
+		l1770:
+			position, tokenIndex, depth = position1770, tokenIndex1770, depth1770
+			return false
+		},
+		/* 118 INVERSE <- <('^' skip)> */
+		func() bool {
+			position1772, tokenIndex1772, depth1772 := position, tokenIndex, depth
+			{
+				position1773 := position
+				depth++
+				if buffer[position] != rune('^') {
+					goto l1772
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1772
+				}
+				depth--
+				add(ruleINVERSE, position1773)
+			}
+			return true
+		l1772:
+			position, tokenIndex, depth = position1772, tokenIndex1772, depth1772
+			return false
+		},
+		/* 119 LPAREN <- <('(' skip)> */
+		func() bool {
+			position1774, tokenIndex1774, depth1774 := position, tokenIndex, depth
+			{
+				position1775 := position
+				depth++
+				if buffer[position] != rune('(') {
+					goto l1774
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1774
+				}
+				depth--
+				add(ruleLPAREN, position1775)
+			}
+			return true
+		l1774:
+			position, tokenIndex, depth = position1774, tokenIndex1774, depth1774
+			return false
+		},
+		/* 120 RPAREN <- <(')' skip)> */
+		func() bool {
+			position1776, tokenIndex1776, depth1776 := position, tokenIndex, depth
+			{
+				position1777 := position
+				depth++
+				if buffer[position] != rune(')') {
+					goto l1776
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1776
+				}
+				depth--
+				add(ruleRPAREN, position1777)
+			}
+			return true
+		l1776:
+			position, tokenIndex, depth = position1776, tokenIndex1776, depth1776
+			return false
+		},
+		/* 121 ISA <- <('a' skip)> */
+		func() bool {
+			position1778, tokenIndex1778, depth1778 := position, tokenIndex, depth
+			{
+				position1779 := position
+				depth++
+				if buffer[position] != rune('a') {
+					goto l1778
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1778
+				}
+				depth--
+				add(ruleISA, position1779)
+			}
+			return true
+		l1778:
+			position, tokenIndex, depth = position1778, tokenIndex1778, depth1778
+			return false
+		},
+		/* 122 NOT <- <('!' skip)> */
+		func() bool {
+			position1780, tokenIndex1780, depth1780 := position, tokenIndex, depth
+			{
+				position1781 := position
+				depth++
+				if buffer[position] != rune('!') {
+					goto l1780
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1780
+				}
+				depth--
+				add(ruleNOT, position1781)
+			}
+			return true
+		l1780:
+			position, tokenIndex, depth = position1780, tokenIndex1780, depth1780
+			return false
+		},
+		/* 123 STAR <- <('*' skip)> */
+		func() bool {
+			position1782, tokenIndex1782, depth1782 := position, tokenIndex, depth
+			{
+				position1783 := position
+				depth++
+				if buffer[position] != rune('*') {
+					goto l1782
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1782
+				}
+				depth--
+				add(ruleSTAR, position1783)
+			}
+			return true
+		l1782:
+			position, tokenIndex, depth = position1782, tokenIndex1782, depth1782
+			return false
+		},
+		/* 124 QUESTION <- <('?' skip)> */
+		nil,
+		/* 125 PLUS <- <('+' skip)> */
+		func() bool {
+			position1785, tokenIndex1785, depth1785 := position, tokenIndex, depth
+			{
+				position1786 := position
+				depth++
+				if buffer[position] != rune('+') {
+					goto l1785
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1785
+				}
+				depth--
+				add(rulePLUS, position1786)
+			}
+			return true
+		l1785:
+			position, tokenIndex, depth = position1785, tokenIndex1785, depth1785
+			return false
+		},
+		/* 126 MINUS <- <('-' skip)> */
+		func() bool {
+			position1787, tokenIndex1787, depth1787 := position, tokenIndex, depth
+			{
+				position1788 := position
+				depth++
+				if buffer[position] != rune('-') {
+					goto l1787
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1787
+				}
+				depth--
+				add(ruleMINUS, position1788)
+			}
+			return true
+		l1787:
+			position, tokenIndex, depth = position1787, tokenIndex1787, depth1787
+			return false
+		},
+		/* 127 OPTIONAL <- <(('o' / 'O') ('p' / 'P') ('t' / 'T') ('i' / 'I') ('o' / 'O') ('n' / 'N') ('a' / 'A') ('l' / 'L') skip)> */
+		nil,
+		/* 128 UNION <- <(('u' / 'U') ('n' / 'N') ('i' / 'I') ('o' / 'O') ('n' / 'N') skip)> */
+		nil,
+		/* 129 LIMIT <- <(('l' / 'L') ('i' / 'I') ('m' / 'M') ('i' / 'I') ('t' / 'T') skip)> */
+		nil,
+		/* 130 OFFSET <- <(('o' / 'O') ('f' / 'F') ('f' / 'F') ('s' / 'S') ('e' / 'E') ('t' / 'T') skip)> */
+		nil,
+		/* 131 INTEGER <- <([0-9]+ skip)> */
+		func() bool {
+			position1793, tokenIndex1793, depth1793 := position, tokenIndex, depth
+			{
+				position1794 := position
+				depth++
+				if c := buffer[position]; c < rune('0') || c > rune('9') {
+					goto l1793
+				}
+				position++
+			l1795:
+				{
+					position1796, tokenIndex1796, depth1796 := position, tokenIndex, depth
+					if c := buffer[position]; c < rune('0') || c > rune('9') {
+						goto l1796
+					}
+					position++
+					goto l1795
+				l1796:
+					position, tokenIndex, depth = position1796, tokenIndex1796, depth1796
+				}
+				if !rules[ruleskip]() {
+					goto l1793
+				}
+				depth--
+				add(ruleINTEGER, position1794)
+			}
+			return true
+		l1793:
+			position, tokenIndex, depth = position1793, tokenIndex1793, depth1793
+			return false
+		},
+		/* 132 CONSTRUCT <- <(('c' / 'C') ('o' / 'O') ('n' / 'N') ('s' / 'S') ('t' / 'T') ('r' / 'R') ('u' / 'U') ('c' / 'C') ('t' / 'T') skip)> */
+		nil,
+		/* 133 DESCRIBE <- <(('d' / 'D') ('e' / 'E') ('s' / 'S') ('c' / 'C') ('r' / 'R') ('i' / 'I') ('b' / 'B') ('e' / 'E') skip)> */
+		nil,
+		/* 134 ASK <- <(('a' / 'A') ('s' / 'S') ('k' / 'K') skip)> */
+		nil,
+		/* 135 OR <- <('|' '|' skip)> */
+		nil,
+		/* 136 AND <- <('&' '&' skip)> */
+		nil,
+		/* 137 EQ <- <('=' skip)> */
+		func() bool {
+			position1802, tokenIndex1802, depth1802 := position, tokenIndex, depth
+			{
+				position1803 := position
+				depth++
+				if buffer[position] != rune('=') {
+					goto l1802
+				}
+				position++
+				if !rules[ruleskip]() {
+					goto l1802
+				}
+				depth--
+				add(ruleEQ, position1803)
+			}
+			return true
+		l1802:
+			position, tokenIndex, depth = position1802, tokenIndex1802, depth1802
+			return false
+		},
+		/* 138 NE <- <('!' '=' skip)> */
+		nil,
+		/* 139 GT <- <('>' skip)> */
+		nil,
+		/* 140 LT <- <('<' skip)> */
+		nil,
+		/* 141 LE <- <('<' '=' skip)> */
+		nil,
+		/* 142 GE <- <('>' '=' skip)> */
+		nil,
+		/* 143 IN <- <(('i' / 'I') ('n' / 'N') skip)> */
+		nil,
+		/* 144 NOTIN <- <(('n' / 'N') ('o' / 'O') ('t' / 'T') ' ' ('i' / 'I') ('n' / 'N') skip)> */
+		nil,
+		/* 145 AS <- <(('a' / 'A') ('s' / 'S') skip)> */
+		func() bool {
+			position1811, tokenIndex1811, depth1811 := position, tokenIndex, depth
+			{
+				position1812 := position
+				depth++
+				{
+					position1813, tokenIndex1813, depth1813 := position, tokenIndex, depth
+					if buffer[position] != rune('a') {
+						goto l1814
+					}
+					position++
+					goto l1813
+				l1814:
+					position, tokenIndex, depth = position1813, tokenIndex1813, depth1813
+					if buffer[position] != rune('A') {
+						goto l1811
+					}
+					position++
+				}
+			l1813:
+				{
+					position1815, tokenIndex1815, depth1815 := position, tokenIndex, depth
+					if buffer[position] != rune('s') {
+						goto l1816
+					}
+					position++
+					goto l1815
+				l1816:
+					position, tokenIndex, depth = position1815, tokenIndex1815, depth1815
+					if buffer[position] != rune('S') {
+						goto l1811
+					}
+					position++
+				}
+			l1815:
+				if !rules[ruleskip]() {
+					goto l1811
+				}
+				depth--
+				add(ruleAS, position1812)
+			}
+			return true
+		l1811:
+			position, tokenIndex, depth = position1811, tokenIndex1811, depth1811
+			return false
+		},
+		/* 146 STR <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') skip)> */
+		nil,
+		/* 147 LANG <- <(('l' / 'L') ('a' / 'A') ('n' / 'N') ('g' / 'G') skip)> */
+		nil,
+		/* 148 DATATYPE <- <(('d' / 'D') ('a' / 'A') ('t' / 'T') ('a' / 'A') ('t' / 'T') ('y' / 'Y') ('p' / 'P') ('e' / 'E') skip)> */
+		nil,
+		/* 149 IRI <- <(('i' / 'I') ('r' / 'R') ('i' / 'I') skip)> */
+		nil,
+		/* 150 URI <- <(('u' / 'U') ('r' / 'R') ('i' / 'I') skip)> */
+		nil,
+		/* 151 ABS <- <(('a' / 'A') ('b' / 'B') ('s' / 'S') skip)> */
+		nil,
+		/* 152 CEIL <- <(('c' / 'C') ('e' / 'E') ('i' / 'I') ('l' / 'L') skip)> */
+		nil,
+		/* 153 ROUND <- <(('r' / 'R') ('o' / 'O') ('u' / 'U') ('n' / 'N') ('d' / 'D') skip)> */
+		nil,
+		/* 154 FLOOR <- <(('f' / 'F') ('l' / 'L') ('o' / 'O') ('o' / 'O') ('r' / 'R') skip)> */
+		nil,
+		/* 155 STRLEN <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('l' / 'L') ('e' / 'E') ('n' / 'N') skip)> */
+		nil,
+		/* 156 UCASE <- <(('u' / 'U') ('c' / 'C') ('a' / 'A') ('s' / 'S') ('e' / 'E') skip)> */
+		nil,
+		/* 157 LCASE <- <(('l' / 'L') ('c' / 'C') ('a' / 'A') ('s' / 'S') ('e' / 'E') skip)> */
+		nil,
+		/* 158 ENCODEFORURI <- <(('e' / 'E') ('n' / 'N') ('c' / 'C') ('o' / 'O') ('d' / 'D') ('e' / 'E') '_' ('f' / 'F') ('o' / 'O') ('r' / 'R') '_' ('u' / 'U') ('r' / 'R') ('i' / 'I') skip)> */
+		nil,
+		/* 159 YEAR <- <(('y' / 'Y') ('e' / 'E') ('a' / 'A') ('r' / 'R') skip)> */
+		nil,
+		/* 160 MONTH <- <(('m' / 'M') ('o' / 'O') ('n' / 'N') ('t' / 'T') ('h' / 'H') skip)> */
+		nil,
+		/* 161 DAY <- <(('d' / 'D') ('a' / 'A') ('y' / 'Y') skip)> */
+		nil,
+		/* 162 HOURS <- <(('h' / 'H') ('o' / 'O') ('u' / 'U') ('r' / 'R') ('s' / 'S') skip)> */
+		nil,
+		/* 163 MINUTES <- <(('m' / 'M') ('i' / 'I') ('n' / 'N') ('u' / 'U') ('t' / 'T') ('e' / 'E') ('s' / 'S') skip)> */
+		nil,
+		/* 164 SECONDS <- <(('s' / 'S') ('e' / 'E') ('c' / 'C') ('o' / 'O') ('n' / 'N') ('d' / 'D') ('s' / 'S') skip)> */
+		nil,
+		/* 165 TIMEZONE <- <(('t' / 'T') ('i' / 'I') ('m' / 'M') ('e' / 'E') ('z' / 'Z') ('o' / 'O') ('n' / 'N') ('e' / 'E') skip)> */
+		nil,
+		/* 166 TZ <- <(('t' / 'T') ('z' / 'Z') skip)> */
+		nil,
+		/* 167 MD5 <- <(('m' / 'M') ('d' / 'D') skip)> */
+		nil,
+		/* 168 SHA1 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '1' skip)> */
+		nil,
+		/* 169 SHA256 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '2' '5' '6' skip)> */
+		nil,
+		/* 170 SHA384 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '3' '8' '4' skip)> */
+		nil,
+		/* 171 SHA512 <- <(('s' / 'S') ('h' / 'H') ('a' / 'A') '5' '1' '2' skip)> */
+		nil,
+		/* 172 ISIRI <- <(('i' / 'I') ('s' / 'S') ('i' / 'I') ('r' / 'R') ('i' / 'I') skip)> */
+		nil,
+		/* 173 ISURI <- <(('i' / 'I') ('s' / 'S') ('u' / 'U') ('r' / 'R') ('i' / 'I') skip)> */
+		nil,
+		/* 174 ISBLANK <- <(('i' / 'I') ('s' / 'S') ('b' / 'B') ('l' / 'L') ('a' / 'A') ('n' / 'N') ('k' / 'K') skip)> */
+		nil,
+		/* 175 ISLITERAL <- <(('i' / 'I') ('s' / 'S') ('l' / 'L') ('i' / 'I') ('t' / 'T') ('e' / 'E') ('r' / 'R') ('a' / 'A') ('l' / 'L') skip)> */
+		nil,
+		/* 176 ISNUMERIC <- <(('i' / 'I') ('s' / 'S') ('n' / 'N') ('u' / 'U') ('m' / 'M') ('e' / 'E') ('r' / 'R') ('i' / 'I') ('c' / 'C') skip)> */
+		nil,
+		/* 177 LANGMATCHES <- <(('l' / 'L') ('a' / 'A') ('n' / 'N') ('g' / 'G') ('m' / 'M') ('a' / 'A') ('t' / 'T') ('c' / 'C') ('h' / 'H') ('e' / 'E') ('s' / 'S') skip)> */
+		nil,
+		/* 178 CONTAINS <- <(('c' / 'C') ('o' / 'O') ('n' / 'N') ('t' / 'T') ('a' / 'A') ('i' / 'I') ('n' / 'N') ('s' / 'S') skip)> */
+		nil,
+		/* 179 STRSTARTS <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('s' / 'S') ('t' / 'T') ('a' / 'A') ('r' / 'R') ('t' / 'T') ('s' / 'S') skip)> */
+		nil,
+		/* 180 STRENDS <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('e' / 'E') ('n' / 'N') ('d' / 'D') ('s' / 'S') skip)> */
+		nil,
+		/* 181 STRBEFORE <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('b' / 'B') ('e' / 'E') ('f' / 'F') ('o' / 'O') ('r' / 'R') ('e' / 'E') skip)> */
+		nil,
+		/* 182 STRAFTER <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('a' / 'A') ('f' / 'F') ('t' / 'T') ('e' / 'E') ('r' / 'R') skip)> */
+		nil,
+		/* 183 STRLANG <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('l' / 'L') ('a' / 'A') ('n' / 'N') ('g' / 'G') skip)> */
+		nil,
+		/* 184 STRDT <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('d' / 'D') ('t' / 'T') skip)> */
+		nil,
+		/* 185 SAMETERM <- <(('s' / 'S') ('a' / 'A') ('m' / 'M') ('e' / 'E') ('t' / 'T') ('e' / 'E') ('r' / 'R') ('m' / 'M') skip)> */
+		nil,
+		/* 186 BOUND <- <(('b' / 'B') ('o' / 'O') ('u' / 'U') ('n' / 'N') ('d' / 'D') skip)> */
+		nil,
+		/* 187 BNODE <- <(('b' / 'B') ('n' / 'N') ('o' / 'O') ('d' / 'D') ('e' / 'E') skip)> */
+		nil,
+		/* 188 RAND <- <(('r' / 'R') ('a' / 'A') ('n' / 'N') ('d' / 'D') skip)> */
+		nil,
+		/* 189 NOW <- <(('n' / 'N') ('o' / 'O') ('w' / 'W') skip)> */
+		nil,
+		/* 190 UUID <- <(('u' / 'U') ('u' / 'U') ('i' / 'I') ('d' / 'D') skip)> */
+		nil,
+		/* 191 STRUUID <- <(('s' / 'S') ('t' / 'T') ('r' / 'R') ('u' / 'U') ('u' / 'U') ('i' / 'I') ('d' / 'D') skip)> */
+		nil,
+		/* 192 CONCAT <- <(('c' / 'C') ('o' / 'O') ('n' / 'N') ('c' / 'C') ('a' / 'A') ('t' / 'T') skip)> */
+		nil,
+		/* 193 SUBSTR <- <(('s' / 'S') ('u' / 'U') ('b' / 'B') ('s' / 'S') ('t' / 'T') ('r' / 'R') skip)> */
+		nil,
+		/* 194 REPLACE <- <(('r' / 'R') ('e' / 'E') ('p' / 'P') ('l' / 'L') ('a' / 'A') ('c' / 'C') ('e' / 'E') skip)> */
+		nil,
+		/* 195 REGEX <- <(('r' / 'R') ('e' / 'E') ('g' / 'G') ('e' / 'E') ('x' / 'X') skip)> */
+		nil,
+		/* 196 IF <- <(('i' / 'I') ('f' / 'F') skip)> */
+		nil,
+		/* 197 EXISTS <- <(('e' / 'E') ('x' / 'X') ('i' / 'I') ('s' / 'S') ('t' / 'T') ('s' / 'S') skip)> */
+		nil,
+		/* 198 NOTEXIST <- <(('n' / 'N') ('o' / 'O') ('t' / 'T') ' ' ('e' / 'E') ('x' / 'X') ('i' / 'I') ('s' / 'S') ('t' / 'T') ('s' / 'S') skip)> */
+		nil,
+		/* 199 COALESCE <- <(('c' / 'C') ('o' / 'O') ('a' / 'A') ('l' / 'L') ('e' / 'E') ('s' / 'S') ('c' / 'C') ('e' / 'E') skip)> */
+		nil,
+		/* 200 FILTER <- <(('f' / 'F') ('i' / 'I') ('l' / 'L') ('t' / 'T') ('e' / 'E') ('r' / 'R') skip)> */
+		nil,
+		/* 201 BIND <- <(('b' / 'B') ('i' / 'I') ('n' / 'N') ('d' / 'D') skip)> */
+		nil,
+		/* 202 SUM <- <(('s' / 'S') ('u' / 'U') ('m' / 'M') skip)> */
+		nil,
+		/* 203 MIN <- <(('m' / 'M') ('i' / 'I') ('n' / 'N') skip)> */
+		nil,
+		/* 204 MAX <- <(('m' / 'M') ('a' / 'A') ('x' / 'X') skip)> */
+		nil,
+		/* 205 AVG <- <(('a' / 'A') ('v' / 'V') ('g' / 'G') skip)> */
+		nil,
+		/* 206 SAMPLE <- <(('s' / 'S') ('a' / 'A') ('m' / 'M') ('p' / 'P') ('l' / 'L') ('e' / 'E') skip)> */
+		nil,
+		/* 207 COUNT <- <(('c' / 'C') ('o' / 'O') ('u' / 'U') ('n' / 'N') ('t' / 'T') skip)> */
+		nil,
+		/* 208 GROUPCONCAT <- <(('g' / 'G') ('r' / 'R') ('o' / 'O') ('u' / 'U') ('p' / 'P') '_' ('c' / 'C') ('o' / 'O') ('n' / 'N') ('c' / 'C') ('a' / 'A') ('t' / 'T') skip)> */
+		nil,
+		/* 209 SEPARATOR <- <(('s' / 'S') ('e' / 'E') ('p' / 'P') ('a' / 'A') ('r' / 'R') ('a' / 'A') ('t' / 'T') ('o' / 'O') ('r' / 'R') skip)> */
+		nil,
+		/* 210 ASC <- <(('a' / 'A') ('s' / 'S') ('c' / 'C') skip)> */
+		nil,
+		/* 211 DESC <- <(('d' / 'D') ('e' / 'E') ('s' / 'S') ('c' / 'C') skip)> */
+		nil,
+		/* 212 ORDER <- <(('o' / 'O') ('r' / 'R') ('d' / 'D') ('e' / 'E') ('r' / 'R') skip)> */
+		nil,
+		/* 213 GROUP <- <(('g' / 'G') ('r' / 'R') ('o' / 'O') ('u' / 'U') ('p' / 'P') skip)> */
+		nil,
+		/* 214 BY <- <(('b' / 'B') ('y' / 'Y') skip)> */
+		func() bool {
+			position1885, tokenIndex1885, depth1885 := position, tokenIndex, depth
+			{
+				position1886 := position
+				depth++
+				{
+					position1887, tokenIndex1887, depth1887 := position, tokenIndex, depth
+					if buffer[position] != rune('b') {
+						goto l1888
+					}
+					position++
+					goto l1887
+				l1888:
+					position, tokenIndex, depth = position1887, tokenIndex1887, depth1887
+					if buffer[position] != rune('B') {
+						goto l1885
+					}
+					position++
+				}
+			l1887:
+				{
+					position1889, tokenIndex1889, depth1889 := position, tokenIndex, depth
+					if buffer[position] != rune('y') {
+						goto l1890
+					}
+					position++
+					goto l1889
+				l1890:
+					position, tokenIndex, depth = position1889, tokenIndex1889, depth1889
+					if buffer[position] != rune('Y') {
+						goto l1885
+					}
+					position++
+				}
+			l1889:
+				if !rules[ruleskip]() {
+					goto l1885
+				}
+				depth--
+				add(ruleBY, position1886)
+			}
+			return true
+		l1885:
+			position, tokenIndex, depth = position1885, tokenIndex1885, depth1885
+			return false
+		},
+		/* 215 HAVING <- <(('h' / 'H') ('a' / 'A') ('v' / 'V') ('i' / 'I') ('n' / 'N') ('g' / 'G') skip)> */
+		nil,
+		/* 216 GRAPH <- <(('g' / 'G') ('r' / 'R') ('a' / 'A') ('p' / 'P') ('h' / 'H') skip)> */
+		nil,
+		/* 217 MINUSSETOPER <- <(('m' / 'M') ('i' / 'I') ('n' / 'N') ('u' / 'U') ('s' / 'S') skip)> */
+		nil,
+		/* 218 skip <- <(ws / comment)*> */
+		func() bool {
+			{
+				position1895 := position
+				depth++
+			l1896:
+				{
+					position1897, tokenIndex1897, depth1897 := position, tokenIndex, depth
+					{
+						position1898, tokenIndex1898, depth1898 := position, tokenIndex, depth
+						if !rules[rulews]() {
+							goto l1899
+						}
+						goto l1898
+					l1899:
+						position, tokenIndex, depth = position1898, tokenIndex1898, depth1898
 						{
-							position1790 := position
+							position1900 := position
 							depth++
 							{
-								position1791 := position
+								position1901 := position
 								depth++
 								if buffer[position] != rune('#') {
-									goto l1787
+									goto l1897
 								}
 								position++
-							l1792:
+							l1902:
 								{
-									position1793, tokenIndex1793, depth1793 := position, tokenIndex, depth
+									position1903, tokenIndex1903, depth1903 := position, tokenIndex, depth
 									{
-										position1794, tokenIndex1794, depth1794 := position, tokenIndex, depth
+										position1904, tokenIndex1904, depth1904 := position, tokenIndex, depth
 										if !rules[ruleendOfLine]() {
-											goto l1794
+											goto l1904
 										}
-										goto l1793
-									l1794:
-										position, tokenIndex, depth = position1794, tokenIndex1794, depth1794
+										goto l1903
+									l1904:
+										position, tokenIndex, depth = position1904, tokenIndex1904, depth1904
 									}
 									if !matchDot() {
-										goto l1793
+										goto l1903
 									}
-									goto l1792
-								l1793:
-									position, tokenIndex, depth = position1793, tokenIndex1793, depth1793
+									goto l1902
+								l1903:
+									position, tokenIndex, depth = position1903, tokenIndex1903, depth1903
 								}
 								if !rules[ruleendOfLine]() {
-									goto l1787
+									goto l1897
 								}
 								depth--
-								add(rulePegText, position1791)
+								add(rulePegText, position1901)
 							}
 							{
 								add(ruleAction13, position)
 							}
 							depth--
-							add(rulecomment, position1790)
+							add(rulecomment, position1900)
 						}
 					}
-				l1788:
-					goto l1786
-				l1787:
-					position, tokenIndex, depth = position1787, tokenIndex1787, depth1787
+				l1898:
+					goto l1896
+				l1897:
+					position, tokenIndex, depth = position1897, tokenIndex1897, depth1897
 				}
 				depth--
-				add(ruleskip, position1785)
+				add(ruleskip, position1895)
 			}
 			return true
 		},
-		/* 201 ws <- <((&('\v') '\v') | (&('\f') '\f') | (&('\t') '\t') | (&(' ') ' ') | (&('\n' | '\r') endOfLine))> */
+		/* 219 ws <- <((&('\v') '\v') | (&('\f') '\f') | (&('\t') '\t') | (&(' ') ' ') | (&('\n' | '\r') endOfLine))> */
 		func() bool {
-			position1796, tokenIndex1796, depth1796 := position, tokenIndex, depth
+			position1906, tokenIndex1906, depth1906 := position, tokenIndex, depth
 			{
-				position1797 := position
+				position1907 := position
 				depth++
 				{
 					switch buffer[position] {
 					case '\v':
 						if buffer[position] != rune('\v') {
-							goto l1796
+							goto l1906
 						}
 						position++
 						break
 					case '\f':
 						if buffer[position] != rune('\f') {
-							goto l1796
+							goto l1906
 						}
 						position++
 						break
 					case '\t':
 						if buffer[position] != rune('\t') {
-							goto l1796
+							goto l1906
 						}
 						position++
 						break
 					case ' ':
 						if buffer[position] != rune(' ') {
-							goto l1796
+							goto l1906
 						}
 						position++
 						break
 					default:
 						if !rules[ruleendOfLine]() {
-							goto l1796
+							goto l1906
 						}
 						break
 					}
 				}
 
 				depth--
-				add(rulews, position1797)
+				add(rulews, position1907)
 			}
 			return true
-		l1796:
-			position, tokenIndex, depth = position1796, tokenIndex1796, depth1796
+		l1906:
+			position, tokenIndex, depth = position1906, tokenIndex1906, depth1906
 			return false
 		},
-		/* 202 comment <- <(<('#' (!endOfLine .)* endOfLine)> Action13)> */
+		/* 220 comment <- <(<('#' (!endOfLine .)* endOfLine)> Action13)> */
 		nil,
-		/* 203 endOfLine <- <(('\r' '\n') / '\n' / '\r')> */
+		/* 221 endOfLine <- <(('\r' '\n') / '\n' / '\r')> */
 		func() bool {
-			position1800, tokenIndex1800, depth1800 := position, tokenIndex, depth
+			position1910, tokenIndex1910, depth1910 := position, tokenIndex, depth
 			{
-				position1801 := position
+				position1911 := position
 				depth++
 				{
-					position1802, tokenIndex1802, depth1802 := position, tokenIndex, depth
+					position1912, tokenIndex1912, depth1912 := position, tokenIndex, depth
 					if buffer[position] != rune('\r') {
-						goto l1803
+						goto l1913
 					}
 					position++
 					if buffer[position] != rune('\n') {
-						goto l1803
+						goto l1913
 					}
 					position++
-					goto l1802
-				l1803:
-					position, tokenIndex, depth = position1802, tokenIndex1802, depth1802
+					goto l1912
+				l1913:
+					position, tokenIndex, depth = position1912, tokenIndex1912, depth1912
 					if buffer[position] != rune('\n') {
-						goto l1804
+						goto l1914
 					}
 					position++
-					goto l1802
-				l1804:
-					position, tokenIndex, depth = position1802, tokenIndex1802, depth1802
+					goto l1912
+				l1914:
+					position, tokenIndex, depth = position1912, tokenIndex1912, depth1912
 					if buffer[position] != rune('\r') {
-						goto l1800
+						goto l1910
 					}
 					position++
 				}
-			l1802:
+			l1912:
 				depth--
-				add(ruleendOfLine, position1801)
+				add(ruleendOfLine, position1911)
 			}
 			return true
-		l1800:
-			position, tokenIndex, depth = position1800, tokenIndex1800, depth1800
+		l1910:
+			position, tokenIndex, depth = position1910, tokenIndex1910, depth1910
 			return false
 		},
 		nil,
-		/* 206 Action0 <- <{ p.addPrefix(p.skipComment(buffer, begin, end)) }> */
+		/* 224 Action0 <- <{ p.addPrefix(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 207 Action1 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
+		/* 225 Action1 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 208 Action2 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
+		/* 226 Action2 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 209 Action3 <- <{ p.setSubject("?POF") }> */
+		/* 227 Action3 <- <{ p.setSubject("?POF") }> */
 		nil,
-		/* 210 Action4 <- <{ p.setPredicate("?POF") }> */
+		/* 228 Action4 <- <{ p.setPredicate("?POF") }> */
 		nil,
-		/* 211 Action5 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
+		/* 229 Action5 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 212 Action6 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
+		/* 230 Action6 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 213 Action7 <- <{ p.setObject("?POF"); p.addTriplePattern() }> */
+		/* 231 Action7 <- <{ p.setObject("?POF"); p.addTriplePattern() }> */
 		nil,
-		/* 214 Action8 <- <{ p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() }> */
+		/* 232 Action8 <- <{ p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() }> */
 		nil,
-		/* 215 Action9 <- <{ p.setObject("?FillVar"); p.addTriplePattern() }> */
+		/* 233 Action9 <- <{ p.setObject("?FillVar"); p.addTriplePattern() }> */
 		nil,
-		/* 216 Action10 <- <{ p.setPrefix(p.skipComment(buffer, begin, end)) }> */
+		/* 234 Action10 <- <{ p.setPrefix(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 217 Action11 <- <{ p.setPathLength(p.skipComment(buffer, begin, end)) }> */
+		/* 235 Action11 <- <{ p.setPathLength(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 218 Action12 <- <{ p.setKeyword(p.skipComment(buffer, begin, end)) }> */
+		/* 236 Action12 <- <{ p.setKeyword(p.skipComment(buffer, begin, end)) }> */
 		nil,
-		/* 219 Action13 <- <{ p.commentBegin = begin }> */
+		/* 237 Action13 <- <{ p.commentBegin = begin }> */
 		nil,
 	}
 	p.rules = rules
