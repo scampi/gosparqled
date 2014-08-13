@@ -14,13 +14,27 @@ func newTemplateData() *templateData {
     return &templateData{ Pof : "?POF" }
 }
 
+// Add a triple pattern to the recommendation query
 func (td *templateData) add(s string, p string, o string) {
     td.Tps = append(td.Tps, triplePattern{ S : s, P : p, O : o })
+}
+
+// Same as add but specify that the object is never used as a subject
+func (td *templateData) addLeaf(s string, p string, o string) {
+    td.Tps = append(td.Tps, triplePattern{ S : s, P : p, O : o, Leaf : true })
 }
 
 // Gets the RecommendationQuery from query and compare it against the expected one
 func parse(t *testing.T, query string, expected *templateData, rType Type) *Sparql {
     s := &Sparql{ Buffer : query, Scope : NewScope() }
+    s.Init()
+    parseWithSparql(t, s, expected, rType)
+    return s
+}
+
+// Like parse but pass a custom query recommendation template
+func parseWithTemplate(t *testing.T, query string, tmpl string, expected *templateData, rType Type) *Sparql {
+    s := &Sparql{ Buffer : query, Scope : NewScopeWithTemplate(tmpl) }
     s.Init()
     parseWithSparql(t, s, expected, rType)
     return s
@@ -43,6 +57,46 @@ func parseWithSparql(t *testing.T, s *Sparql, expected *templateData, rType Type
     if rType != aType {
         t.Errorf("Expected Recommendation type to be [%v] but got [%v]\n", rType, aType)
     }
+}
+
+func TestLeaves1(t *testing.T) {
+    tmpl := `{{range .Tps}}
+                {{if eq .Leaf true}}
+                    {{.O}}
+                {{end}}
+             {{end}}`
+    td := newTemplateData()
+    td.add("?s", "a", "?o")
+    td.addLeaf("?s", "<p1>", "?o1")
+    td.addLeaf("?o", "a", ":Person")
+    td.addLeaf("?o", "?POF", "?FillVar")
+    parseWithTemplate(t, `
+        SELECT *
+        WHERE {
+            ?s a ?o; <p1> ?o1 .
+            ?o a :Person; <
+        }
+    `, tmpl, td, PREDICATE)
+}
+
+func TestLeaves2(t *testing.T) {
+    tmpl := `{{range .Tps}}
+                {{if eq .Leaf true}}
+                    {{.O}}
+                {{end}}
+             {{end}}`
+    td := newTemplateData()
+    td.add("?s", "a", "<aaa>")
+    td.addLeaf("?s", "<p1>", "?o1")
+    td.addLeaf("<aaa>", "a", ":Person")
+    td.addLeaf("<aaa>", "?POF", "?FillVar")
+    parseWithTemplate(t, `
+        SELECT *
+        WHERE {
+            ?s a <aaa>; <p1> ?o1 .
+            <aaa> a :Person; <
+        }
+    `, tmpl, td, PREDICATE)
 }
 
 func TestTwoTypes(t *testing.T) {

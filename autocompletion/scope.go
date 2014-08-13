@@ -45,6 +45,8 @@ const (
 // A SPARQL triple pattern
 type triplePattern struct {
     S, P, O string
+    // True is the object is not used as a subject
+    Leaf bool
 }
 
 // Set of triple patterns relevant for the recommendation
@@ -230,6 +232,19 @@ func (tp *triplePattern) addToScope(scope map[string]bool) {
     scope[tp.O] = true
 }
 
+// Update the Leaf attribute of the triplePattern
+func (b *Scope) setLeaves() {
+    for i,tp := range b.Tps {
+        b.Tps[i].Leaf = true
+        for _,in := range b.Tps {
+            if tp.O == in.S {
+                b.Tps[i].Leaf = false
+                break
+            }
+        }
+    }
+}
+
 // Adds the property variables for building the path to recommend of length pathLength
 func (b *Scope) addIntermediatePath() {
     if b.pathLength == 0 {
@@ -296,6 +311,7 @@ func (b *Scope) RecommendationType() Type {
 func (b *Scope) RecommendationQuery() string {
     b.trimToScope()
     b.addIntermediatePath()
+    b.setLeaves()
     var out bytes.Buffer
     b.template.Execute(&out, b)
     return out.String()
