@@ -10,3 +10,4 @@
 * [GH-20] Support SPARQL aggregates
 * [GH-22] Support SPARQL solutions modifiers
 * [GH-3] Complete SPARQL grammar
+* [GH-26] Check if a pattern is a leaf or not
