@@ -15,7 +15,9 @@ The folder `demo/` shows how gosparqled can be used with other tools such as [YA
 
 # Auto-Completion
 
-The recommendations are context-aware, i.e., the current state of the SPARQL query is taken into consideration when retrieving the recommendations. In the examples below, the character `<` represents the position in the query to auto-complete. The auto-completion is possible at any position in a triple pattern.
+The recommendations are context-aware, i.e., the current state of the SPARQL query is taken into consideration when retrieving the recommendations.
+
+In the examples below, the character `<` represents the position in the query to auto-complete by pressing `CTRL + SPACE`; the `<` should not be typed prior to pressing the key combination. The auto-completion is possible at any position in a triple pattern.
 
 ## Class
 
