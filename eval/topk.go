@@ -3,7 +3,7 @@ package eval
 
 import (
     "github.com/scampi/gosparqled/autocompletion"
-    "log"
+    "github.com/golang/glog"
     "strconv"
     "time"
     "sort"
@@ -53,7 +53,7 @@ func Gold(endpoint string, from string, query string, template string) []Recomme
     s.Init()
     err := s.Parse()
     if err != nil {
-        log.Fatal(err)
+        glog.Fatal(err)
     }
     s.Execute()
     bindings, _ := GetBindings(endpoint, s.RecommendationQuery())
@@ -102,7 +102,7 @@ func getRecommendations(endpoint string, from string, query string, template str
     s.Init()
     err := s.Parse()
     if err != nil {
-        log.Fatal(err)
+        glog.Fatal(err)
     }
     s.Execute()
     bindings, elapsedTime := GetBindings(endpoint, s.RecommendationQuery())
@@ -112,7 +112,7 @@ func getRecommendations(endpoint string, from string, query string, template str
         count,_ := strconv.Atoi(v["count"]["value"])
         counts[v["POF"]["value"]] += count
     }
-    log.Printf("Results: %v\n", counts)
+    glog.Infof("Results: %v\n", counts)
     var pofs byCount
     for k,v := range counts {
         pofs = append(pofs, Recommendation{ Item: k, Count: v })
@@ -120,7 +120,7 @@ func getRecommendations(endpoint string, from string, query string, template str
     sort.Sort(sort.Reverse(pofs))
     min := int(math.Min(10, float64(len(pofs))))
     top := pofs[:min]
-    log.Printf("TOP10: %v\n", top)
+    glog.Infof("TOP10: %v\n", top)
     // get the total number of occurrences of each recommended item
     values := "values ?POF { "
     for _,r := range top {
@@ -139,7 +139,7 @@ func getRecommendations(endpoint string, from string, query string, template str
     s.Init()
     err = s.Parse()
     if err != nil {
-        log.Fatal(err)
+        glog.Fatal(err)
     }
     s.Execute()
     bindings, _ = GetBindings(endpoint, s.RecommendationQuery())
@@ -148,7 +148,7 @@ func getRecommendations(endpoint string, from string, query string, template str
         count,_ := strconv.Atoi(v["count"]["value"])
         popularity = append(popularity, Recommendation{ Item: v["POF"]["value"], Count: count })
     }
-    log.Printf("Popularity=%v\n", bindings)
+    glog.Infof("Popularity=%v\n", bindings)
     return popularity, elapsedTime
 }
 

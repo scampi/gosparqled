@@ -3,7 +3,7 @@ package main
 import (
     "os"
     "bufio"
-    "log"
+    "github.com/golang/glog"
     "github.com/scampi/gosparqled/eval"
     "github.com/scampi/gosparqled/eval/data"
     "fmt"
@@ -23,6 +23,7 @@ func missingOption(option string) {
 
 func main() {
     flag.Parse()
+    defer glog.Flush()
 
     if *queries == "" { missingOption("queries") }
     if *endpoint == "" { missingOption("endpoint") }
@@ -43,18 +44,18 @@ func main() {
          LIMIT 10
     `
     file := data.Load(*queries)
-    log.Printf("Processing file [%s]", *queries)
+    glog.Infof("Processing file [%s]", *queries)
 
     fi, err := os.Create(*output)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer fi.Close()
     w := bufio.NewWriter(fi)
     defer w.Flush()
 
     for _,query := range file {
-        log.Printf("\tProcessing query [%s]", query)
+        glog.Infof("\tProcessing query [%s]", query)
         for _,pof := range data.POFs(query) {
-            log.Printf("\t\tProcessing [%s]", pof)
+            glog.Infof("\t\tProcessing [%s]", pof)
             gold := eval.Gold(*endpoint, *graph, pof, tmpl)
             w.WriteString(fmt.Sprintf("%v\n", gold))
         }

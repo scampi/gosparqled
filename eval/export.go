@@ -3,7 +3,7 @@ package eval
 import (
     "os"
     "bufio"
-    "log"
+    "github.com/golang/glog"
     "strings"
     "strconv"
     "time"
@@ -26,9 +26,9 @@ type AggregatedMeasurement struct {
 // loadGold reads a list of Recommendations from the given file.
 // Each line represents the recommendations for one query.
 func loadGold(gold string) [][]Recommendation {
-    log.Printf("Loading Gold [%v]\n", gold)
+    glog.Infof("Loading Gold [%v]\n", gold)
     fi, err := os.Open(gold)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer fi.Close()
     s := bufio.NewScanner(fi)
     var allrecs [][]Recommendation
@@ -41,7 +41,7 @@ func loadGold(gold string) [][]Recommendation {
             lbrace := strings.Index(v, "{")
             space := strings.LastIndex(v, " ")
             if lbrace == -1 || space == -1 {
-                log.Fatalf("Invalid gold: %v\n", v)
+                glog.Fatalf("Invalid gold: %v\n", v)
             }
             item := v[lbrace+1:space]
             count, _ := strconv.Atoi(v[space+1:])
@@ -56,7 +56,7 @@ func loadGold(gold string) [][]Recommendation {
 // Each line represents the Measurement for one query.
 func loadMeasure(result string) []Measurement {
     fi, err := os.Open(result)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer fi.Close()
     s := bufio.NewScanner(fi)
     var measurements []Measurement
@@ -75,7 +75,7 @@ func loadMeasure(result string) []Measurement {
             lbrace := strings.Index(v, "{")
             space := strings.LastIndex(v, " ")
             if lbrace == -1 || space == -1 {
-                log.Fatalf("Invalid measurement: %v\n", v)
+                glog.Fatalf("Invalid measurement: %v\n", v)
             }
             item := v[lbrace+1:space]
             count, _ := strconv.Atoi(v[space+1:])
@@ -107,18 +107,18 @@ func jaccard(a []Recommendation, b []Recommendation) float64 {
 // compare evaluates the list of Measurements from results
 // and returns its AggregatedMeasurement
 func compare(gold [][]Recommendation, results string) AggregatedMeasurement {
-    log.Printf("Processing results [%s]\n", results)
+    glog.Infof("Processing results [%s]\n", results)
     measures := loadMeasure(results)
     if len(gold) != len(measures) {
-        log.Fatalf("Gold=%v Measures=%v", len(gold), len(measures))
+        glog.Fatalf("Gold=%v Measures=%v", len(gold), len(measures))
     }
     es, j := int64(0), float64(0)
     for i, im := range measures {
         es += int64(im.ElapsedTime)
         j += jaccard(gold[i], im.Recs)
-        log.Printf("Jaccard: %v\n", jaccard(gold[i], im.Recs))
+        glog.Infof("Jaccard: %v\n", jaccard(gold[i], im.Recs))
     }
-    log.Printf("Avg: %v\n", j/float64(len(measures)))
+    glog.Infof("Avg: %v\n", j/float64(len(measures)))
     return AggregatedMeasurement{ Name: results, Jaccard: j/float64(len(measures)), ElapsedTime: time.Duration(es/int64(len(measures))) }
 }
 
@@ -155,7 +155,7 @@ var signRe = regexp.MustCompile("_[0-9]*[0-9-]*[0-9]")
 // toLatex exports results to output as LATEX table rows
 func toLatex(output string, results map[string][]AggregatedMeasurement) {
     out, err := os.Create(output)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer out.Close()
     w := bufio.NewWriter(out)
     defer w.Flush()
@@ -205,10 +205,10 @@ func toLatex(output string, results map[string][]AggregatedMeasurement) {
 // into the output file.
 func Export(output string, gold string, results []string) {
     fi, err := os.Open(gold)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer fi.Close()
     goldFiles, err := filepath.Glob(gold + "/query_*")
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
 
     limit := make(map[string][]AggregatedMeasurement)
     limitRe := regexp.MustCompile("limit[0-9]+$")
@@ -217,7 +217,7 @@ func Export(output string, gold string, results []string) {
         _, name := filepath.Split(file)
         for _,res := range results {
             matches, err := filepath.Glob(filepath.Join(res, name)  + "-limit*")
-            if err != nil { log.Fatal(err) }
+            if err != nil { glog.Fatal(err) }
             for _, match := range matches {
                 aggm := compare(gd, match)
                 l := limitRe.FindString(match)

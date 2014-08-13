@@ -4,7 +4,7 @@ package data
 import (
     "os"
     "bufio"
-    "log"
+    "github.com/golang/glog"
     "github.com/scampi/gosparqled/eval"
     "strings"
     "regexp"
@@ -13,7 +13,7 @@ import (
 // Load reads a file with SPARQL queries separated by a line with "###".
 func Load(file string) []string {
     fi, err := os.Open(file)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer fi.Close()
     s := bufio.NewScanner(fi)
     var queries []string
@@ -33,7 +33,7 @@ func Load(file string) []string {
 // Only those that have a solution are written to out.
 func Clean(endpoint string, graph string, queries string, out string) {
     fi, err := os.Create(out)
-    if err != nil { log.Fatal(err) }
+    if err != nil { glog.Fatal(err) }
     defer fi.Close()
     w := bufio.NewWriter(fi)
     defer w.Flush()
@@ -53,7 +53,7 @@ func POFs(query string) []string {
     reg, _ := regexp.Compile("<[^>]*>")
     m := reg.FindAllStringIndex(query, -1)
     if m == nil {
-        log.Fatal("No match for " + query)
+        glog.Fatal("No match for " + query)
     }
     pofs := make([]string, len(m))
     for i,ind := range m {

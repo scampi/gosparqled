@@ -3,7 +3,7 @@ package eval
 import (
     "net/http"
     "net/url"
-    "log"
+    "github.com/golang/glog"
     "encoding/json"
     "io"
     "time"
@@ -17,11 +17,11 @@ type Binding map[string]string
 func executeQuery(endpoint string, query string) (io.ReadCloser, time.Duration) {
     time.Sleep(time.Second)
     q := endpoint + "?format=application/json&query=" + url.QueryEscape(query)
-    log.Printf("Execute request: [%s]", q)
+    glog.Infof("Execute request: [%s]", q)
     start := time.Now()
     resp, err := http.Get(q)
     if err != nil {
-        log.Fatal(err)
+        glog.Fatal(err)
     }
     return resp.Body, time.Since(start)
 }
@@ -33,7 +33,7 @@ func GetBindings(endpoint string, query string) ([]map[string]Binding, time.Dura
     dec := json.NewDecoder(body)
     var res = new(struct{Results struct{Bindings []map[string]Binding}})
     if err := dec.Decode(&res); err != nil {
-        log.Fatal(err)
+        glog.Fatal(err)
     }
     return res.Results.Bindings, et
 }
@@ -45,7 +45,7 @@ func Ask(endpoint string, query string) (bool, time.Duration) {
     dec := json.NewDecoder(body)
     var res = new(struct{Boolean bool})
     if err := dec.Decode(&res); err != nil {
-        log.Fatal(err)
+        glog.Fatal(err)
     }
     return res.Boolean, et
 }

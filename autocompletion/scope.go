@@ -112,6 +112,23 @@ func Reset(s *Sparql) {
     s.Tps = s.Tps[:0]
 }
 
+// SObjects returns the set of variables at the subject and object position
+func (s *Scope) SObjects() string {
+    so := ""
+    set := make(map[string]bool, 10)
+    for _,tp := range s.Tps {
+        if _,ok := set[tp.S]; !ok && strings.HasPrefix(tp.S, "?v") {
+            so += tp.S + " "
+            set[tp.S] = true
+        }
+        if _,ok := set[tp.O]; !ok && strings.HasPrefix(tp.O, "?v") {
+            so += tp.O + " "
+            set[tp.O] = true
+        }
+    }
+    return so
+}
+
 // Skip ignores comments in the buffer
 func (s *Scope) skipComment(buffer string, begin int, end int) string {
     if begin <= s.commentBegin {
