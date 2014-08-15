@@ -1060,6 +1060,11 @@ func (t *tokens32) Expand(index int) tokenTree {
 }
 
 type Sparql struct {
+
+	// The start offset of a comment
+	skipBegin int
+	triplePattern
+
 	*Scope
 
 	Buffer string
@@ -1140,36 +1145,36 @@ func (p *Sparql) Execute() {
 		case rulePegText:
 			begin, end = int(token.begin), int(token.end)
 		case ruleAction0:
-			p.addPrefix(p.skipComment(buffer, begin, end))
+			p.addPrefix(p.skipped(buffer, begin, end))
 		case ruleAction1:
-			p.setSubject(p.skipComment(buffer, begin, end))
+			p.S = p.skipped(buffer, begin, end)
 		case ruleAction2:
-			p.setSubject(p.skipComment(buffer, begin, end))
+			p.S = p.skipped(buffer, begin, end)
 		case ruleAction3:
-			p.setSubject("?POF")
+			p.S = "?POF"
 		case ruleAction4:
-			p.setPredicate("?POF")
+			p.P = "?POF"
 		case ruleAction5:
-			p.setPredicate(p.skipComment(buffer, begin, end))
+			p.P = p.skipped(buffer, begin, end)
 		case ruleAction6:
-			p.setPredicate(p.skipComment(buffer, begin, end))
+			p.P = p.skipped(buffer, begin, end)
 		case ruleAction7:
-			p.setObject("?POF")
+			p.O = "?POF"
 			p.addTriplePattern()
 		case ruleAction8:
-			p.setObject(p.skipComment(buffer, begin, end))
+			p.O = p.skipped(buffer, begin, end)
 			p.addTriplePattern()
 		case ruleAction9:
-			p.setObject("?FillVar")
+			p.O = "?FillVar"
 			p.addTriplePattern()
 		case ruleAction10:
-			p.setPrefix(p.skipComment(buffer, begin, end))
+			p.setPrefix(p.skipped(buffer, begin, end))
 		case ruleAction11:
-			p.setPathLength(p.skipComment(buffer, begin, end))
+			p.setPathLength(p.skipped(buffer, begin, end))
 		case ruleAction12:
-			p.setKeyword(p.skipComment(buffer, begin, end))
+			p.setKeyword(p.skipped(buffer, begin, end))
 		case ruleAction13:
-			p.commentBegin = begin
+			p.skipBegin = begin
 
 		}
 	}
@@ -15113,30 +15118,30 @@ func (p *Sparql) Init() {
 		nil,
 		/* 217 MINUSSETOPER <- <(('m' / 'M') ('i' / 'I') ('n' / 'N') ('u' / 'U') ('s' / 'S') skip)> */
 		nil,
-		/* 218 skip <- <(ws / comment)*> */
+		/* 218 skip <- <(<(ws / comment)*> Action13)> */
 		func() bool {
 			{
 				position1895 := position
 				depth++
-			l1896:
 				{
-					position1897, tokenIndex1897, depth1897 := position, tokenIndex, depth
+					position1896 := position
+					depth++
+				l1897:
 					{
 						position1898, tokenIndex1898, depth1898 := position, tokenIndex, depth
-						if !rules[rulews]() {
-							goto l1899
-						}
-						goto l1898
-					l1899:
-						position, tokenIndex, depth = position1898, tokenIndex1898, depth1898
 						{
-							position1900 := position
-							depth++
+							position1899, tokenIndex1899, depth1899 := position, tokenIndex, depth
+							if !rules[rulews]() {
+								goto l1900
+							}
+							goto l1899
+						l1900:
+							position, tokenIndex, depth = position1899, tokenIndex1899, depth1899
 							{
 								position1901 := position
 								depth++
 								if buffer[position] != rune('#') {
-									goto l1897
+									goto l1898
 								}
 								position++
 							l1902:
@@ -15159,22 +15164,22 @@ func (p *Sparql) Init() {
 									position, tokenIndex, depth = position1903, tokenIndex1903, depth1903
 								}
 								if !rules[ruleendOfLine]() {
-									goto l1897
+									goto l1898
 								}
 								depth--
-								add(rulePegText, position1901)
+								add(rulecomment, position1901)
 							}
-							{
-								add(ruleAction13, position)
-							}
-							depth--
-							add(rulecomment, position1900)
 						}
+					l1899:
+						goto l1897
+					l1898:
+						position, tokenIndex, depth = position1898, tokenIndex1898, depth1898
 					}
-				l1898:
-					goto l1896
-				l1897:
-					position, tokenIndex, depth = position1897, tokenIndex1897, depth1897
+					depth--
+					add(rulePegText, position1896)
+				}
+				{
+					add(ruleAction13, position)
 				}
 				depth--
 				add(ruleskip, position1895)
@@ -15229,7 +15234,7 @@ func (p *Sparql) Init() {
 			position, tokenIndex, depth = position1906, tokenIndex1906, depth1906
 			return false
 		},
-		/* 220 comment <- <(<('#' (!endOfLine .)* endOfLine)> Action13)> */
+		/* 220 comment <- <('#' (!endOfLine .)* endOfLine)> */
 		nil,
 		/* 221 endOfLine <- <(('\r' '\n') / '\n' / '\r')> */
 		func() bool {
@@ -15272,33 +15277,33 @@ func (p *Sparql) Init() {
 			return false
 		},
 		nil,
-		/* 224 Action0 <- <{ p.addPrefix(p.skipComment(buffer, begin, end)) }> */
+		/* 224 Action0 <- <{ p.addPrefix(p.skipped(buffer, begin, end)) }> */
 		nil,
-		/* 225 Action1 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
+		/* 225 Action1 <- <{ p.S = p.skipped(buffer, begin, end) }> */
 		nil,
-		/* 226 Action2 <- <{ p.setSubject(p.skipComment(buffer, begin, end)) }> */
+		/* 226 Action2 <- <{ p.S = p.skipped(buffer, begin, end) }> */
 		nil,
-		/* 227 Action3 <- <{ p.setSubject("?POF") }> */
+		/* 227 Action3 <- <{ p.S = "?POF" }> */
 		nil,
-		/* 228 Action4 <- <{ p.setPredicate("?POF") }> */
+		/* 228 Action4 <- <{ p.P = "?POF" }> */
 		nil,
-		/* 229 Action5 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
+		/* 229 Action5 <- <{ p.P = p.skipped(buffer, begin, end) }> */
 		nil,
-		/* 230 Action6 <- <{ p.setPredicate(p.skipComment(buffer, begin, end)) }> */
+		/* 230 Action6 <- <{ p.P = p.skipped(buffer, begin, end) }> */
 		nil,
-		/* 231 Action7 <- <{ p.setObject("?POF"); p.addTriplePattern() }> */
+		/* 231 Action7 <- <{ p.O = "?POF"; p.addTriplePattern() }> */
 		nil,
-		/* 232 Action8 <- <{ p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() }> */
+		/* 232 Action8 <- <{ p.O = p.skipped(buffer, begin, end); p.addTriplePattern() }> */
 		nil,
-		/* 233 Action9 <- <{ p.setObject("?FillVar"); p.addTriplePattern() }> */
+		/* 233 Action9 <- <{ p.O = "?FillVar"; p.addTriplePattern() }> */
 		nil,
-		/* 234 Action10 <- <{ p.setPrefix(p.skipComment(buffer, begin, end)) }> */
+		/* 234 Action10 <- <{ p.setPrefix(p.skipped(buffer, begin, end)) }> */
 		nil,
-		/* 235 Action11 <- <{ p.setPathLength(p.skipComment(buffer, begin, end)) }> */
+		/* 235 Action11 <- <{ p.setPathLength(p.skipped(buffer, begin, end)) }> */
 		nil,
-		/* 236 Action12 <- <{ p.setKeyword(p.skipComment(buffer, begin, end)) }> */
+		/* 236 Action12 <- <{ p.setKeyword(p.skipped(buffer, begin, end)) }> */
 		nil,
-		/* 237 Action13 <- <{ p.commentBegin = begin }> */
+		/* 237 Action13 <- <{ p.skipBegin = begin }> */
 		nil,
 	}
 	p.rules = rules
