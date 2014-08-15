@@ -12,6 +12,15 @@ func parse(t *testing.T, query string) *Sparql {
     return s
 }
 
+func TestMultiObjects(t *testing.T) {
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?s <aaa> ?o1, ?o2
+        }
+        `)
+}
+
 func TestEscapedQuotes(t *testing.T) {
     parse(t, `
         SELECT *
