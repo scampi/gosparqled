@@ -11,3 +11,4 @@
 * [GH-22] Support SPARQL solutions modifiers
 * [GH-3] Complete SPARQL grammar
 * [GH-26] Check if a pattern is a leaf or not
+* [GH-28] Update management of whitespace & comments in the PEG grammar

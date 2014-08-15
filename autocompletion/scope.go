@@ -53,10 +53,6 @@ type triplePattern struct {
 // A triple pattern is relevant only if it is part of the connected component
 // that contains the Point Of Focus.
 type Scope struct {
-    // The start offset of a comment
-    commentBegin int
-    triplePattern
-
     // The list of triple patterns
     Tps []triplePattern
     scope map[string]bool
@@ -106,7 +102,7 @@ func NewScopeWithTemplate(tmpl string) *Scope {
 // Reset re-initialises the internal structures in preparation for a new query
 func Reset(s *Sparql) {
     s.Reset()
-    s.commentBegin = 0
+    s.skipBegin = 0
     s.Keyword = ""
     s.Prefix = ""
     s.pathLength = 0
@@ -131,10 +127,10 @@ func (s *Scope) SObjects() string {
     return so
 }
 
-// Skip ignores comments in the buffer
-func (s *Scope) skipComment(buffer string, begin int, end int) string {
-    if begin <= s.commentBegin {
-        return buffer[begin:s.commentBegin]
+// Skipped returns the buffer without the whitespaces and comments
+func (s *Sparql) skipped(buffer string, begin int, end int) string {
+    if begin <= s.skipBegin {
+        return buffer[begin:s.skipBegin]
     } else {
         return buffer[begin:end]
     }
@@ -160,34 +156,10 @@ func (b *Scope) setKeyword(keyword string) {
     }
 }
 
-// Sets the subject of the triple pattern
-func (b *Scope) setSubject(s string) {
-    s = strings.TrimSpace(s)
-    if (len(s) != 0) {
-        b.S = s
-    }
-}
-
-// Sets the predicate of the triple pattern
-func (b *Scope) setPredicate(p string) {
-    p = strings.TrimSpace(p)
-    if (len(p) != 0) {
-        b.P = p
-    }
-}
-
-// Sets the object of the triple pattern
-func (b *Scope) setObject(o string) {
-    o = strings.TrimSpace(o)
-    if (len(o) != 0) {
-        b.O = o
-    }
-}
-
 // Adds the current triple pattern to the Scope
-func (b *Scope) addTriplePattern() {
+func (b *Sparql) addTriplePattern() {
     tp := triplePattern{ S : b.S, P : b.P, O : b.O }
-    b.Tps = append(b.Tps, tp)
+    b.Scope.Tps = append(b.Scope.Tps, tp)
 }
 
 // Sets the length of the path to be recommended

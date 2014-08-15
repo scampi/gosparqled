@@ -3,6 +3,10 @@
 package autocompletion
 
 type Sparql Peg {
+    // The start offset of a comment
+    skipBegin int
+    triplePattern
+
     *Scope
 }
 
@@ -10,7 +14,7 @@ queryContainer <- skip prolog query !.
 
 prolog <- ( prefixDecl / baseDecl )*
 
-prefixDecl <- PREFIX <pnPrefix? COLON iri> { p.addPrefix(p.skipComment(buffer, begin, end)) }
+prefixDecl <- PREFIX <pnPrefix? COLON iri> { p.addPrefix(p.skipped(buffer, begin, end)) }
 
 baseDecl <- BASE iri
 
@@ -54,7 +58,7 @@ triplesBlock <- triplesSameSubjectPath ( DOT triplesSameSubjectPath )* DOT?
 
 triplesSameSubjectPath <- ( varOrTerm propertyListPath / triplesNodePath propertyListPath? )
 
-varOrTerm <- <var> { p.setSubject(p.skipComment(buffer, begin, end)) } / <graphTerm> { p.setSubject(p.skipComment(buffer, begin, end)) } / pof { p.setSubject("?POF") } 
+varOrTerm <- <var> { p.S = p.skipped(buffer, begin, end) } / <graphTerm> { p.S = p.skipped(buffer, begin, end) } / pof { p.S = "?POF" } 
 
 graphTerm <- iriref / literal / numericLiteral / booleanLiteral / blankNode / nil
 
@@ -64,7 +68,7 @@ collectionPath <- LPAREN graphNodePath+ RPAREN
 
 blankNodePropertyListPath <- LBRACK propertyListPath RBRACK
 
-propertyListPath <- ( pof { p.setPredicate("?POF") } / <var> { p.setPredicate(p.skipComment(buffer, begin, end)) } / verbPath ) objectListPath ( SEMICOLON propertyListPath? )?
+propertyListPath <- ( pof { p.P = "?POF" } / <var> { p.P = p.skipped(buffer, begin, end) } / verbPath ) objectListPath ( SEMICOLON propertyListPath? )?
 
 verbPath <- path
 
@@ -72,7 +76,7 @@ path <- pathAlternative
 
 pathAlternative <- pathSequence ( PIPE pathSequence )*
 
-pathSequence <- <pathElt> { p.setPredicate(p.skipComment(buffer, begin, end)) } ( SLASH pathSequence )*
+pathSequence <- <pathElt> { p.P = p.skipped(buffer, begin, end) } ( SLASH pathSequence )*
 
 pathElt <- INVERSE? pathPrimary pathMod?
 
@@ -86,7 +90,7 @@ pathMod <- ( STAR / QUESTION / PLUS ) !.
 
 objectListPath <- objectPath ( COMMA objectPath )*
 
-objectPath <- pof { p.setObject("?POF"); p.addTriplePattern() } / <graphNodePath> { p.setObject(p.skipComment(buffer, begin, end)); p.addTriplePattern() } / { p.setObject("?FillVar"); p.addTriplePattern() }
+objectPath <- pof { p.O = "?POF"; p.addTriplePattern() } / <graphNodePath> { p.O = p.skipped(buffer, begin, end); p.addTriplePattern() } / { p.O = "?FillVar"; p.addTriplePattern() }
 
 graphNodePath <- var / graphTerm / triplesNodePath
 
@@ -180,9 +184,9 @@ builtinCall <- (
 #
 
 pof <- (
-        <[[a-z]]*>':' { p.setPrefix(p.skipComment(buffer, begin, end)) } /
-        <[2-9][0-9]*>'/' { p.setPathLength(p.skipComment(buffer, begin, end)) } /
-        <[a-zA-Z0-9.\-_+]*> { p.setKeyword(p.skipComment(buffer, begin, end)) }
+        <[[a-z]]*>':' { p.setPrefix(p.skipped(buffer, begin, end)) } /
+        <[2-9][0-9]*>'/' { p.setPathLength(p.skipped(buffer, begin, end)) } /
+        <[a-zA-Z0-9.\-_+]*> { p.setKeyword(p.skipped(buffer, begin, end)) }
        ) '<' ws skip
 
 #
@@ -364,11 +368,11 @@ HAVING <- "HAVING" skip
 GRAPH <- "GRAPH" skip
 MINUSSETOPER <- "MINUS" skip
 
-skip <- ( ws / comment )*
+skip <- <( ws / comment )*> { p.skipBegin = begin }
 
 ws <- '\040' / '\t' / '\f' / '\v' / endOfLine
 
-comment <- < '#' (!endOfLine .)* endOfLine > { p.commentBegin = begin }
+comment <- '#' (!endOfLine .)* endOfLine
 
 endOfLine <- '\r\n' / '\n' / '\r'
 
