@@ -1,7 +1,0 @@
-8300027 8300027 8.300027e+06 1 251.308329ms [{http://dbpedia.org/ontology/currentMembers 8300027}]
-1843693 4171837 3.007765e+06 2 256.814017ms [{http://dbpedia.org/ontology/background 1843693} {http://dbpedia.org/ontology/homeTown 4171837}]
-3246523 9488018 6.6693665e+06 4 284.769236ms [{http://dbpedia.org/ontology/label 7455485} {http://dbpedia.org/ontology/currentMembers 3246523} {http://dbpedia.org/ontology/associatedBand 6487439} {http://dbpedia.org/ontology/homeTown 9488018}]
-5338476 5338476 5.338476e+06 1 263.932948ms [{http://dbpedia.org/ontology/birthplace 5338476}]
-777479883 777479883 7.774799e+08 1 262.046294ms [{http://dbpedia.org/property/wikilink 777479883}]
-93503 163647133 1.7820158e+07 10 254.031356ms [{http://www.w3.org/2004/02/skos/core#subject 10315693} {http://dbpedia.org/property/wikilink 163647133} {http://dbpedia.org/ontology/affiliation 325688} {http://dbpedia.org/ontology/motto 451912} {http://dbpedia.org/ontology/city 1269700} {http://dbpedia.org/ontology/colours 580607} {http://dbpedia.org/property/affiliation 93503} {http://dbpedia.org/ontology/students 804764} {http://dbpedia.org/property/students 455120} {http://dbpedia.org/property/freeLabel 257476}]
-51470622 6794667826 2.3091203e+09 3 266.465853ms [{http://xmlns.com/foaf/0.1/name 81221896} {http://dbpedia.org/property/wikilink 6794667826} {http://dbpedia.org/ontology/format 51470622}]

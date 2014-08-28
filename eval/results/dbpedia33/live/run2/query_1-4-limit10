@@ -1,0 +1,5 @@
+3 4 3.3333333 3 96.931139ms [{http://dbpedia.org/ontology/Film 4} {http://dbpedia.org/ontology/Work 3} {http://dbpedia.org/ontology/Resource 3}]
+1 7 2.5 4 181.856263ms [{http://dbpedia.org/property/wikilink 7} {http://dbpedia.org/ontology/starring 1} {http://dbpedia.org/ontology/director 1} {http://dbpedia.org/ontology/writer 1}]
+10 10 10 1 176.642848ms [{http://www.w3.org/2004/02/skos/core#subject 10}]
+1 7 2.5 4 184.784431ms [{http://www.w3.org/2004/02/skos/core#subject 7} {http://www.w3.org/2000/01/rdf-schema#label 1} {http://dbpedia.org/ontology/cinematography 1} {http://dbpedia.org/ontology/director 1}]
+1 9 5 2 117.726375ms [{http://www.w3.org/2004/02/skos/core#subject 9} {http://www.w3.org/2000/01/rdf-schema#label 1}]

@@ -1,4 +1,0 @@
-708 1864 1093.3334 3 247.488115ms [{http://www.w3.org/2000/01/rdf-schema#label 708} {http://www.w3.org/2004/02/skos/core#broader 1864} {http://www.w3.org/2004/02/skos/core#prefLabel 708}]
-1864 1864 1864 1 333.101573ms [{http://www.w3.org/2004/02/skos/core#subject 1864}]
-1807 21124 9207.667 3 246.708813ms [{http://dbpedia.org/property/wikilink 21124} {http://www.w3.org/2004/02/skos/core#subject 4692} {http://www.w3.org/2000/01/rdf-schema#label 1807}]
-1137 104568 30396 4 246.797694ms [{http://dbpedia.org/property/wikilink 104568} {http://www.w3.org/2004/02/skos/core#subject 12334} {http://dbpedia.org/property/routes 1137} {http://www.w3.org/2000/01/rdf-schema#label 3545}]

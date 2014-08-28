@@ -1,0 +1,7 @@
+10 10 10 1 101.570327ms [{http://dbpedia.org/ontology/currentMembers 10}]
+10 10 10 1 102.01467ms [{http://dbpedia.org/ontology/background 10}]
+10 10 10 1 99.37992ms [{http://dbpedia.org/ontology/currentMembers 10}]
+10 10 10 1 102.800299ms [{http://dbpedia.org/ontology/birthplace 10}]
+10 10 10 1 101.167735ms [{http://dbpedia.org/property/wikilink 10}]
+1 6 2 5 97.11325ms [{http://dbpedia.org/property/wikilink 6} {http://dbpedia.org/ontology/country 1} {http://dbpedia.org/ontology/affiliation 1} {http://www.w3.org/2004/02/skos/core#subject 1} {http://xmlns.com/foaf/0.1/name 1}]
+3 4 3.3333333 3 103.52639ms [{http://dbpedia.org/property/wikilink 4} {http://dbpedia.org/ontology/format 3} {http://xmlns.com/foaf/0.1/name 3}]

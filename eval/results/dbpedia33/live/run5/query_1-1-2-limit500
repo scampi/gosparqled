@@ -1,0 +1,4 @@
+123 253 166.66667 3 104.89758ms [{http://www.w3.org/2004/02/skos/core#broader 253} {http://www.w3.org/2004/02/skos/core#prefLabel 124} {http://www.w3.org/2000/01/rdf-schema#label 123}]
+500 500 500 1 129.065716ms [{http://www.w3.org/2004/02/skos/core#broader 500}]
+500 500 500 1 119.729142ms [{http://www.w3.org/2004/02/skos/core#subject 500}]
+9 216 48.2 10 110.073999ms [{http://dbpedia.org/property/wikilink 216} {http://www.w3.org/2004/02/skos/core#subject 101} {http://dbpedia.org/ontology/homeTown 41} {http://dbpedia.org/ontology/label 36} {http://dbpedia.org/ontology/genre 23} {http://www.w3.org/2000/01/rdf-schema#label 16} {http://dbpedia.org/ontology/background 16} {http://dbpedia.org/ontology/currentMembers 14} {http://xmlns.com/foaf/0.1/name 10} {http://dbpedia.org/ontology/otherName 9}]

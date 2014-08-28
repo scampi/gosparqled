@@ -1,0 +1,8 @@
+1 1 1 10 96.355013ms [{http://www.w3.org/2004/02/skos/core#subject 1} {http://www.w3.org/2000/01/rdf-schema#label 1} {http://dbpedia.org/ontology/areaTotal 1} {http://dbpedia.org/ontology/capital 1} {http://dbpedia.org/ontology/nickname 1} {http://dbpedia.org/ontology/otherName 1} {http://dbpedia.org/ontology/areaLand 1} {http://dbpedia.org/ontology/areaWater 1} {http://dbpedia.org/ontology/motto 1} {http://xmlns.com/foaf/0.1/name 1}]
+10 10 10 1 110.11132ms [{http://dbpedia.org/property/wikilink 10}]
+1 6 3.3333333 3 100.704614ms [{http://www.w3.org/2004/02/skos/core#subject 6} {http://www.w3.org/2000/01/rdf-schema#label 3} {http://dbpedia.org/ontology/coordinates 1}]
+1 6 3.3333333 3 98.915233ms [{http://www.w3.org/2004/02/skos/core#subject 6} {http://www.w3.org/2000/01/rdf-schema#label 3} {http://dbpedia.org/ontology/coordinates 1}]
+1 6 3.3333333 3 97.520729ms [{http://dbpedia.org/property/wikilink 6} {http://www.w3.org/2004/02/skos/core#subject 3} {http://www.w3.org/2000/01/rdf-schema#label 1}]
+10 10 10 1 95.265655ms [{http://dbpedia.org/property/wikilink 10}]
+1 3 2.5 4 110.439869ms [{http://www.w3.org/2004/02/skos/core#subject 3} {http://dbpedia.org/ontology/areaCode 3} {http://www.w3.org/2000/01/rdf-schema#label 3} {http://dbpedia.org/ontology/coordinates 1}]
+1 3 2.5 4 108.834022ms [{http://www.w3.org/2004/02/skos/core#subject 3} {http://www.w3.org/2000/01/rdf-schema#label 3} {http://dbpedia.org/ontology/areaCode 3} {http://dbpedia.org/ontology/coordinates 1}]

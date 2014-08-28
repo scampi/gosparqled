@@ -1,0 +1,4 @@
+2 6 3.3333333 3 98.127705ms [{http://www.w3.org/2004/02/skos/core#broader 6} {http://www.w3.org/2004/02/skos/core#prefLabel 2} {http://www.w3.org/2000/01/rdf-schema#label 2}]
+10 10 10 1 105.859672ms [{http://www.w3.org/2004/02/skos/core#broader 10}]
+10 10 10 1 95.782939ms [{http://www.w3.org/2004/02/skos/core#subject 10}]
+10 10 10 1 97.37859ms [{http://www.w3.org/2004/02/skos/core#subject 10}]

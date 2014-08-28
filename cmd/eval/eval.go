@@ -29,7 +29,7 @@ func main() {
     defer glog.Flush()
 
     if *queries == "" { missingOption("queries") }
-    if *endpoint == "" { missingOption("endpoing") }
+    if *endpoint == "" { missingOption("endpoint") }
     if *output == "" { missingOption("output") }
     if *recGraph == "" { missingOption("rec-graph") }
     if *countGraph == "" { missingOption("count-graph") }

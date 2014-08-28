@@ -1,7 +1,0 @@
-8300027 8300027 8.300027e+06 1 388.993977ms [{http://dbpedia.org/ontology/currentMembers 8300027}]
-1843693 1843693 1.843693e+06 1 254.829229ms [{http://dbpedia.org/ontology/background 1843693}]
-3246523 3246523 3.246523e+06 1 251.473919ms [{http://dbpedia.org/ontology/currentMembers 3246523}]
-5338476 5338476 5.338476e+06 1 291.861087ms [{http://dbpedia.org/ontology/birthplace 5338476}]
-777479883 777479883 7.774799e+08 1 254.654231ms [{http://dbpedia.org/property/wikilink 777479883}]
-325688 163647133 3.5250744e+07 5 253.265914ms [{http://dbpedia.org/property/wikilink 163647133} {http://xmlns.com/foaf/0.1/name 1098731} {http://www.w3.org/2004/02/skos/core#subject 10315693} {http://dbpedia.org/ontology/affiliation 325688} {http://dbpedia.org/ontology/country 866448}]
-51470622 6794667826 2.3091203e+09 3 254.628461ms [{http://xmlns.com/foaf/0.1/name 81221896} {http://dbpedia.org/property/wikilink 6794667826} {http://dbpedia.org/ontology/format 51470622}]

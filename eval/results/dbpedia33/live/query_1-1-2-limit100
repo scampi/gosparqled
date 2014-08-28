@@ -1,4 +1,0 @@
-18719557 47002560 2.8147224e+07 3 323.429448ms [{http://www.w3.org/2000/01/rdf-schema#label 18719557} {http://www.w3.org/2004/02/skos/core#broader 47002560} {http://www.w3.org/2004/02/skos/core#prefLabel 18719557}]
-47002560 47002560 4.700256e+07 1 312.93787ms [{http://www.w3.org/2004/02/skos/core#broader 47002560}]
-47002560 47002560 4.700256e+07 1 348.598003ms [{http://www.w3.org/2004/02/skos/core#subject 47002560}]
-422118 1730062619 2.0808323e+08 10 302.551914ms [{http://dbpedia.org/ontology/label 2450402} {http://dbpedia.org/ontology/otherName 814289} {http://xmlns.com/foaf/0.1/name 16749083} {http://dbpedia.org/property/wikilink 1730062619} {http://www.w3.org/2004/02/skos/core#subject 275930759} {http://www.w3.org/2000/01/rdf-schema#label 47002560} {http://dbpedia.org/ontology/background 980689} {http://dbpedia.org/ontology/genre 4992822} {http://dbpedia.org/ontology/currentMembers 422118} {http://dbpedia.org/ontology/homeTown 1427053}]

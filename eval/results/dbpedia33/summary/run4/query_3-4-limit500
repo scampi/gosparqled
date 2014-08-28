@@ -1,0 +1,7 @@
+212 288 250 2 108.529071ms [{http://dbpedia.org/ontology/currentMembers 288} {http://dbpedia.org/ontology/associatedBand 212}]
+38 342 166.66667 3 585.867334ms [{http://dbpedia.org/ontology/homeTown 342} {http://dbpedia.org/ontology/associatedBand 120} {http://dbpedia.org/ontology/background 38}]
+19 122 62.5 8 172.702336ms [{http://dbpedia.org/ontology/homeTown 122} {http://dbpedia.org/ontology/associatedBand 112} {http://dbpedia.org/ontology/associatedMusicalArtist 76} {http://dbpedia.org/ontology/currentMembers 57} {http://dbpedia.org/ontology/label 57} {http://dbpedia.org/ontology/genre 38} {http://www.w3.org/2004/02/skos/core#subject 19} {http://www.w3.org/2000/01/rdf-schema#label 19}]
+500 500 500 1 168.215805ms [{http://dbpedia.org/ontology/birthplace 500}]
+500 500 500 1 189.082212ms [{http://dbpedia.org/property/wikilink 500}]
+7 192 44.8 10 189.833175ms [{http://dbpedia.org/property/wikilink 192} {http://www.w3.org/2004/02/skos/core#subject 191} {http://dbpedia.org/ontology/affiliation 14} {http://dbpedia.org/property/affiliation 9} {http://www.w3.org/2000/01/rdf-schema#label 7} {http://dbpedia.org/ontology/mascot 7} {http://dbpedia.org/property/campus 7} {http://dbpedia.org/ontology/nickname 7} {http://xmlns.com/foaf/0.1/name 7} {http://dbpedia.org/property/students 7}]
+166 167 166.66667 3 157.172783ms [{http://dbpedia.org/ontology/format 167} {http://dbpedia.org/property/wikilink 167} {http://xmlns.com/foaf/0.1/name 166}]

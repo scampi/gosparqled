@@ -1,4 +1,0 @@
-47002560 47002560 4.700256e+07 1 388.354418ms [{http://www.w3.org/2004/02/skos/core#broader 47002560}]
-47002560 47002560 4.700256e+07 1 1.589498711s [{http://www.w3.org/2004/02/skos/core#broader 47002560}]
-47002560 47002560 4.700256e+07 1 257.810202ms [{http://www.w3.org/2004/02/skos/core#subject 47002560}]
-580481 1730062619 2.101361e+08 10 258.259389ms [{http://dbpedia.org/ontology/genus 691489} {http://xmlns.com/foaf/0.1/name 16749083} {http://dbpedia.org/property/wikilink 1730062619} {http://www.w3.org/2004/02/skos/core#subject 275930759} {http://www.w3.org/2000/01/rdf-schema#label 47002560} {http://dbpedia.org/ontology/birthdate 7239773} {http://dbpedia.org/ontology/birthplace 11087556} {http://dbpedia.org/ontology/currentPosition 2986760} {http://dbpedia.org/ontology/binomial_authority 580481} {http://dbpedia.org/ontology/clubs 9029985}]

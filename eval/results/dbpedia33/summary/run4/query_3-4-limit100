@@ -1,0 +1,7 @@
+100 100 100 1 99.297281ms [{http://dbpedia.org/ontology/currentMembers 100}]
+38 62 50 2 101.613166ms [{http://dbpedia.org/ontology/homeTown 62} {http://dbpedia.org/ontology/background 38}]
+16 38 25 4 99.329243ms [{http://dbpedia.org/ontology/currentMembers 38} {http://dbpedia.org/ontology/associatedBand 30} {http://dbpedia.org/ontology/homeTown 16} {http://dbpedia.org/ontology/label 16}]
+100 100 100 1 99.167388ms [{http://dbpedia.org/ontology/birthplace 100}]
+100 100 100 1 102.484976ms [{http://dbpedia.org/property/wikilink 100}]
+1 42 8.8 10 98.695397ms [{http://www.w3.org/2004/02/skos/core#subject 42} {http://dbpedia.org/property/wikilink 36} {http://dbpedia.org/ontology/affiliation 2} {http://dbpedia.org/property/affiliation 2} {http://dbpedia.org/property/president 1} {http://www.w3.org/2000/01/rdf-schema#label 1} {http://dbpedia.org/ontology/students 1} {http://dbpedia.org/property/students 1} {http://dbpedia.org/ontology/state 1} {http://dbpedia.org/ontology/campus 1}]
+26 37 33.333332 3 102.821343ms [{http://dbpedia.org/property/wikilink 37} {http://dbpedia.org/ontology/format 37} {http://xmlns.com/foaf/0.1/name 26}]

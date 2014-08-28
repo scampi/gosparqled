@@ -1,0 +1,7 @@
+8 60 20 5 101.039626ms [{http://dbpedia.org/property/wikilink 60} {http://www.w3.org/2004/02/skos/core#subject 16} {http://dbpedia.org/ontology/homeTown 8} {http://dbpedia.org/ontology/genre 8} {http://dbpedia.org/ontology/label 8}]
+6 58 16.666666 6 103.22307ms [{http://dbpedia.org/property/wikilink 58} {http://www.w3.org/2004/02/skos/core#subject 18} {http://dbpedia.org/ontology/otherName 6} {http://dbpedia.org/ontology/genre 6} {http://www.w3.org/2000/01/rdf-schema#label 6} {http://dbpedia.org/ontology/homeTown 6}]
+4 60 14.285714 7 101.039536ms [{http://dbpedia.org/property/wikilink 60} {http://www.w3.org/2004/02/skos/core#subject 12} {http://dbpedia.org/ontology/homeTown 8} {http://dbpedia.org/ontology/genre 8} {http://www.w3.org/2000/01/rdf-schema#label 4} {http://xmlns.com/foaf/0.1/name 4} {http://dbpedia.org/ontology/label 4}]
+100 100 100 1 99.877434ms [{http://dbpedia.org/ontology/birthplace 100}]
+100 100 100 1 120.212017ms [{http://dbpedia.org/property/wikilink 100}]
+4 52 8.8 10 99.001071ms [{http://dbpedia.org/property/wikilink 52} {http://dbpedia.org/property/schoolnumber 4} {http://dbpedia.org/ontology/country 4} {http://dbpedia.org/ontology/state 4} {http://dbpedia.org/ontology/city 4} {http://xmlns.com/foaf/0.1/name 4} {http://dbpedia.org/ontology/type 4} {http://dbpedia.org/property/students 4} {http://dbpedia.org/ontology/students 4} {http://dbpedia.org/ontology/faculty 4}]
+100 100 100 1 104.454355ms [{http://dbpedia.org/property/wikilink 100}]

@@ -1,0 +1,7 @@
+2 8 5 2 120.461587ms [{http://dbpedia.org/ontology/label 8} {http://dbpedia.org/property/wikilink 2}]
+4 6 5 2 101.264868ms [{http://dbpedia.org/property/wikilink 6} {http://www.w3.org/2004/02/skos/core#subject 4}]
+2 4 3.3333333 3 101.254307ms [{http://dbpedia.org/ontology/label 4} {http://dbpedia.org/property/wikilink 4} {http://dbpedia.org/ontology/genre 2}]
+10 10 10 1 100.111254ms [{http://dbpedia.org/ontology/birthplace 10}]
+10 10 10 1 104.613309ms [{http://dbpedia.org/property/wikilink 10}]
+4 6 5 2 97.86105ms [{http://dbpedia.org/property/wikilink 6} {http://dbpedia.org/ontology/students 4}]
+10 10 10 1 102.850939ms [{http://dbpedia.org/property/wikilink 10}]

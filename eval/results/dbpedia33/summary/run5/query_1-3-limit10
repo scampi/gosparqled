@@ -1,0 +1,4 @@
+3 4 3.3333333 3 91.668429ms [{http://www.w3.org/2000/01/rdf-schema#label 4} {http://www.w3.org/2004/02/skos/core#broader 3} {http://www.w3.org/2004/02/skos/core#prefLabel 3}]
+10 10 10 1 180.371434ms [{http://www.w3.org/2004/02/skos/core#subject 10}]
+2 6 3.3333333 3 95.333255ms [{http://dbpedia.org/property/wikilink 6} {http://www.w3.org/2004/02/skos/core#subject 2} {http://www.w3.org/2000/01/rdf-schema#label 2}]
+1 6 2.5 4 92.500831ms [{http://dbpedia.org/property/wikilink 6} {http://www.w3.org/2004/02/skos/core#subject 2} {http://dbpedia.org/property/routes 1} {http://www.w3.org/2000/01/rdf-schema#label 1}]

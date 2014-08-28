@@ -23,6 +23,20 @@ type AggregatedMeasurement struct {
     ElapsedTime time.Duration
 }
 
+// Return the average of the set of aggregated measurements
+func avgAggregatedMeasurement(agg []AggregatedMeasurement) AggregatedMeasurement {
+    avg := AggregatedMeasurement{}
+    t := int64(0)
+    for _,v := range agg {
+        avg.Name = v.Name
+        avg.Jaccard += v.Jaccard
+        t += int64(v.ElapsedTime)
+    }
+    avg.Jaccard = avg.Jaccard / float64(len(agg))
+    avg.ElapsedTime = time.Duration(t / int64(len(agg)))
+    return avg
+}
+
 // loadGold reads a list of Recommendations from the given file.
 // Each line represents the recommendations for one query.
 func loadGold(gold string) [][]Recommendation {
@@ -116,9 +130,7 @@ func compare(gold [][]Recommendation, results string) AggregatedMeasurement {
     for i, im := range measures {
         es += int64(im.ElapsedTime)
         j += jaccard(gold[i], im.Recs)
-        glog.Infof("Jaccard: %v\n", jaccard(gold[i], im.Recs))
     }
-    glog.Infof("Avg: %v\n", j/float64(len(measures)))
     return AggregatedMeasurement{ Name: results, Jaccard: j/float64(len(measures)), ElapsedTime: time.Duration(es/int64(len(measures))) }
 }
 
@@ -153,23 +165,23 @@ func (am bySign) Less(i, j int) bool {
 var signRe = regexp.MustCompile("_[0-9]*[0-9-]*[0-9]")
 
 // toLatex exports results to output as LATEX table rows
-func toLatex(output string, results map[string][]AggregatedMeasurement) {
+func toLatex(output string, results map[string][]AggregatedMeasurement, nbResults int) {
     out, err := os.Create(output)
     if err != nil { glog.Fatal(err) }
     defer out.Close()
     w := bufio.NewWriter(out)
     defer w.Flush()
     header := ""
-    cmr, cmrI := "", 3
+    cmr, cmrI := "", nbResults + 1
     for _,v := range results {
         sort.Sort(bySign(v))
         for i, am := range v {
-            if i % 2 == 0 {
+            if i % nbResults == 0 {
                 sign := signRe.FindString(am.Name)
-                w.WriteString(" & \\phantom{a} & \\multicolumn{2}{c}{" + sign[strings.Index(sign, "_")+1:] + "}")
+                w.WriteString(" & \\phantom{a} & \\multicolumn{" + strconv.Itoa(nbResults) + "}{c}{" + sign[strings.Index(sign, "_")+1:] + "}")
                 header += "c@{}rr"
                 cmr += "\\cmidrule{" + strconv.Itoa(cmrI) + "-" + strconv.Itoa(cmrI+1) + "}"
-                cmrI += 3
+                cmrI += nbResults + 1
             }
         }
         w.WriteString(" \\\\\n")
@@ -179,9 +191,9 @@ func toLatex(output string, results map[string][]AggregatedMeasurement) {
     w.WriteString(cmr + "\n")
     for k,v := range results {
         sort.Sort(bySign(v))
-        w.WriteString(" \\multirow{2}{*}{" + k + "}")
+        w.WriteString(" \\multirow{" + strconv.Itoa(nbResults) + "}{*}{" + k + "}")
         for i, am := range v {
-            if i % 2 == 0 {
+            if i % nbResults == 0 {
                 w.WriteString(" & \\phantom{a} & ")
             } else {
                 w.WriteString(" & ")
@@ -190,12 +202,12 @@ func toLatex(output string, results map[string][]AggregatedMeasurement) {
         }
         w.WriteString(" \\\\\n")
         for i, am := range v {
-            if i % 2 == 0 {
+            if i % nbResults == 0 {
                 w.WriteString(" & \\phantom{a} & ")
             } else {
                 w.WriteString(" & ")
             }
-            w.Write(strconv.AppendInt([]byte{}, int64(am.ElapsedTime / time.Millisecond), 10))
+            w.Write(strconv.AppendInt([]byte{}, int64(float64(am.ElapsedTime) / float64(time.Millisecond) + 0.5), 10))
         }
         w.WriteString(" \\\\\n")
     }
@@ -216,15 +228,21 @@ func Export(output string, gold string, results []string) {
         gd := loadGold(file)
         _, name := filepath.Split(file)
         for _,res := range results {
+            set := make(map[string][]AggregatedMeasurement)
             matches, err := filepath.Glob(filepath.Join(res, name)  + "-limit*")
             if err != nil { glog.Fatal(err) }
             for _, match := range matches {
                 aggm := compare(gd, match)
-                l := limitRe.FindString(match)
-                limit[l] = append(limit[l], aggm)
+                l := filepath.Base(match)
+                set[l] = append(set[l], aggm)
+            }
+            for k,v := range set {
+                avg := avgAggregatedMeasurement(v)
+                l := limitRe.FindString(k)
+                limit[l] = append(limit[l], avg)
             }
         }
     }
-    toLatex(output, limit)
+    toLatex(output, limit, len(results))
 }
 

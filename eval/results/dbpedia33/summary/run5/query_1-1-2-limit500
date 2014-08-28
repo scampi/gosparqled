@@ -1,0 +1,4 @@
+500 500 500 1 102.072716ms [{http://www.w3.org/2004/02/skos/core#broader 500}]
+500 500 500 1 1.317888311s [{http://www.w3.org/2004/02/skos/core#broader 500}]
+500 500 500 1 104.834788ms [{http://www.w3.org/2004/02/skos/core#subject 500}]
+6 205 37.1 10 106.372805ms [{http://dbpedia.org/property/wikilink 205} {http://www.w3.org/2004/02/skos/core#subject 44} {http://www.w3.org/2000/01/rdf-schema#label 44} {http://dbpedia.org/ontology/clubs 19} {http://dbpedia.org/ontology/genus 15} {http://dbpedia.org/ontology/birthplace 11} {http://xmlns.com/foaf/0.1/name 10} {http://dbpedia.org/ontology/binomial_authority 9} {http://dbpedia.org/ontology/birthdate 8} {http://dbpedia.org/ontology/currentPosition 6}]

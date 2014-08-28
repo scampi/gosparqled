@@ -1,0 +1,4 @@
+25 50 33.333332 3 97.47193ms [{http://www.w3.org/2004/02/skos/core#broader 50} {http://www.w3.org/2000/01/rdf-schema#label 25} {http://www.w3.org/2004/02/skos/core#prefLabel 25}]
+100 100 100 1 163.875175ms [{http://www.w3.org/2004/02/skos/core#broader 100}]
+100 100 100 1 191.65529ms [{http://www.w3.org/2004/02/skos/core#subject 100}]
+2 53 9.7 10 156.775633ms [{http://dbpedia.org/property/wikilink 53} {http://www.w3.org/2004/02/skos/core#subject 16} {http://dbpedia.org/ontology/homeTown 9} {http://xmlns.com/foaf/0.1/name 3} {http://www.w3.org/2000/01/rdf-schema#label 3} {http://dbpedia.org/ontology/label 3} {http://dbpedia.org/ontology/background 3} {http://dbpedia.org/ontology/genre 3} {http://dbpedia.org/ontology/otherName 2} {http://dbpedia.org/ontology/currentMembers 2}]
