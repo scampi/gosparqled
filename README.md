@@ -1,9 +1,8 @@
-gosparqled
-==========
-
-SPARQL auto-completion
+Gosparqled - SPARQL auto-completion
 
 [![GoDoc](https://godoc.org/github.com/scampi/gosparqled?status.svg)](https://godoc.org/github.com/scampi/gosparqled) [![Build Status](https://travis-ci.org/scampi/gosparqled.svg?branch=master)](https://travis-ci.org/scampi/gosparqled)
+
+==========
 
 # SPARQL Auto-Completion
 
