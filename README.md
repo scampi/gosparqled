@@ -2,8 +2,6 @@ Gosparqled - SPARQL auto-completion
 
 [![GoDoc](https://godoc.org/github.com/scampi/gosparqled?status.svg)](https://godoc.org/github.com/scampi/gosparqled) [![Build Status](https://travis-ci.org/scampi/gosparqled.svg?branch=master)](https://travis-ci.org/scampi/gosparqled)
 
-==========
-
 # SPARQL Auto-Completion
 
 Gosparqled provides a library for retrieving context-aware recommendations for a SPARQL query. The library is written in GO and is then translated into JavaScript using [GopherJS](https://github.com/gopherjs/gopherjs).
