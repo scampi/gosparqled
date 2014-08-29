@@ -254,6 +254,18 @@ func TestPrefixRecommendation4(t *testing.T) {
         `, td, PREDICATE)
 }
 
+func TestLimitOffset(t *testing.T) {
+    td := newTemplateData()
+    td.add("?s", "a", "?POF")
+    parse(t, `
+        SELECT * WHERE {
+          ?s a <
+        }
+        offset 10
+        LIMIT 10
+        `, td, CLASS)
+}
+
 func TestPath1(t *testing.T) {
     td := newTemplateData()
     td.add("?sFillVar2", "?POF3", "?FillVar")

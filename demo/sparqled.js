@@ -1,3 +1,4 @@
+// Adds a symbol to the query defining what should be recommended
 var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
      var cur = yasqe.getCursor(false);
      var begin = yasqe.getRange({line: 0, ch:0}, cur);
@@ -6,9 +7,8 @@ var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
 };
 
 /**
- * Sparqled autocompletion function
+ * Autocompletion function
  */
-
 var customAutocompletionFunction = function(yasqe, partialToken, type, callback) {
     autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q, type, err) {
         if (err) {
@@ -28,6 +28,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
                 query: q
             },
             success: function(data) {
+                // Get the list of recommended terms
                 var completions = [];
                 for (var i = 0; i < data.results.bindings.length; i++) {
                     var binding = data.results.bindings[i];
@@ -52,6 +53,7 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
     })
 };
 
+// Plug the recommendation to the YASQE editor
 var yasqe = YASQE(document.getElementById("yasqe"), {
 	sparql: {
         endpoint: sparqled.config.endpoint,
@@ -81,3 +83,4 @@ yasqe.options.sparql.handlers.success =  function(data, status, response) {
 yasqe.options.sparql.handlers.error = function(xhr, textStatus, errorThrown) {
 	yasr.setResponse({exception: textStatus + ": " + errorThrown});
 };
+

@@ -354,7 +354,18 @@ func TestUnion(t *testing.T) {
     `)
 }
 
-func TestLimitOffset(t *testing.T) {
+func TestLimitOffset1(t *testing.T) {
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?s <aaa> ?o
+        }
+        offset 10
+        LIMIT 10
+        `)
+}
+
+func TestLimitOffset2(t *testing.T) {
     parse(t, `
         SELECT * {
             ?s ?p ?o
