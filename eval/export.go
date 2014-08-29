@@ -100,7 +100,7 @@ func loadMeasure(result string) []Measurement {
     return measurements
 }
 
-// jaccard computes the Jaccard similarity of the two Recommendations sets.
+// Jaccard computes the Jaccard similarity of the two Recommendations sets.
 func jaccard(a []Recommendation, b []Recommendation) float64 {
     occ := make(map[string]int)
     for _,r := range a {
@@ -118,7 +118,7 @@ func jaccard(a []Recommendation, b []Recommendation) float64 {
     return inter / float64(len(occ))
 }
 
-// compare evaluates the list of Measurements from results
+// Compare evaluates the list of Measurements from results
 // and returns its AggregatedMeasurement
 func compare(gold [][]Recommendation, results string) AggregatedMeasurement {
     glog.Infof("Processing results [%s]\n", results)
@@ -164,7 +164,9 @@ func (am bySign) Less(i, j int) bool {
 }
 var signRe = regexp.MustCompile("_[0-9]*[0-9-]*[0-9]")
 
-// toLatex exports results to output as LATEX table rows
+// toLatex exports results to output as LATEX table rows.
+// Output is the path to the LATEX file. Results is the set of benchmark results.
+// NbResults is the number of evaluated algorithms.
 func toLatex(output string, results map[string][]AggregatedMeasurement, nbResults int) {
     out, err := os.Create(output)
     if err != nil { glog.Fatal(err) }
@@ -215,6 +217,9 @@ func toLatex(output string, results map[string][]AggregatedMeasurement, nbResult
 
 // Export evaluates and export in latex format the results of the experiment
 // into the output file.
+// Export is the path to the file to dump the results in Latex. Gold is the
+// path to the gold standard top-K recommendations. Results is an array of
+// paths to benchmark results.
 func Export(output string, gold string, results []string) {
     fi, err := os.Open(gold)
     if err != nil { glog.Fatal(err) }
