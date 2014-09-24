@@ -5,27 +5,18 @@ import (
     "bytes"
 )
 
-type templateData struct {
-    Tps []triplePattern
-    Keyword, Pof, Prefix string
-}
-
-func newTemplateData() *templateData {
-    return &templateData{ Pof : "?POF" }
-}
-
 // Add a triple pattern to the recommendation query
-func (td *templateData) add(s string, p string, o string) {
+func (td *Scope) add(s string, p string, o string) {
     td.Tps = append(td.Tps, triplePattern{ S : s, P : p, O : o })
 }
 
 // Same as add but specify that the object is never used as a subject
-func (td *templateData) addLeaf(s string, p string, o string) {
+func (td *Scope) addLeaf(s string, p string, o string) {
     td.Tps = append(td.Tps, triplePattern{ S : s, P : p, O : o, Leaf : true })
 }
 
 // Gets the RecommendationQuery from query and compare it against the expected one
-func parse(t *testing.T, query string, expected *templateData, rType Type) *Sparql {
+func parse(t *testing.T, query string, expected *Scope, rType Type) *Sparql {
     s := &Sparql{ Buffer : query, Scope : NewScope() }
     s.Init()
     parseWithSparql(t, s, expected, rType)
@@ -33,7 +24,7 @@ func parse(t *testing.T, query string, expected *templateData, rType Type) *Spar
 }
 
 // Like parse but pass a custom query recommendation template
-func parseWithTemplate(t *testing.T, query string, tmpl string, expected *templateData, rType Type) *Sparql {
+func parseWithTemplate(t *testing.T, query string, tmpl string, expected *Scope, rType Type) *Sparql {
     s := &Sparql{ Buffer : query, Scope : NewScopeWithTemplate(tmpl) }
     s.Init()
     parseWithSparql(t, s, expected, rType)
@@ -41,7 +32,7 @@ func parseWithTemplate(t *testing.T, query string, tmpl string, expected *templa
 }
 
 // Like parse but pass the Sparql object as argument instead
-func parseWithSparql(t *testing.T, s *Sparql, expected *templateData, rType Type) {
+func parseWithSparql(t *testing.T, s *Sparql, expected *Scope, rType Type) {
     if err := s.Parse(); err != nil {
         t.Errorf("Failed to parse query\n%v", err)
     }
@@ -59,13 +50,27 @@ func parseWithSparql(t *testing.T, s *Sparql, expected *templateData, rType Type
     }
 }
 
+func TestPofSubject(t *testing.T) {
+    tmpl := "{{.PofSubject}}"
+    td := NewScope()
+    td.addLeaf("?s", "a", "?POF")
+    td.add("?s", "?p", "?o")
+    parseWithTemplate(t, `
+        SELECT *
+        WHERE {
+            ?s a < ; ?p ?o .
+            ?o <aaa> <bbb>
+        }
+    `, tmpl, td, CLASS)
+}
+
 func TestLeaves1(t *testing.T) {
     tmpl := `{{range .Tps}}
                 {{if eq .Leaf true}}
                     {{.O}}
                 {{end}}
              {{end}}`
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "?o")
     td.addLeaf("?s", "<p1>", "?o1")
     td.addLeaf("?o", "a", ":Person")
@@ -85,7 +90,7 @@ func TestLeaves2(t *testing.T) {
                     {{.O}}
                 {{end}}
              {{end}}`
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "<aaa>")
     td.addLeaf("?s", "<p1>", "?o1")
     td.addLeaf("<aaa>", "a", ":Person")
@@ -100,7 +105,7 @@ func TestLeaves2(t *testing.T) {
 }
 
 func TestTwoTypes(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", ":Person")
     td.add("?s", "a", "?POF")
     parse(t, `
@@ -112,7 +117,7 @@ func TestTwoTypes(t *testing.T) {
 }
 
 func TestFilter(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "?POF")
     td.add("?s", "<name>", "?name")
     parse(t, `# Test comment
@@ -126,7 +131,7 @@ func TestFilter(t *testing.T) {
 }
 
 func TestComment1(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?POF", "?p", "?o")
     parse(t, `# Test comment
         SELECT *
@@ -139,7 +144,7 @@ func TestComment1(t *testing.T) {
 }
 
 func TestComment2(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     parse(t, `# Test comment
         SELECT *
@@ -151,7 +156,7 @@ func TestComment2(t *testing.T) {
 }
 
 func TestComment3(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?p", "?POF")
     parse(t, `# Test comment
         SELECT *
@@ -175,7 +180,7 @@ func TestComment4(t *testing.T) {
     s := &Sparql{ Buffer : query, Scope : scope }
     s.Init()
 
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     parseWithSparql(t, s, td, PREDICATE)
     Reset(s)
@@ -193,7 +198,7 @@ func TestReset(t *testing.T) {
     s := &Sparql{ Buffer : query, Scope : scope }
     s.Init()
 
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     parseWithSparql(t, s, td, PREDICATE)
     Reset(s)
@@ -201,7 +206,7 @@ func TestReset(t *testing.T) {
 }
 
 func TestPrefixRecommendation1(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     td.Prefix = "aaa"
     parse(t, `
@@ -214,7 +219,7 @@ func TestPrefixRecommendation1(t *testing.T) {
 }
 
 func TestPrefixRecommendation2(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     td.Prefix = "aaa"
     parse(t, `
@@ -227,7 +232,7 @@ func TestPrefixRecommendation2(t *testing.T) {
 }
 
 func TestPrefixRecommendation3(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "?POF")
     td.Prefix = "bbb"
     parse(t, `
@@ -242,7 +247,7 @@ func TestPrefixRecommendation3(t *testing.T) {
 }
 
 func TestPrefixRecommendation4(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", ":bbb", "?o")
     td.add("?s", "?POF", "?FillVar")
     parse(t, `
@@ -255,7 +260,7 @@ func TestPrefixRecommendation4(t *testing.T) {
 }
 
 func TestLimitOffset(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "?POF")
     parse(t, `
         SELECT * WHERE {
@@ -267,7 +272,7 @@ func TestLimitOffset(t *testing.T) {
 }
 
 func TestPath1(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?sFillVar2", "?POF3", "?FillVar")
     td.add("?s", "?POF1", "?sFillVar1")
     td.add("?sFillVar1", "?POF2", "?sFillVar2")
@@ -281,7 +286,7 @@ func TestPath1(t *testing.T) {
 }
 
 func TestPath2(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "<aaa>")
     td.add("?sFillVar2", "?POF3", "?FillVar")
     td.add("?s", "?POF1", "?sFillVar1")
@@ -296,7 +301,7 @@ func TestPath2(t *testing.T) {
 }
 
 func TestEval1(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?v0", "a", "?POF")
     td.add("?v1", "<http://dbpedia.org/ontology/developer>", "?v0")
     td.add("?v1", "a", "<http://dbpedia.org/ontology/Software>")
@@ -311,7 +316,7 @@ func TestEval1(t *testing.T) {
 }
 
 func TestEval2(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?v0", "a", "?POF")
     td.add("?v0", "<http://dbpedia.org/ontology/director>", "?v1")
     td.add("?v0", "<http://xmlns.com/foaf/0.1/name>", "?v2")
@@ -330,7 +335,7 @@ func TestEval2(t *testing.T) {
 }
 
 func TestEval3(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?v0", "a", "?POF")
     td.add("?v0", "<http://dbpedia.org/ontology/birthdate>", "?v1")
     td.add("?v0", "<http://xmlns.com/foaf/0.1/name>", "?v2")
@@ -344,7 +349,7 @@ func TestEval3(t *testing.T) {
 }
 
 func TestKeyword1(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     td.Keyword = "test"
     parse(t, `
@@ -356,7 +361,7 @@ func TestKeyword1(t *testing.T) {
 }
 
 func TestKeyword2(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?p", "?POF")
     td.Keyword = "test"
     parse(t, `
@@ -368,7 +373,7 @@ func TestKeyword2(t *testing.T) {
 }
 
 func TestKeyword3(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "a", "?POF")
     td.Keyword = "Person-1"
     parse(t, `
@@ -380,7 +385,7 @@ func TestKeyword3(t *testing.T) {
 }
 
 func TestEditor(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?sub", "a", "<http://schema.org/MusicGroup>")
     td.add("?sub", "?POF", "?FillVar")
     parse(t, `
@@ -393,7 +398,7 @@ func TestEditor(t *testing.T) {
 }
 
 func TestSubject(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?POF", "?p", "?o1")
     td.add("?POF", "a", "?o2")
     parse(t, `
@@ -406,7 +411,7 @@ func TestSubject(t *testing.T) {
 }
 
 func TestPredicate(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     td.add("?s", "a", "?o")
     td.add("?o", "?op", "?oo")
@@ -420,7 +425,7 @@ func TestPredicate(t *testing.T) {
 }
 
 func TestObject(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "?p", "?POF")
     td.add("?s", "a", "?o")
     td.add("?o", "?op", "?oo")
@@ -434,7 +439,7 @@ func TestObject(t *testing.T) {
 }
 
 func TestTerms(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "<p1>", "?POF")
     td.add("?s", "a", "?o")
     td.add("?o", "?p", "\"test\"")
@@ -447,7 +452,7 @@ func TestTerms(t *testing.T) {
 }
 
 func TestOptional1(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "<p1>", "?o")
     td.add("?o", "?POF", "?FillVar")
     parse(t, `
@@ -459,7 +464,7 @@ func TestOptional1(t *testing.T) {
 }
 
 func TestOptional2(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?o", "?POF", "?FillVar")
     td.add("?s", "<p1>", "?o")
     parse(t, `
@@ -471,7 +476,7 @@ func TestOptional2(t *testing.T) {
 }
 
 func TestOptional3(t *testing.T) {
-    td := newTemplateData()
+    td := NewScope()
     td.add("?s", "<p1>", "?o")
     td.add("?o", "?POF", "?FillVar")
     td.add("?s", "<p1>", "?o")

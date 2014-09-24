@@ -127,6 +127,16 @@ func (s *Scope) SObjects() string {
     return so
 }
 
+// PofSubject returns the subject variable that is connected to the ?POF
+func (s *Scope) PofSubject() string {
+    for _,tp := range s.Tps {
+        if tp.P == "?POF" || tp.O == "?POF" {
+            return tp.S
+        }
+    }
+    return ""
+}
+
 // Skipped returns the buffer without the whitespaces and comments
 func (s *Sparql) skipped(buffer string, begin int, end int) string {
     if begin <= s.skipBegin {
