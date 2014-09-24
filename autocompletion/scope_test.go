@@ -54,6 +54,7 @@ func TestPofSubject(t *testing.T) {
     tmpl := "{{.PofSubject}}"
     td := NewScope()
     td.addLeaf("?s", "a", "?POF")
+    td.add("?s", "?p", "?o")
     parseWithTemplate(t, `
         SELECT *
         WHERE {
