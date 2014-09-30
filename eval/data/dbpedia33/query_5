@@ -45,15 +45,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/ontology/birthplace> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/birthdate> ?v2 .
-  ?v0 <http://dbpedia.org/ontology/background> ?v3 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v4 .
-  ?v0 <http://xmlns.com/foaf/0.1/img> ?v5 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://xmlns.com/foaf/0.1/homepage> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
   ?v0 <http://xmlns.com/foaf/0.1/img> ?v3 .

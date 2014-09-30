@@ -230,20 +230,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/property/abstract> ?v1 .
-  ?v0 a <http://dbpedia.org/ontology/MusicalArtist> .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/lenght> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://dbpedia.org/property/name> ?v2 .
 }
 ###
 SELECT *
@@ -272,7 +260,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 a <http://dbpedia.org/class/yago/Country108544813> ;<http://dbpedia.org/property/establishedDate> ?v1 .
+  ?v0 a <http://dbpedia.org/class/yago/Country108544813>  .
+  ?v0 <http://dbpedia.org/property/establishedDate> ?v1 .
 }
 ###
 SELECT *
@@ -363,7 +352,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 a <http://dbpedia.org/ontology/Disease> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v0 a <http://dbpedia.org/ontology/Disease>  .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
 }
 ###
 SELECT *
@@ -406,7 +396,8 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 a <http://dbpedia.org/ontology/Beverage> ;<http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
+  ?v0 a <http://dbpedia.org/ontology/Beverage>  .
+  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
 }
 ###
 SELECT *
@@ -453,12 +444,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/numberOfEmployees> ?v1 .
   ?v0 <http://dbpedia.org/ontology/revenue> ?v2 .
 }
@@ -467,12 +452,6 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/genre> ?v1 .
   ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 a <http://dbpedia.org/ontology/Film> .
 }
 ###
 SELECT *
@@ -561,18 +540,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v1 .
-  ?v0 <http://dbpedia.org/ontology/author> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/abstract> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/page> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/property/pastMembers> ?v1 .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -621,19 +588,14 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 a <http://dbpedia.org/ontology/Person> ;<http://dbpedia.org/ontology/weight> ?v1 .
+  ?v0 a <http://dbpedia.org/ontology/Person>  .
+  ?v0 <http://dbpedia.org/ontology/weight> ?v1 .
 }
 ###
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/animal> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://xmlns.com/foaf/0.1/name> ?v2 .
 }
 ###
 SELECT *
@@ -675,12 +637,6 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
-  ?v0 <http://dbpedia.org/property/abstract> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
   ?v0 <http://dbpedia.org/property/author> ?v2 .
 }
 ###
@@ -705,12 +661,6 @@ WHERE {
 SELECT *
 WHERE {
   ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
-  ?v0 <http://dbpedia.org/property/starring> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
   ?v0 <http://dbpedia.org/property/blackboard> ?v2 .
 }
 ###
@@ -728,12 +678,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/property/birthPlace> ?v1 .
-  ?v0 <http://dbpedia.org/property/deathPlace> ?v2 .
-}
-###
-SELECT *
-WHERE {
   ?v0 a <http://dbpedia.org/ontology/Actor> .
   ?v0 <http://www.w3.org/2000/01/rdf-schema#label> ?v1 .
 }
@@ -742,12 +686,6 @@ SELECT *
 WHERE {
   ?v0 a <http://xmlns.com/foaf/0.1/Person> .
   ?v0 <http://dbpedia.org/property/party> ?v1 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://www.w3.org/2004/02/skos/core#subject> ?v1 .
-  ?v0 <http://dbpedia.org/property/name> ?v2 .
 }
 ###
 SELECT *

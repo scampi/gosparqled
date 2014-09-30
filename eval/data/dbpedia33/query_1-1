@@ -108,12 +108,6 @@ WHERE {
 ###
 SELECT *
 WHERE {
-  ?v0 <http://dbpedia.org/property/capital> ?v2 .
-  ?v2 <http://www.w3.org/2000/01/rdf-schema#label> ?v3 .
-}
-###
-SELECT *
-WHERE {
   ?v0 <http://dbpedia.org/ontology/capital> ?v1 .
   ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
 }
@@ -122,12 +116,6 @@ SELECT *
 WHERE {
   ?v0 <http://dbpedia.org/property/incumbent> ?v1 .
   ?v1 <http://www.w3.org/2000/01/rdf-schema#label> ?v2 .
-}
-###
-SELECT *
-WHERE {
-  ?v0 <http://dbpedia.org/property/notableRole> ?v1 .
-  ?v1 <http://xmlns.com/foaf/0.1/name> ?v2 .
 }
 ###
 SELECT *
