@@ -100,3 +100,6 @@ The following methods can then be called via JavaScript (see `demo/sparqled.js`)
 
     It takes in the SPARQL query with the character `<` indicating the position in the query to auto-complete. It returns the processed SPARQL query, which can then be sent to the SPARQL endpoint in order to retrieve the possible recommendations. The recommendations are bound to the variable `?POF`.
 
+# Publication
+
+This library is presented in [http://ceur-ws.org/Vol-1272/paper_157.pdf](http://ceur-ws.org/Vol-1272/paper_157.pdf). If you are using this tool, please cite this work.
