@@ -38,7 +38,9 @@ groupGraphPattern <- LBRACE ( subSelect / graphPattern ) RBRACE
 
 graphPattern <- basicGraphPattern? ( graphPatternNotTriples DOT? graphPattern )?
 
-graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern / graphGraphPattern / minusGraphPattern
+graphPatternNotTriples <- optionalGraphPattern / groupOrUnionGraphPattern / graphGraphPattern / minusGraphPattern / serviceGraphPattern
+
+serviceGraphPattern <- SERVICE SILENT?  ( var / iriref ) groupGraphPattern
 
 optionalGraphPattern <- OPTIONAL LBRACE ( subSelect / graphPattern ) RBRACE
 
