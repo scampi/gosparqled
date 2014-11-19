@@ -104,6 +104,17 @@ func TestLeaves2(t *testing.T) {
     `, tmpl, td, PREDICATE)
 }
 
+func TestObjectPof(t *testing.T) {
+    td := NewScope()
+    td.add("?s", "<aaa>", "?POF")
+    parse(t, `
+        SELECT *
+        WHERE {
+            ?s <aaa> <
+        }
+        `, td, OBJECT)
+}
+
 func TestTwoTypes(t *testing.T) {
     td := NewScope()
     td.add("?s", "a", ":Person")

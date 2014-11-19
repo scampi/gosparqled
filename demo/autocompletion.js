@@ -1,5 +1,5 @@
 // Adds a symbol to the query defining what should be recommended
-var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
+var formatQueryForAutocompletion = function(partialToken, query) {
      var cur = yasqe.getCursor(false);
      var begin = yasqe.getRange({line: 0, ch:0}, cur);
      query = begin + "< " + query.substring(begin.length, query.length);
@@ -9,8 +9,8 @@ var formatQueryForAutocompletion = function(yasqe, partialToken, query) {
 /**
  * Autocompletion function
  */
-var customAutocompletionFunction = function(yasqe, partialToken, type, callback) {
-    autocompletion.RecommendationQuery(formatQueryForAutocompletion(yasqe, partialToken, yasqe.getValue()), function(q, type, err) {
+var customAutocompletionFunction = function(partialToken, callback) {
+    autocompletion.RecommendationQuery(formatQueryForAutocompletion(partialToken, yasqe.getValue()), function(q, type, err) {
         if (err) {
             alert(err)
             return
@@ -53,22 +53,27 @@ var customAutocompletionFunction = function(yasqe, partialToken, type, callback)
     })
 };
 
-// Plug the recommendation to the YASQE editor
+/*
+ * Plug the recommendation to the YASQE editor
+ */
+
+YASQE.registerAutocompleter("sparqled", function() {
+    return {
+        async : true,
+        bulk : false,
+        isValidCompletionPosition : function() { return true;  },
+        get : customAutocompletionFunction,
+        preProcessToken: function(token) {return YASQE.Autocompleters.properties.preProcessToken(yasqe, token)},
+        postProcessToken: function(token, suggestedString) {return YASQE.Autocompleters.properties.postProcessToken(yasqe, token, suggestedString)}
+    };
+});
+YASQE.defaults.autocompleters = ["prefixes", "variables", "sparqled"];
+
 var yasqe = YASQE(document.getElementById("yasqe"), {
 	sparql: {
         endpoint: sparqled.config.endpoint,
-		showQueryButton: true,
+		showQueryButton: true
 	},
-	autocompletions: {
-		classes: {
-			async: true,
-			get: customAutocompletionFunction
-		},
-		properties: {
-			async: true,
-			get: customAutocompletionFunction
-		}
-	}
 });
 var yasr = YASR(document.getElementById("yasr"), {
 	getUsedPrefixes: yasqe.getPrefixesFromQuery

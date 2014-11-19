@@ -13,3 +13,4 @@
 * [GH-26] Check if a pattern is a leaf or not
 * [GH-28] Update management of whitespace & comments in the PEG grammar
 * [GH-31] Add method for getting the subject associated to the POF
+* [GH-36] Update YASQE to 2.2.1 and YASRE to 2.0.2
