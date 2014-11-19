@@ -1,6 +1,7 @@
 package eval
 
 import (
+    "runtime"
     "net/http"
     "net/url"
     "github.com/golang/glog"
@@ -33,6 +34,10 @@ func GetBindings(endpoint string, query string) ([]map[string]Binding, time.Dura
     dec := json.NewDecoder(body)
     var res = new(struct{Results struct{Bindings []map[string]Binding}})
     if err := dec.Decode(&res); err != nil {
+        _, file, line, ok := runtime.Caller(2)
+        if ok {
+            glog.Infof("Caller: file=%v line=%v", file, line)
+        }
         glog.Fatal(err)
     }
     return res.Results.Bindings, et
@@ -45,6 +50,10 @@ func Ask(endpoint string, query string) (bool, time.Duration) {
     dec := json.NewDecoder(body)
     var res = new(struct{Boolean bool})
     if err := dec.Decode(&res); err != nil {
+        _, file, line, ok := runtime.Caller(2)
+        if ok {
+            glog.Infof("Caller: file=%v line=%v", file, line)
+        }
         glog.Fatal(err)
     }
     return res.Boolean, et
