@@ -39,6 +39,11 @@ var customAutocompletionFunction = function(partialToken, callback) {
                     var pof = binding.POF.value
                     switch (binding.POF.type) {
                         case "literal":
+                            if (type === autocompletion.PATH) {
+                                // The property path is built as a concatenation
+                                // of URIs' label. It is then typed as a Literal.
+                                break;
+                            }
                             if ("xml:lang" in binding.POF) {
                                 pof = "\"" + pof + "\"@" + binding.POF["xml:lang"];
                             } else {
@@ -64,6 +69,10 @@ var customAutocompletionFunction = function(partialToken, callback) {
     })
 };
 
+/*
+ * Plug the recommendation to the YASQE editor
+ */
+
 // If token is an uri, return its prefixed form
 var postprocessResourceTokenForCompletion = function(token, suggestedString) {
     if (token.tokenPrefix && token.autocompletionString && token.tokenPrefixUri) {
@@ -72,10 +81,6 @@ var postprocessResourceTokenForCompletion = function(token, suggestedString) {
     }
     return suggestedString;
 };
-
-/*
- * Plug the recommendation to the YASQE editor
- */
 
 YASQE.registerAutocompleter("sparqled", function(yasqe) {
     return {
