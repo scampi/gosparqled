@@ -1,3 +1,7 @@
+/**
+ * Gosparqled plugin for YASQE
+ */
+
 // Adds a symbol to the query defining what should be recommended
 var formatQueryForAutocompletion = function(partialToken, query) {
      var cur = yasqe.getCursor(false);
