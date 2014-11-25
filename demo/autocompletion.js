@@ -75,6 +75,7 @@ var yasqe = YASQE(document.getElementById("yasqe"), {
 		showQueryButton: true
 	},
 });
+yasqe.showCompletionNotification("sparqled")
 var yasr = YASR(document.getElementById("yasr"), {
 	getUsedPrefixes: yasqe.getPrefixesFromQuery
 });
