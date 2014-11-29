@@ -123,7 +123,7 @@ Run the command below to create the JavaScript library. The `-m` flag minifies t
 $ gopherjs build -m
 ```
 
-The following methods can then be called via JavaScript (see `demo/sparqled.js`).
+The following methods can then be called via JavaScript (see `demo/autocompletion.js`).
 
 - `RecommendationQuery` in the `autocompletion` namespace
 
