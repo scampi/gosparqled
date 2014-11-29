@@ -18,7 +18,7 @@ In the examples below, the character `<` represents the position in the query to
 
 Recommend possible classes:
 
-```sparql
+```sql
 SELECT * {
     ?s a <
 }
@@ -28,7 +28,7 @@ SELECT * {
 
 Recommend possible predicates:
 
-```sparql
+```sql
 SELECT * {
     ?s <
 }
@@ -38,7 +38,7 @@ SELECT * {
 
 Recommend possible relations between a `Person` and a `Document`:
 
-```sparql
+```sql
 SELECT * {
     ?s a <Person> .
     ?o a <Document> .
@@ -50,7 +50,7 @@ SELECT * {
 
 Recommend possible terms (e.g., classes or predicates) which URI contains a keyword, case-insensitive. Below, it presents classes which contain the word `movie`:
 
-```sparql
+```sql
 SELECT * {
     ?s a Movie<
 }
@@ -60,7 +60,7 @@ SELECT * {
 
 Recommend possible path of a fixed length, written as `X/`. Below, recommendations about paths of lengths 2 between a `Movie` and a `Person` are returned:
 
-```sparql
+```sql
 SELECT * {
     ?s a <Movie> .
     ?o a <Person> .
@@ -71,7 +71,7 @@ SELECT * {
 
 Recommend possible terms (e.g., classes or predicates) with the given prefix. Below, it presents only the predicates within the `rdfs` prefix:
 
-```sparql
+```sql
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT * {
