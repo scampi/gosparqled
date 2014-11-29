@@ -79,6 +79,25 @@ SELECT * {
 }
 ```
 
+## Content
+
+Recommend content elements, e.g., literals, URIs, either at the subject or the object location.
+
+- Auto-completion on the object. This returns a sample of the labels, probably literals.
+
+    ```sql
+    SELECT * {
+        ?s rdfs:label <
+    }
+    ```
+
+- Auto-completion on the subject. This returns a list of URIs which name is John.
+
+    ```sql
+    SELECT * {
+        < foaf:name "John" .
+    }
+    ```
 
 # Building
 
