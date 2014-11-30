@@ -38,6 +38,9 @@ var customAutocompletionFunction = function(partialToken, callback) {
                     var binding = data.results.bindings[i];
                     var pof = binding.POF.value
                     switch (binding.POF.type) {
+                        case "typed-literal":
+                            pof = "\"" + pof + "\"^^<" + binding.POF["datatype"] + ">"; 
+                            break;
                         case "literal":
                             if (type === autocompletion.PATH) {
                                 // The property path is built as a concatenation
