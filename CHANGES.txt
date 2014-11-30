@@ -17,3 +17,4 @@
 * [GH-38] Support literal recommended items
 * [GH-40] Correct path recommendation
 * [GH-42] Pass prefixes to the recommendation query
+* [GH-44] autocompletion grammar error that sets two fill vars

@@ -70,7 +70,9 @@ collectionPath <- LPAREN graphNodePath+ RPAREN
 
 blankNodePropertyListPath <- LBRACK propertyListPath RBRACK
 
-propertyListPath <- ( pof { p.P = "?POF" } / <var> { p.P = p.skipped(buffer, begin, end) } / verbPath ) objectListPath ( SEMICOLON propertyListPath? )?
+propertyListPath <- (pofPropertyListPath / noPofPropertyListPath) ( SEMICOLON propertyListPath? )?
+noPofPropertyListPath <- ( <var> { p.P = p.skipped(buffer, begin, end) } / verbPath ) objectListPath
+pofPropertyListPath <- pof { p.P = "?POF" } fillObjectListPath
 
 verbPath <- path
 
@@ -90,9 +92,17 @@ pathOneInPropertySet <- iriref / ISA / INVERSE ( iriref / ISA )
 
 pathMod <- ( STAR / QUESTION / PLUS ) !.
 
-objectListPath <- objectPath ( COMMA objectPath )*
+# Object list with a possible filling var
+# The reason is that the predicate is the POF
+fillObjectListPath <- fillObjectPath ( COMMA fillObjectPath )*
+fillObjectPath <- object / { p.O = "?FillVar"; p.addTriplePattern() }
 
-objectPath <- pof { p.O = "?POF"; p.addTriplePattern() } / <graphNodePath> { p.O = p.skipped(buffer, begin, end); p.addTriplePattern() } / { p.O = "?FillVar"; p.addTriplePattern() }
+# Object list with a possible POF
+# POF is valid here because the predicate is either a variable or a term
+objectListPath <- objectPath ( COMMA objectPath )*
+objectPath <- pof { p.O = "?POF"; p.addTriplePattern() } / object
+
+object <- <graphNodePath> { p.O = p.skipped(buffer, begin, end); p.addTriplePattern() }
 
 graphNodePath <- var / graphTerm / triplesNodePath
 

@@ -31,6 +31,15 @@ func parseWithTemplate(t *testing.T, query string, tmpl string, expected *Scope,
     return s
 }
 
+// Parse a SPARQL query which is expected to throw an error
+func parseInvalid(t *testing.T, query string) {
+    s := &Sparql{ Buffer : query, Scope : NewScope() }
+    s.Init()
+    if err := s.Parse(); err == nil {
+        t.Error("Expected parse error!")
+    }
+}
+
 // Like parse but pass the Sparql object as argument instead
 func parseWithSparql(t *testing.T, s *Sparql, expected *Scope, rType Type) {
     if err := s.Parse(); err != nil {
@@ -102,6 +111,15 @@ func TestLeaves2(t *testing.T) {
             <aaa> a :Person; <
         }
     `, tmpl, td, PREDICATE)
+}
+
+func TestMissingPredicateOrObject(t *testing.T) {
+    parseInvalid(t, `
+        SELECT *
+        WHERE {
+            ?s <aaa>; <
+        }
+        `)
 }
 
 func TestObjectPof(t *testing.T) {
