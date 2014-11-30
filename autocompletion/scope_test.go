@@ -216,10 +216,25 @@ func TestReset(t *testing.T) {
     parseWithSparql(t, s, td, PREDICATE)
 }
 
+func TestPrefix(t *testing.T) {
+    td := NewScope()
+    td.add("?s", "a", "a:bbb")
+    td.add("?s", "?POF", "?FillVar")
+    td.Prefixes = map[string]string{ "a" : "aaa" }
+    parse(t, `
+        PREFIX a: <aaa>
+        SELECT *
+        WHERE {
+            ?s a a:bbb; < 
+        }
+        `, td, PREDICATE)
+}
+
 func TestPrefixRecommendation1(t *testing.T) {
     td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     td.Prefix = "aaa"
+    td.Prefixes = map[string]string{ "a" : "aaa" }
     parse(t, `
         PREFIX a: <aaa>
         SELECT *
@@ -233,6 +248,7 @@ func TestPrefixRecommendation2(t *testing.T) {
     td := NewScope()
     td.add("?s", "?POF", "?FillVar")
     td.Prefix = "aaa"
+    td.Prefixes = map[string]string{ "" : "aaa" }
     parse(t, `
         PREFIX : <aaa>
         SELECT *
@@ -246,6 +262,7 @@ func TestPrefixRecommendation3(t *testing.T) {
     td := NewScope()
     td.add("?s", "a", "?POF")
     td.Prefix = "bbb"
+    td.Prefixes = map[string]string{ "a" : "aaa", "b" : "bbb", "c" : "ccc" }
     parse(t, `
         PREFIX a: <aaa>
         PREFIX b: <bbb>
@@ -261,6 +278,7 @@ func TestPrefixRecommendation4(t *testing.T) {
     td := NewScope()
     td.add("?s", ":bbb", "?o")
     td.add("?s", "?POF", "?FillVar")
+    td.Prefixes = map[string]string{ "" : "aaa" }
     parse(t, `
         PREFIX : <aaa>
         SELECT * WHERE {

@@ -68,12 +68,16 @@ type Scope struct {
     // The prefix of the recommended item
     Prefix string
     // The set of declared prefixes
-    prefixes map[string]string
+    Prefixes map[string]string
 }
 
 // Scope struct constructor
 func NewScope() *Scope {
     tmpl := `
+        {{range $prefix, $uri := .Prefixes}}
+        PREFIX {{$prefix}}: <{{$uri}}>
+        {{end}}
+
         SELECT DISTINCT {{.Pof}}
         WHERE {
         {{range .Tps}}
@@ -95,7 +99,7 @@ func NewScopeWithTemplate(tmpl string) *Scope {
     scope := &Scope{ Pof : "?POF" }
     tp, _ := template.New("rec").Parse(tmpl)
     scope.template = tp
-    scope.prefixes = make(map[string]string)
+    scope.Prefixes = make(map[string]string)
     return scope
 }
 
@@ -151,12 +155,12 @@ func (s *Sparql) skipped(buffer string, begin int, end int) string {
 func (b *Scope) addPrefix(prefix string) {
     parts := strings.SplitN(prefix, ":", 2)
     uri := strings.Trim(parts[1], " \n\t\v\f\r\040")
-    b.prefixes[parts[0]] = uri[1:len(uri)-1]
+    b.Prefixes[parts[0]] = uri[1:len(uri)-1]
 }
 
 // Sets the prefix of the Point Of Focus.
 func (b *Scope) setPrefix(prefix string) {
-    b.Prefix = b.prefixes[prefix]
+    b.Prefix = b.Prefixes[prefix]
 }
 
 // Sets the keyword that the recommended item must match
