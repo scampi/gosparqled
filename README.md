@@ -4,6 +4,8 @@
 
 Gosparqled provides a library for retrieving context-aware recommendations for a SPARQL query. The library is written in GO and is then translated into JavaScript using [GopherJS](https://github.com/gopherjs/gopherjs).
 
+![Gosparqled demo](anim.gif)
+
 # What is _context-aware_ ?
 
 By context-aware recommendation, I mean that all patterns which are connected to the element to recommend participate in the recommendation. For example, the 3<sup>rd</sup> pattern below is left out of the context of the recommendation. The reason is that none of its variables appear in the others. However, the 2<sup>nd</sup> is kept.
