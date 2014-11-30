@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-    
+
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta content="utf-8" http-equiv="encoding">
 
-        <!--Make sure to store YASR and YASQE css/js files in the current working dir! (these are not included in this gist)-->
-    	<link href="yasqe.min.css" rel="stylesheet" type="text/css" />
-    	<link href="yasr.min.css" rel="stylesheet" type="text/css" />
+        <!--CSS for YASQE and YASR-->
+        <link href='lib/yasr.min.css' rel='stylesheet' type='text/css'/>
+        <link href='lib/yasqe.min.css' rel='stylesheet' type='text/css'/>
 
         <script type="text/javascript">
+            // Default configuration
             var sparqled = function() {
                 var config = { endpoint : "http://dbpedia.org/sparql" };
-                return { config : config};
+                return { config : config };
             }();
         </script>
 
@@ -45,12 +46,16 @@
         
         <div id="yasqe"></div>
         <div id="yasr"></div>
-        
-        <script src="yasqe.min.js"></script>
-        <script src="yasr.min.js"></script>
-        <script src="sparqled.js"></script>
-        <script src="gosparqled.js"></script>
-    
+
+        <!--YASQE and YASRE libraries-->
+        <script src="lib/jquery.min.js"></script>
+        <script src='lib/yasqe.bundled.min.js'></script>
+        <script src='lib/yasr.bundled.min.js'></script>
+        <!--Gosparqled plugin for YASQE-->
+        <script src="autocompletion.js"></script>
+        <!--The Gosparqled JS library-->
+        <script src="lib/gosparqled.js"></script>
+
         <script type="text/javascript">
             // Update the endpoint address
             function updateEndpoint() {
