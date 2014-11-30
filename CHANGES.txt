@@ -16,3 +16,4 @@
 * [GH-36] Update YASQE to 2.2.1 and YASRE to 2.0.2
 * [GH-38] Support literal recommended items
 * [GH-40] Correct path recommendation
+* [GH-42] Pass prefixes to the recommendation query
