@@ -20,7 +20,7 @@ func RecommendationQuery(query string, callback func(string, autocompletion.Type
             s.Execute()
             callback(s.RecommendationQuery(), s.RecommendationType(), "")
         } else {
-            callback(query, autocompletion.NONE, "Failed to process query\n" + err.Error())
+            callback(query, autocompletion.NONE, "Unable to create recommendation query\n" + err.Error())
         }
     }(query)
 }

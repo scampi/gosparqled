@@ -14,9 +14,10 @@ var formatQueryForAutocompletion = function(partialToken, query) {
  * Autocompletion function
  */
 var customAutocompletionFunction = function(partialToken, callback) {
+    $("#error").html("")
     autocompletion.RecommendationQuery(formatQueryForAutocompletion(partialToken, yasqe.getValue()), function(q, type, err) {
         if (err) {
-            alert(err)
+            $("#error").html(ansi_up.ansi_to_html(err))
             return
         }
         if (!q) {
