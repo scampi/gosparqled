@@ -134,3 +134,9 @@ The following methods can then be called via JavaScript (see `demo/autocompletio
 # Publication
 
 This library is presented in [http://ceur-ws.org/Vol-1272/paper_157.pdf](http://ceur-ws.org/Vol-1272/paper_157.pdf). If you are using this tool, please cite this work.
+
+## Addendum
+
+The `?POF` variable excludes predicates that match `rdf:type`.
+
+https://github.com/scampi/gosparqled/blob/60bb750c5d00986754cb45b6e751db617b57eac4/cmd/eval/eval.go#L46
